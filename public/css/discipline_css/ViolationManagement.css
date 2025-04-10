@@ -1,0 +1,454 @@
+:root {
+    --main-color: #2c698d;
+    --second-color: #018ABD;
+    --third-color: #d9edf7;
+    --fourth-color: #DDE8F0;
+}
+
+body {
+    background-color: var(--third-color);
+    overflow-x: hidden;
+}
+/* Start of SideBar CSS */
+.sidebar {
+    width: 15.6rem;
+    height: 100%;
+    background: white;
+    position: fixed;
+    padding: 0.6rem;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.sidebar .nav-link {
+    color: #333;
+    margin: 0.6rem 0;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link i {
+    min-width: 2.5rem;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.sidebar .nav-link.active {
+    background: var(--second-color);
+    color: white !important;
+    border-radius: 5px;
+}
+
+.sidebar .nav-link:hover {
+    background: var(--main-color);
+    color: white;
+    border-radius: 5px;
+}
+
+.logo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.logo h1 {
+    font-size: 2rem;
+    padding-left: 2rem;
+}
+
+.dashboard-content {
+    margin-left: 250px;
+    padding: 20px;
+    transition: all 0.3s ease-in-out;
+    width: calc(100% - 250px);
+}
+
+.sidebar.collapsed {
+    width: 4.4rem;
+}
+
+.sidebar.collapsed ~ .dashboard-content {
+    margin-left: 4.4rem;
+    width: calc(100% - 4.4rem);
+}
+
+.sidebar.collapsed .logo h1,
+.sidebar.collapsed .nav-link span {
+    display: none;
+}
+
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.sidebar.collapsed .nav-link i {
+    font-size: 1.2rem;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    margin-right: 0.8rem;
+    cursor: pointer;
+}
+
+.close-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Centered logout button */
+.logout-container {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.logout-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dc3545 !important;
+    text-decoration: none;
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+.logout-link i {
+    margin-right: 0.6rem;
+}
+
+.sidebar.collapsed .logout-link i {
+    margin-right: 0;
+}
+
+.logout-link:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.sidebar.collapsed .logout-link span {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 250px;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed {
+        width: 15.6rem;
+        transform: translateX(-100%);
+    }
+
+    .sidebar.collapsed.show {
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed ~ .dashboard-content,
+    .sidebar ~ .dashboard-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .close-btn {
+        display: block !important;
+    }
+}
+/* End of Side Bar CSS */
+
+/* Start of Violation Management CSS */
+.container-custom {
+    max-width: 100%;
+    margin: auto;
+}
+.card-custom {
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding-bottom: 60px;
+}
+.studentinfo {
+    width: 80%;
+}
+.student-list {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+.student-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.create-violation-btn {
+   width: 20rem;
+   margin-top: 15px;
+}
+.createviolation {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.student-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.profile-img {
+    width: 10rem;
+    height: 10rem;
+    object-fit: cover;
+    border-radius: 0.6rem;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .profile-img {
+        width: 10rem; 
+        height: 10rem; 
+        margin-bottom: 1rem;
+    }
+
+    .studentinfo {
+        text-align: center;
+    }
+}
+
+.recent-violation {
+    background-color: white;
+    margin-top: 1.2rem; 
+    padding: 1rem;
+    border-radius: 1rem; 
+    position: relative; 
+}
+
+.violation-card {
+    background-color: var(--main-color);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.6rem; 
+    margin-top: 0.6rem;
+    cursor: pointer;
+    height: 5.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative; 
+}
+
+.violation-card p {
+    margin: 0;
+}
+
+.top-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bottom-content {
+    margin-top: auto;
+}
+/* End of Violation Managament CSS */
+
+/* Misconduct CSS */
+.modal-content {
+    border-radius: 0.9rem; 
+    background-color: var(--main-color);
+}
+
+.modal-header {
+    border-bottom: none;
+    position: relative;
+}
+
+.resolved-badge {
+    position: absolute;
+    margin-top: 0.3rem; 
+    top: 0.6rem; 
+    right: 0.6rem; 
+    padding: 0.3rem 0.6rem; 
+    border-radius: 0.5rem; 
+}
+
+.misconduct-details p {
+    margin: 0.3rem 0; 
+    font-size: 0.9rem; 
+    color: white;
+}
+
+.misconduct-details p span {
+    float: right;
+    color: white;
+}
+
+.evidence-section h6 {
+    border-bottom: 0.1rem solid #ddd;
+    padding-bottom: 0.3rem; 
+    color: white;
+    padding-top: 4.1rem; 
+    font-size: 1.3rem; 
+}
+
+.evidence-box {
+    border: 0.2rem dashed #ccc;
+    border-radius: 0.6rem; 
+    background-color: #f8f9fa;
+    height: 6.3rem; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+/* End of Misconduct CSS */
+.upload-modal .modal-content {
+    border-radius: 0.9rem; 
+    padding: 1.3rem; 
+    border: none;
+}
+
+.upload-box {
+    border: 0.3rem dashed var(--third-color);
+    border-radius: 0.6rem;
+    text-align: center;
+    padding: 2.5rem; 
+    cursor: pointer;
+    background-color: #f8f9fa;
+}
+
+.upload-box:hover {
+    border-color: var(--main-color);
+}
+.upload-box p {
+    margin: 0;
+    font-weight: 500;
+    color: #666;
+}
+.btn {
+    background: var(--second-color);
+    color: #d6eaf8;
+    border: #2c698d;
+}
+.btn:hover {
+    background: var(--fourth-color);
+    color: #2c698d;
+}
+button.btn.upload-btn {
+    background: #DEF0F6;
+    color: #000;
+}
+button.btn.submit-btn{
+    background: #DEF0F6;
+    color: #000;
+}
+button.btn.upload-btn:hover{
+    background: #2596BE;
+    color: #d6eaf8;
+}
+button.btn.submit-btn:hover{
+    background: #2596BE;
+    color: #d6eaf8;
+}
+
+/* Dropdown CSS */
+select.form-select {
+    height: 3.1rem;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    background: white;
+    border-radius: 7px;
+    margin-top: 5px;
+}
+.dropdown-toggle .icon {
+    font-size: 14px;
+    color: #000;
+    margin-left: auto;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    max-height: 11.2rem;
+    overflow-y: auto;
+    z-index: 100;
+}
+.dropdown-menu label {
+    display: block;
+    padding: 5px;
+    cursor: pointer;
+}
+.dropdown-menu label:hover {
+    background: #d9edf7;
+}
+.selected-items {
+    display: flex;
+    flex-wrap: wrap;
+    color: #333;
+    gap: 5px;
+    min-height: 2.2rem;
+    align-items: center;
+}
+.selected-item {
+    background: #d9edf7;
+    padding: 5px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+}
+.selected-item span {
+    cursor: pointer;
+    margin-left: 5px;
+    color: red;
+}
+.search-box {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    outline: none;
+}

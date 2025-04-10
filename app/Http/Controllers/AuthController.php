@@ -5,8 +5,9 @@ use App\Models\users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
-class MainController extends Controller
+class AuthController extends Controller
 {
 
     //roles = faculty,counselor,dicipline,registar,student
@@ -63,6 +64,16 @@ class MainController extends Controller
         ]
     ]);
 }
+
+public function logout(Request $request) {
+    Auth::logout(); 
+    Session::flush(); 
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('/'); // Redirect to landing page after logout
+}
+
 
 }
 

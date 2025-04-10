@@ -21,7 +21,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <a href="#" class="text-decoration-none" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#ForgotModal">Forgot Password?</a>
                     </div>
-                    <button type="button" id="loginButton" class="btn btn-primary w-100">Sign In</button>
+                    <button type="button" id="loginButton" class="btn btn-primary w-100 ">Sign In</button>
                 </form>
 
                 <p class="text-center mt-3">
@@ -76,8 +76,8 @@
             },
             success: function (response) {
                 if (response.success) {
-                    if (response.role == 'admin') {
-                        window.location.href = "{{ url('admin_dashboard') }}";
+                    if (response.role == 'discipline') {
+                        window.location.href = "{{ url('discipline_dashboard') }}";
                     } else if (response.role == 'super') {
                         window.location.href = "{{ url('super_dashboard') }}";
                     } else if (response.role == 'student') {

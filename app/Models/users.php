@@ -10,7 +10,7 @@ class users extends Authenticatable
     //
 
     protected $table = 'tb_users';
-    protected $fillable = ['firstname', 'lastname', 'email', 'password','role','student_no','course_and_section'];
+    protected $fillable = ['firstname', 'lastname', 'email', 'password','role','student_no','course_and_section','status'];
     public $timestamps = false;
 
     use \Illuminate\Auth\Authenticatable;

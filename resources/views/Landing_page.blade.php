@@ -105,10 +105,10 @@
           let menu = document.querySelector('#menu-icon');
           let navbar = document.querySelector('.navbar');
 
-        window.onscroll = () => {
-            menu.classList.remove('bx-x');
-            navbar.classList.remove('active');
-        }
+        // window.onscroll = () => {
+        //     menu.classList.remove('bx-x');
+        //     navbar.classList.remove('active');
+        // }
     </script>
 
 </body>

@@ -10,6 +10,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    //roles = faculty,counselor,dicipline,registar,student  
     public function up(): void
     {
         Schema::create('tb_users', function (Blueprint $table) {
@@ -20,7 +21,7 @@ return new class extends Migration
             $table->string('student_no');
             $table->string('course_and_section')->nullable();
             $table->string('password');
-            $table->enum('role',['admin','student','super']);
+            $table->enum('role',['student','counselor','discipline','faculty','registar','super']);
             $table->enum('status',['active','archive']);
         });
 
@@ -42,18 +43,18 @@ return new class extends Migration
              'student_no' => '02000782191',
              'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),
-             'role' => 'admin',
+             'role' => 'discipline',
              'status' => 'active'
-        ],
-        ['firstname' => 'Jeff',
-        'lastname' => 'Caber',
-        'email' => 'admins@gmail.com',
-        'student_no' => '02000782196',
-        'course_and_section' => 'Faculty',
-        'password' => bcrypt('123456789'),
-        'role' => 'super',
-        'status' => 'active'
-       ]
+            ],
+            ['firstname' => 'John',
+             'lastname' => 'Baybay',
+             'email' => 'super@gmail.com',
+             'student_no' => '02000782196',
+             'course_and_section' => 'Faculty',
+             'password' => bcrypt('123456789'),
+             'role' => 'super',
+             'status' => 'active'
+            ]
 
 
 
