@@ -1,5 +1,10 @@
 <link rel="stylesheet" href="{{ asset('./css/discipline_css/ViolationRecords.css') }}">
-            <div class="d-flex align-items-center">
+@php
+    use App\Models\postviolation;
+    
+    $violators = postviolation::get();
+@endphp
+        <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Violation Records</h3>
                 <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
@@ -15,7 +20,7 @@
             </div>
     
             <div class="table-container">
-                <table class="table table-hover">
+                <table class="table table-hover" id="violationrecordstable">
                     <thead>
                         <tr>
                             <th>Student No.</th>
@@ -24,49 +29,26 @@
                             <th>Violation</th>
                             <th>Status</th>
                             <th>Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="violationTable">
+                        @foreach ($violators as $data )
                         <tr>
-                            <td data-label="Student No.">02000911833</td>
-                            <td data-label="Name">Mark Jecil M. Bausa</td>
-                            <td data-label="Email">markjecil@gmail.com</td>
-                            <td data-label="Violation">Violation Code 4032</td>
-                            <td data-label="Status"><span class="badge-ongoing">Ongoing</span></td>
-                            <td data-label="Date">03/04/25</td>
+                            <td data-label="Student No.">{{$data -> student_no}}</td>
+                            <td data-label="Name">{{$data -> student_name}}</td>
+                            <td data-label="Email">{{$data -> school_email}}</td>
+                            <td data-label="Violation">{{$data -> violation -> violations}}</td>
+                            <td data-label="Status"><span class="badge-ongoing">{{$data -> status -> status}}</span></td>
+                            <td data-label="Date">{{$data -> Date_Created}}</td>
+                            <td>
+                                <button class="btn btn-primary btn-view-post" value="{{ $data -> id }}">View</button>
+                                <button class="btn btn-primary btn-edit-post" value="{{ $data -> id }}">Edit</button>
+                            </td>
                         </tr>
-                        <tr>
-                            <td data-label="Student No.">02000911834</td>
-                            <td data-label="Name">Jane Doe</td>
-                            <td data-label="Email">janedoe@gmail.com</td>
-                            <td data-label="Violation">Violation Code 5012</td>
-                            <td data-label="Status"><span class="badge-resolved">Resolved</span></td>
-                            <td data-label="Date">03/07/25</td>
-                        </tr>
-                        <tr>
-                            <td data-label="Student No.">02000911835</td>
-                            <td data-label="Name">John Smith</td>
-                            <td data-label="Email">johnsmith@gmail.com</td>
-                            <td data-label="Violation">Violation Code 6073</td>
-                            <td data-label="Status"><span class="badge-ongoing">Ongoing</span></td>
-                            <td data-label="Date">03/15/25</td>
-                        </tr>
-                        <tr>
-                            <td data-label="Student No.">02000911836</td>
-                            <td data-label="Name">Emily Davis</td>
-                            <td data-label="Email">emilyd@gmail.com</td>
-                            <td data-label="Violation">Violation Code 3056</td>
-                            <td data-label="Status"><span class="badge-resolved">Resolved</span></td>
-                            <td data-label="Date">03/04/25</td>
-                        </tr>
-                        <tr>
-                            <td data-label="Student No.">02000911837</td>
-                            <td data-label="Name">Michael Brown</td>
-                            <td data-label="Email">michaelb@gmail.com</td>
-                            <td data-label="Violation">Violation Code 2098</td>
-                            <td data-label="Status"><span class="badge-ongoing">Ongoing</span></td>
-                            <td data-label="Date">03/07/25</td>
-                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
+
+            @include('components.discipline_components.modals.modal')

@@ -18,7 +18,7 @@ $violationdata = violation::get();
     <div class="content-section active" id="violation-type-section">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Violation Type</h4>
-            <button class="btn btn-add px-4 py-2" id="addViolationBtn" data-bs-toggle="modal" data-bs-target="#violationModal">+ Add</button>
+            <button class="btn btn-add px-4 py-2" id="addViolationBtn">+ Add</button>
         </div>
         <div class="card-table bg-white">
             <table class="table table-hover mb-0" id="violationTable">
@@ -71,6 +71,15 @@ $violationdata = violation::get();
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 
 <script>
+
+$(document).ready(function(){
+    $('#addViolationBtn').on('click', function(e){
+        e.preventDefault();
+        $('#violationModal').modal('show');
+    });
+
+});
+
 $(document).ready(function () {
     // Add Violation
     $("#violationForm").on("submit", function (e) {

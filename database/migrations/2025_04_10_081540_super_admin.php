@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -49,6 +50,33 @@ return new class extends Migration
             $table -> id('referal_id');
             $table -> string('referals');
         });
+        
+        DB::table('tb_severity')->insert([
+            ['severity' => 'Minor A'],
+            ['severity' => 'Minor B'],
+            ['severity' => 'Minor C'],
+            ['severity' => 'Major A'],
+            ['severity' => 'Major B'],
+            ['severity' => 'Major C'],
+        ]);
+        
+        DB::table('tb_referals')->insert([
+            ['referals' => 'Verbal Reprimand']
+        ]);
+
+        DB::table('tb_status')->insert([
+            ['status' => 'Draft'],
+            ['status' => 'Pending'],
+            ['status' => 'Under Review'],
+            ['status' => 'Confirmed'],
+            ['status' => 'Appealed'],
+            ['status' => 'Appeal Under Review'],
+            ['status' => 'Appeal Approved'],
+            ['status' => 'Appeal Denied'],
+            ['status' => 'Resolved'],
+            ['status' => 'Archived'],
+        ]);
+
     }
 
     /**

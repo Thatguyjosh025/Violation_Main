@@ -1,5 +1,7 @@
 <link rel="stylesheet" href="{{ asset('./css/discipline_css/AdminDashboard.css') }}">
-
+@php
+    use App\Models\users;
+@endphp
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Dashboard</h3>
@@ -13,13 +15,13 @@
                         <div class="card card-custom shadow-sm h-100">
                             <h4>Welcome</h4>
                             <div class="d-flex align-items-center mt-4 flex-md-nowrap flex-wrap">
-                                <img src="/Photos/UserPic.jpg" alt="Profile Picture" class="profile-img">
+                                <img src="{{ asset('./Photos/aiah.jpg') }}" alt="Profile Picture" class="profile-img">
                                 <div class="flex-grow-1">
-                                    <span class="badge badge-custom">Disciplinary Officer</span>
-                                    <h4 class="mt-2 mb-1">Mark Jecil Bausa</h4>
-                                    <p class="mb-1">Age: 21 &nbsp; | &nbsp; School: STI Alabang</p>
+                                    <span class="badge badge-custom">{{ Auth::user()->role }}</span>
+                                    <h4 class="mt-2 mb-1">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h4>
+                                    <p class="mb-1">School ID: {{ Auth::user()-> student_no }}</p>
                                     <p class="mb-1">Bachelor of Science in Information Technology</p>
-                                    <span>IT Department | Part Time Worker</span>
+                                    <span>{{Auth::user()-> course_and_section}}</span>
                                 </div>
                             </div>
                         </div>
@@ -39,7 +41,7 @@
                     </div>
 
                 <div class="row mt-4">
-                    <!-- Chart Card -->
+                    <!-- Chart Card --> 
                     <div class="col-lg-7">
                         <div class="card p-3 shadow-sm">
                             <h6>Overall Violation</h6>

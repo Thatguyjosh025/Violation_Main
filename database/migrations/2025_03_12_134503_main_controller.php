@@ -37,10 +37,19 @@ return new class extends Migration
              'status' => 'active'
             ],
 
-            ['firstname' => 'Jeff',
-             'lastname' => 'Caber',
+            ['firstname' => 'Aiah',
+             'lastname' => 'Arceta',
              'email' => 'admin@gmail.com',
              'student_no' => '02000782191',
+             'course_and_section' => 'Faculty',
+             'password' => bcrypt('123456789'),
+             'role' => 'discipline',
+             'status' => 'active'
+            ],
+            ['firstname' => 'Josh',
+             'lastname' => 'Calinog',
+             'email' => 'admintest@gmail.com',
+             'student_no' => '02000782196',
              'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),
              'role' => 'discipline',

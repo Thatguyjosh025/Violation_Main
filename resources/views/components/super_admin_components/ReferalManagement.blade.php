@@ -18,7 +18,7 @@ $referalsdata = referals::get();
     <div class="content-section active" id="referral-type-section">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Referral Type</h4>
-            <button class="btn btn-add px-4 py-2" id="addPenaltyBtn" data-bs-toggle="modal" data-bs-target="#referralModal">+ Add</button>
+            <button class="btn btn-add px-4 py-2" id="addreferalBtn">+ Add</button>
         </div>
         <div class="card-table bg-white">
             <table class="table table-hover mb-0" id="referalTable">
@@ -72,6 +72,15 @@ $referalsdata = referals::get();
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 
 <script>
+
+$(document).ready(function(){
+    $('#addreferalBtn').on('click', function(e){
+        e.preventDefault();
+        $('#referralModal').modal('show');
+    });
+
+});
+
 $(document).ready(function () {
     // Add referral form submission via AJAX
     $("#referralForm").on("submit", function (e) {

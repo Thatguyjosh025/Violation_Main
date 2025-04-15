@@ -20,7 +20,7 @@
 
                 <!-- Create Rule Button (moved to left) -->
                 <div class="create-rule-container">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRuleModal">
+                    <button class="btn btn-primary" id="addrule">
                         <i class="bi bi-plus-circle"></i> Create Rule
                     </button>
                 </div>
@@ -127,6 +127,15 @@
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
+
+$(document).ready(function(){
+    $('#addrule').on('click', function(e){
+        e.preventDefault();
+        $('#createRuleModal').modal('show');
+    });
+
+});
+
  $(document).ready(function () {
         $("#ruleForm").on("submit", function (e) {
             e.preventDefault();

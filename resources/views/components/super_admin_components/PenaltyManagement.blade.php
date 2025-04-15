@@ -20,7 +20,7 @@ $penaltydata = penalties::get();
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Penalty Type</h4>
-            <button class="btn btn-add px-4 py-2" id="addPenaltyBtn" data-bs-toggle="modal" data-bs-target="#penaltyModal">+ Add</button>
+            <button class="btn btn-add px-4 py-2" id="addPenaltyBtn">+ Add</button>
         </div>
         
         <div class="card-table bg-white">
@@ -73,6 +73,14 @@ $penaltydata = penalties::get();
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script>
+
+$(document).ready(function(){
+    $('#addPenaltyBtn').on('click', function(e){
+        e.preventDefault();
+        $('#penaltyModal').modal('show');
+    });
+
+});
 
 //add penalty
 $(document).ready(function () {

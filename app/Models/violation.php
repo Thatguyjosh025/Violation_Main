@@ -15,7 +15,5 @@ class violation extends Model
     protected $fillable = ['violations'];
     public $timestamps = false;
 
-//     public function incidents(){
-//     return $this->hasMany(postviolation::class, 'violation_id');
-// }
+    
 }

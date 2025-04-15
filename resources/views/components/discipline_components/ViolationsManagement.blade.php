@@ -24,34 +24,20 @@
                             <div class="d-flex flex-column flex-md-row align-items-center gap-3">
                                 <img src="/Photos/UserPic.jpg" class="profile-img" alt="Profile Picture">
                                 <div class="studentinfo w-100">
-                                    <input type="text" class="form-control mb-2" placeholder="Student No." readonly>
-                                    <input type="text" class="form-control mb-2" placeholder="Student Name" readonly>
-                                    <input type="text" class="form-control mb-2" placeholder="Course and Section" readonly>
-                                    <input type="email" class="form-control mb-2" placeholder="Student School Email" readonly>
+                                    <input type="text" class="form-control mb-2" placeholder="Student No." id="student_no" required readonly>
+                                    <input type="text" class="form-control mb-2" placeholder="Student Name" id="student_name" readonly required>
+                                    <input type="text" class="form-control mb-2" placeholder="Course and Section" id="course_and_section" readonly required>
+                                    <input type="email" class="form-control mb-2" placeholder="Student School Email" id="schoolEmail" readonly required>
                                 </div>
                             </div>
                             <div class="createviolation mt-1">
-                                <button class="btn create-violation-btn" data-bs-toggle="modal" data-bs-target="#violationModal">+ Create Violation</button>
+                                <button class="btn create-violation-btn" id="createViolationbtn">+ Create Violation</button>
                             </div>
                         </div>
 
                         <div class="recent-violation">
                             <h5 class="mt-4 pb-2">Recent Violations</h5>
-                            <div class="violation-card">
-                                <div class="top-content">
-                                    <p>Today - Monday, March 17, 2025</p>
-                                    <p class="cheating-text fw-bold fs-5">Cheating</p>
-                                </div>
-                                <p class="bottom-content">12:45 PM</p>
-                            </div>
-                            
-                            <div class="violation-card">
-                                <div class="top-content">
-                                    <p>Today - Monday, March 17, 2025</p>
-                                    <p class="cheating-text fw-bold fs-5">Cheating</p>
-                                </div>
-                                <p class="bottom-content">12:45 PM</p>
-                            </div>
+                                
                         </div>
                     </div>
 
@@ -61,17 +47,26 @@
                             <input type="text" class="form-control mb-3" placeholder="Search Student">
                             <div class="student-list">
                                 @foreach ($accounts as $data )
-                                <div class="student-item">
-                                    <div class="d-flex align-items-center">
-                                        <img src="/Photos/UserPic.jpg" alt="Student">
-                                        <div class="ms-2">
-                                            <p class="mb-0 fw-bold">Student No.</p>
-                                            <small>{{ $data -> student_no}}</small>
-                                            <p>{{ $data->firstname }} {{ $data->lastname }}</p>
+                                    @if ($data -> role === 'student')
+                                    <div class="student-item">
+                                        <div class="d-flex align-items-center">
+                                            <img src="/Photos/UserPic.jpg" alt="Student">
+                                            <div class="ms-2">
+                                                <p class="mb-0 fw-bold">Student No.</p>
+                                                <small>{{ $data -> student_no}}</small>
+                                                <p>{{ $data->firstname }} {{ $data->lastname }}</p>
+                                            </div>
                                         </div>
+                                        <button class="btn btn-outline-primary btn-sm view-btn"
+                                        data-id="{{ $data->id }}"
+                                        data-name="{{ $data->firstname }} {{ $data->lastname }}"
+                                        data-email="{{ $data->email }}"
+                                        data-student_no="{{ $data->student_no }}"
+                                        data-course="{{ $data->course_and_section }}">
+                                        View
+                                        </button>
                                     </div>
-                                    <button class="btn btn-outline-primary btn-sm">View</button>
-                                </div>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
@@ -81,128 +76,207 @@
             </div>
         </div>
     </div>
+    
+    @include('components.discipline_components.modals.modal')
 
-    <!-- Violation Process Form Modal -->
-<div class="modal fade" id="violationModal" tabindex="-1" aria-labelledby="violationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content" style="background-color: #2c698d; color: white; padding: 20px; border-radius: 10px;">
-            <div class="modal-header border-0">
-                <h4 class="modal-title fw-bold" id="violationModalLabel">Violation Process</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-bs-theme="dark"></button>
-            </div>
-            <div class="modal-body">
-                <form action="" method="POST" enctype="multipart/form-data" class="mb-4">
-                    @csrf
+<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+<script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
 
-                    <div class="mb-3">
-                        <!-- <label for="student_no" class="form-label">Student No.</label> -->
-                        <input type="hidden" name="student_no" id="student_no" class="form-control form-control-sm" required>
-                    </div> 
+    $(document).ready(function(){
+        $('#createViolationbtn').on('click', function(e){
+            e.preventDefault();
+            $('#violationModal').modal('show');
+        });
+    });
 
-                    <div class="mb-3">
-                        <!-- <label for="student_name" class="form-label">Student Name</label> -->
-                        <input type="hidden" name="student_name" id="student_name" class="form-control" required>
-                    </div>
+    //populating the input from the student list
+    $(document).ready(function () {
+    $(".view-btn").on("click", function (e) {
+        e.preventDefault();
 
-                    <div class="mb-3">
-                        <!-- <label for="course_and_section" class="form-label">Course and Section</label> -->
-                        <input type="hidden" name="course_and_section" id="course_and_section" class="form-control" required>
-                    </div> 
+        var studentId = $(this).data("id");
+        var studentName = $(this).data("name");
+        var email = $(this).data("email");
+        var studentNo = $(this).data("student_no"); // Assume this field exists
+        var course = $(this).data("course");
 
-                    <div class="mb-3">
-                        <!-- <label for="school_email" class="form-label">School Email</label> -->
-                        <input type="hidden" name="school_email" id="schoolEmail" class="form-control" required>    
-                    </div>
+        // Fill in form fields
+        $("#student_name").val(studentName);
+        $("#schoolEmail").val(email);
+        $("#student_no").val(studentNo);
+        $("#course_and_section").val(course);
 
-                    <div class="mb-3">  
-                        <label for="violation_type" class="form-label">Violation Type</label>
-                        <select name="violation_type" id="violation_type" class="form-select">
-                            <option value="">Select</option>
-                            @foreach ($violate as $test)
-                                <option value="{{ $test->violation_id }}">{{ $test->violations }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+        // AJAX request to fetch violations for the student
+        $.ajax({
+            url: "/get_violators_history/" + encodeURIComponent(studentName) + "/" + studentNo,
+            type: "GET",
+            success: function (response) {
+                $(".recent-violation").empty();
 
-                    <div class="mb-3">
-                        <label class="form-label">Rule:</label>
-                        <p id="ruleName"></p>
-                        <input type="hidden" id="ruleNameInput" name="rule_Name"> 
-                    </div>
+                if (response.length === 0) {
+                    $(".recent-violation").append("<div class='violation-card'><p>No violations found.</p></div>");
+                } else {
+                    response.forEach(function (violation) {
+                        var card = `
+                            <div class="violation-card">
+                                <div class="top-content">
+                                    <p id="dateandtime">Date: ${violation.date}</p>
+                                    <p class="cheating-text fw-bold fs-5" id="violationtype">${violation.type}</p>
+                                </div>
+                                <p class="bottom-content" id="penaltytype">Violated Rule: ${violation.violatedrule}</p>
+                            </div>
+                        `;
+                        $(".recent-violation").append(card);
+                    });
+                }
+            },
+            error: function () {
+                alert("Failed to fetch violations.");
+            }
+        });
+    });
+});
 
-                    <div class="mb-3">
-                        <label class="form-label">Description:</label>
-                        <p id="descriptionName"></p> 
-                        <input type="hidden" id="descriptionNameInput" name="description_Name"> 
-                    </div>
+    //passing the populated data outside of the modal
+    $(document).ready(function(){
+        $("#createViolationbtn").on('click', function(e){
+            e.preventDefault();
 
-                    <div class="mb-3">
-                        <label class="form-label">Severity:</label>
-                        <p id="severityName"></p> 
-                        <input type="hidden" id="severityNameInput" name="severity_Name"> 
-                    </div>   
+            var studentnum = $('#student_no').val();
+            var studentname = $('#student_name').val();
+            var course = $('#course_and_section').val();
+            var schoolemail = $('#schoolEmail').val();
 
-                    <div class="mb-3">  
-                        <label for="referal_type" class="form-label">Action Taken Prior to Referral</label>
-                        <select name="referal_type" id="referal_type" class="form-select">
-                            <option value="">Select</option>
-                            @foreach ($ref as $refdata)
-                                <option value="{{ $refdata->referal_id }}">{{ $refdata->referals }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+            $('#modal_student_no').val(studentnum);
+            $('#modal_student_name').val(studentname);
+            $('#modal_student_course').val(course);
+            $('#modal_student_email').val(schoolemail);
 
-                    <div class="mb-3">  
-                        <label for="penalty_type" class="form-label">Penalty Type</label>
-                        <select name="penalty_type" id="penalty_type" class="form-select">
-                            <option value="">Select</option>
-                            @foreach ($pen as $pendata)
-                                <option value="{{ $pendata->penalties_id }}">{{ $pendata->penalties }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+        })
+    });
 
-                    <div class="mb-3">
-                        <h5>Faculty Involvement</h5>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="faculty_yes" name="faculty_involvement" value="yes">
-                            <label class="form-check-label" for="faculty_yes">Yes</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="faculty_no" name="faculty_involvement" value="no" checked>
-                            <label class="form-check-label" for="faculty_no">No</label>
-                        </div>
-                        <label for="" id="facultyLabel" style="display: none;"></label>
-                        <input type="text" name="faculty_name" id="facultyName" class="form-control mt-2" style="display: none;">
-                    </div>
+    //Selecting violation populating the rule,desc,severity
+    $(document).on("change", "#violation_type", function (e) {
+        e.preventDefault();
+        
+        var violation_id = $(this).val();
 
-                    <div class="mb-3">
-                        <h5>Counseling Required</h5>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="counseling_yes" name="counseling_required" value="yes">
-                            <label class="form-check-label" for="counseling_yes">Yes</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="counseling_no" name="counseling_required" value="no">
-                            <label class="form-check-label" for="counseling_no">No</label>
-                        </div>
-                    </div>
+        if (!violation_id) {
+            updateRuleDetails("-", "-", "-");
+            return;
+        }
 
-                    <div class="mb-3">
-                        <label for="remarks" class="form-label">Remarks</label>
-                        <input type="text" id="remarks" name="remarks" class="form-control">
-                    </div>
+        $.get("/get_rule/" + violation_id, function (response) {
+            if (response.error) {
+                updateRuleDetails("", "", "");
+            } else {
+                updateRuleDetails(response.rule_name, response.description, response.severity_name);
+            }
+        });
 
-                    <div class="mb-3">
-                        <label for="uploadEvidence" class="form-label">Upload Evidence</label>
-                        <input type="file" class="form-control" id="uploadEvidence" name="upload_evidence">
-                    </div>
+        function updateRuleDetails(rule, desc, severity) {
+            $("#ruleName").text(rule);
+            $("#descriptionName").text(desc);
+            $("#severityName").text(severity);
 
-                    <div class="modal-footer border-0 d-flex justify-content-end px-0">
-                        <button type="submit" id="submit_violation" class="btn btn-light">Create Violation</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+            // Populate hidden inputs
+            $("#descriptionNameInput").val(desc);
+            $("#severityNameInput").val(severity);
+            $("#ruleNameInput").val(rule);
+        }
+  
+    });
+
+    //faculty Inolvement
+    $(document).ready(function () {
+        $('input[name="faculty_involvement"]').change(function () {
+            if ($('#faculty_yes').is(':checked')) {
+                $('#facultyName').show();
+                $("#facultyLabel").show().text('Enter Faculty Name:');
+            } else {
+                $("#facultyLabel").hide();
+                $('#facultyName').hide().val('');
+            }
+        });
+    });
+
+    //submit form
+    $(document).ready(function () {
+        $("#submit_violation").click(function (e) {
+            e.preventDefault();
+
+            let facultyName = "N/A";
+
+            if ($('#faculty_yes').is(':checked')) {
+                facultyName = $("#facultyName").val();
+            }
+
+            let formData = new FormData();
+
+            formData.append('_token', $('input[name="_token"]').val());
+            formData.append('student_no', $("#modal_student_no").val());
+            formData.append('student_name', $("#modal_student_name").val());
+            formData.append('course', $("#modal_student_course").val());
+            formData.append('school_email', $("#modal_student_email").val());
+            formData.append('violation_type', $("#violation_type").val());
+            formData.append('penalty_type', $("#penalty_type").val());
+            formData.append('severity_Name', $("#severityNameInput").val());
+            formData.append('rule_Name', $("#ruleNameInput").val());
+            formData.append('description_Name', $("#descriptionNameInput").val());
+            formData.append('faculty_involvement', $("input[name='faculty_involvement']:checked").val());
+            formData.append('faculty_name', facultyName);
+            formData.append('counseling_required', $("input[name='counseling_required']:checked").val());
+            formData.append('referal_type', $("#referal_type").val());
+            formData.append('Remarks', $("#remarks").val());
+            formData.append('upload_evidence', $("#uploadEvidence")[0].files[0]);
+
+            $.ajax({
+                url: "/post_violation",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log("Violation recorded successfully!");
+
+                    const clearallfield = [
+                        "student_no",
+                        "student_name",
+                        "course_and_section",
+                        "schoolEmail",
+                        "violation_type",
+                        "penalty_type",
+                        "severityNameInput",
+                        "ruleNameInput",
+                        "descriptionNameInput",
+                        "referal_type",
+                        "remarks",
+                        "facultyName",
+                        "uploadEvidence"
+                    ];
+
+                    for (let field of clearallfield) {
+                        $(`#${field}`).val("");
+                    }
+
+                    $('#postviolationForm').reset();
+
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Oops! It looks like some required fields are missing or incorrect. Please check your inputs.",
+                        footer: '<a href="#">Why do I have this issue?</a>'
+                    });
+                    console.log("Error submitting form. Please check the inputs.");
+                    console.log(xhr.responseText);
+                }
+            });
+    });
+});
+
+
+</script>
