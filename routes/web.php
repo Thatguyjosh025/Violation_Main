@@ -29,6 +29,9 @@ Route::post('/logout',[AuthController::class,'logout']);
 Route::get('/discipline_dashboard',[ViewController::class, 'admin_dashboard'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('discipline_dashboard');
 Route::get('/student_dashboard',[ViewController::class, 'student_dash'])->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
 Route::get('/super_dashboard', [ViewController::class, 'authorization'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super'])->name('super_dashboard');
+Route::get('/faculty_dashboard', [ViewController::class, 'faculty_dashboard'])->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty'])->name('faculty_dashboard');
+
+
 
 //View routes superadmin
 Route::get('/authorization', [ViewController:: class, 'authorization'])->name('authorization');
@@ -42,6 +45,10 @@ Route::get('/incident_report', [ViewController::class, 'incident_report'])->name
 Route::get('/violation_manage', [ViewController::class, 'violation_manage'])->name('violation_manage'); 
 Route::get('/violation_records', [ViewController::class, 'violation_records'])->name('violation_records');
 
+//view routes faculty
+Route::get('/faculty_violation', [ViewController::class, 'faculty_violation'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
+
+
 //Create routes
 Route::post('/create_penalties', [SuperController::class, 'penalties']);
 Route::post('/create_violation', [SuperController::class, 'violation']);
@@ -49,6 +56,8 @@ Route::post('/create_referals', [SuperController::class, 'referal']);
 Route::post('/create_rules', [SuperController::class, 'rules']);
 Route::post('/post_violation',[AdminController::class,'postviolation']);
 Route::post('/update_student_info/{id}', [AdminController::class, 'updateStudentInfo']);
+Route::post('/submit_incident_report',[AdminController::class,'submitIncidentReport']);
+
 
 
 //Update routes

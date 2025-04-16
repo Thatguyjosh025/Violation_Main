@@ -40,6 +40,29 @@ return new class extends Migration
             $table->string('upload_evidence');
             $table->date('Date_Created');
         });
+
+        Schema::create('tb_incidentreport', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('student_name');
+            $table->string('student_no');
+            $table->string('course_section');
+            $table->string('school_email');
+            $table->string('faculty_name');
+
+            $table->unsignedBigInteger('violation_type');
+            $table->foreign('violation_type')->references('violation_id')->on('tb_violation');
+            
+            $table->string('rule_name');
+            $table->string('description');
+            $table->string('severity');
+            $table->string('remarks');
+
+            $table->string('upload_evidence')->nullable();
+            $table->date('Date_Created');
+
+
+        });
     }
 
     /**
@@ -49,5 +72,7 @@ return new class extends Migration
     {
         //
         Schema::dropIfExists('tb_postviolation');
+        Schema::dropIfExists('tb_incidentreport');
+
     }
 };

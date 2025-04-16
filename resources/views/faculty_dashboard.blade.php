@@ -10,21 +10,18 @@
     <title>Document</title>
 </head>
 <body>
-
     <div class="sidebar" id="sidebar">
             <div class="logo">
                 <h1 class="mb-0 sidebar-title" style="color: #004581;">Central</h1>
                 <button class="close-btn" id="closeSidebar"><i class="bi bi-list"></i></button>
             </div>
             <nav class="nav flex-column mt-3 flex-grow-1">
-                <a class="nav-link active" href={{ route('discipline_dashboard') }}><i class="bi bi-columns-gap"></i> <span>Dashboard</span></a>
-                <a class="nav-link" href="{{ route('violation_manage')}}"><i class="bi bi-person-exclamation"></i> <span>Violation Management</span></a>
-                <a class="nav-link" href="{{ route('incident_report') }}"><i class='bx bxs-report'></i> <span>Incident Report</span></a>
-                <a class="nav-link" href="{{ route('violation_records') }}"><i class="bi bi-people"></i> <span>Violation Record</span></a>
+                <a class="nav-link active" href="{{ url('faculty_dashboard') }}"><i class="bi bi-columns-gap"></i> <span>Dashboard</span></a>
+                <a class="nav-link" href="{{ url('faculty_violation') }}"><i class="bi bi-person-exclamation"></i> <span>Incident Report</span></a>
                 <a class="nav-link" href="#"><i class="bi bi-clipboard-data-fill"></i> <span>Reports and Analytics</span></a>
                 <a class="nav-link" href="#"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
             </nav>
-            
+
             <div class="logout-container">
                 <a class="logout-link" href="#" onclick="document.getElementById('logout-form').submit();">
                     <i class="bi bi-box-arrow-left"></i> <span>Log Out</span>
@@ -34,16 +31,13 @@
                     @csrf
                 </form>
             </div>
-    </div>
+        </div>
 
+        <div class="dashboard-content w-90">
+            @include('components.faculty_components.' . $views)
+        </div>
 
-        
-    <div class="dashboard-content w-90">
-        @include('components.discipline_components.' . $views)
-    </div>
-
-
-<script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('./js/discipline_js/AdminDashboard.js') }}"></script>
 </body>
+<script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('./js/faculty_js/FacultyDashboard.js') }}"></script>
 </html>

@@ -46,15 +46,6 @@ return new class extends Migration
              'role' => 'discipline',
              'status' => 'active'
             ],
-            ['firstname' => 'Josh',
-             'lastname' => 'Calinog',
-             'email' => 'admintest@gmail.com',
-             'student_no' => '02000782196',
-             'course_and_section' => 'Faculty',
-             'password' => bcrypt('123456789'),
-             'role' => 'discipline',
-             'status' => 'active'
-            ],
             ['firstname' => 'John',
              'lastname' => 'Baybay',
              'email' => 'super@gmail.com',
@@ -63,10 +54,16 @@ return new class extends Migration
              'password' => bcrypt('123456789'),
              'role' => 'super',
              'status' => 'active'
+            ],
+            ['firstname' => 'Rod',
+             'lastname' => 'Rufino',
+             'email' => 'faculty@gmail.com',
+             'student_no' => '02000782192',
+             'course_and_section' => 'Faculty',
+             'password' => bcrypt('123456789'),
+             'role' => 'faculty',
+             'status' => 'active'
             ]
-
-
-
         ]);
 
     }

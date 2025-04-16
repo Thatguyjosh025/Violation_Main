@@ -328,7 +328,8 @@ use App\Models\users;
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script>
-    // View student
+  
+// View student
   $(document).on('click', '.btn-view-post', function () {
     var id = $(this).val();
     console.log("test", id);

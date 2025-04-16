@@ -34,10 +34,10 @@
                                 <button class="btn create-violation-btn" id="createViolationbtn">+ Create Violation</button>
                             </div>
                         </div>
-
+                        
+                        <h5 class="mt-4 pb-2">Recent Violations</h5>
                         <div class="recent-violation">
-                            <h5 class="mt-4 pb-2">Recent Violations</h5>
-                                
+                            
                         </div>
                     </div>
 
@@ -93,7 +93,7 @@
 
     //populating the input from the student list
     $(document).ready(function () {
-    $(".view-btn").on("click", function (e) {
+        $(".view-btn").on("click", function (e) {
         e.preventDefault();
 
         var studentId = $(this).data("id");
@@ -241,6 +241,8 @@
                 success: function (response) {
                     console.log("Violation recorded successfully!");
 
+                    $('#violationModal').modal('hide');
+
                     const clearallfield = [
                         "student_no",
                         "student_name",
@@ -261,7 +263,7 @@
                         $(`#${field}`).val("");
                     }
 
-                    $('#postviolationForm').reset();
+                   
 
                 },
                 error: function (xhr) {

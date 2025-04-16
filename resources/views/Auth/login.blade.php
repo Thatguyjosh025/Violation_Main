@@ -82,6 +82,8 @@
                         window.location.href = "{{ url('super_dashboard') }}";
                     } else if (response.role == 'student') {
                         window.location.href = "{{ url('student_dashboard') }}";
+                    } else if (response.role == 'faculty') {
+                        window.location.href = "{{ url('faculty_dashboard') }}";
                     }
                 } else {
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\incident;
 use Carbon\Carbon;
 use App\Models\rules;
 use App\Models\violation;
@@ -160,7 +161,54 @@ class AdminController extends Controller
         'Date_Created' => Carbon::now()
     ]);
 
-    return response()->json(['status' => 200, 'message' => 'Student information updated successfully']);
+        return response()->json(['status' => 200, 'message' => 'Student information updated successfully']);
+    }
+
+    public function submitIncidentReport(Request $request){
+    $request->validate([
+        'student_name' => 'required|string',
+        'student_no' => 'required|string',
+        'course_section' => 'required|string',
+        'school_email' => 'required|email',
+        'violation_type' => 'required|integer',
+        'rule_name' => 'required|string',
+        'description' => 'required|string',
+        'severity' => 'required|string',
+        'faculty_name' => 'required|string',
+        'remarks' => 'required|string|max:500',
+        'upload_evidence' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048',
+    ]);
+
+    if ($request->hasFile('upload_evidence')) {
+        $evidencePath = $request->file('upload_evidence')->store('incident_evidence', 'public');
+    } else {
+        $evidencePath = null;
+    }
+
+    $create = incident::create([
+        'student_name' => $request->student_name,
+        'student_no' => $request->student_no,
+        'course_section' => $request->course_section,
+        'school_email' => $request->school_email,
+        'faculty_name' => $request->faculty_name,
+        'violation_type' => $request->violation_type,
+        'rule_name' => $request->rule_name,
+        'description' => $request->description,
+        'severity' => $request->severity,
+        'remarks' => $request->remarks,
+        'upload_evidence' => $evidencePath,
+        'Date_Created' => Carbon::now(),
+    ]);
+
+    $create->load('violation');
+
+    return response()->json([
+        'incidentreport' => [
+            'message' => 'Incident report submitted successfully.',
+            'violation_type' => $create->violation->violations, 
+        ]
+    ]);
 }
+
 
 }

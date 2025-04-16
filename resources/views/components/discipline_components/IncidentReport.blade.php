@@ -1,4 +1,9 @@
 <link rel="stylesheet" href="{{ asset('./css/discipline_css/IncidentReport.css') }}">
+@php
+use App\Models\incident;
+
+$reports = incident::get();
+@endphp
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Incident Report</h3>
@@ -7,19 +12,20 @@
 
             <div class="container mt-5">
                 <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
+                @foreach ($reports as $datareport )    
                     <div class="col">
                         <div class="card p-3 position-relative">
                             <div class="d-flex justify-content-between align-items-start">
-                                <h5 class="mb-0">Improper Uniform</h5>
-                                <span class="badge badge-minor">Minor</span>
+                            <h5 class="mb-0">{{ $datareport->violation->violations }}</h5> <span class="badge badge-minor">{{$datareport -> severity}}</span>
                             </div>
-                            <p>Mark Jecil Bausa <br> 0200067751</p>
-                            <p><small>Submitted by: Keith Izzam Magante</small></p>
+                            <p>{{$datareport -> student_name}}<br>{{$datareport -> student_no}}</p>
+                            <p><small>Submitted by: {{$datareport -> faculty_name}}</small></p>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button class="btn" data-bs-toggle="modal" data-bs-target="#violationModal" style="background: #376881; color: white; width: fit-content;">Review</button>
                             </div>
                         </div>
                     </div>
+                @endforeach
                 </div>
             </div>
         
@@ -32,7 +38,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p><strong>Name of violator:</strong> Mark Jecil Bausa</p>
+                            <p id="view_in"><strong>Name of violator:</strong> Mark Jecil Bausa</p>
                             <p><strong>Student No:</strong> 02000311488</p>
                             <p><strong>Section:</strong> BSIT 611</p>
                             <p><strong>School email:</strong> mark@gmail.com</p>

@@ -26,12 +26,17 @@ class ViewController extends Controller
     public function super_dash(){
         return view('super_dashboard');
     }
+    public function faculty_dash(){
+        return view('faculty_dashboard');
+    }
+
+
+    //super admin components
     public function authorization()
     {
         return view('super_dashboard', ['view' => 'Authorization']);
     }
 
-    //super admin components
     public function rule_management()
     {
         return view('super_dashboard', ['view' => 'RuleManage']);
@@ -67,6 +72,15 @@ class ViewController extends Controller
         return view('discipline_dashboard', ['views' => 'ViolationRecords']);
     }
 
+    //faculty components
+    public function faculty_dashboard()
+    {
+        return view('faculty_dashboard', ['views' => 'FacultyDashboard']);
+    }
+    public function faculty_violation()
+    {
+        return view('faculty_dashboard', ['views' => 'ViolationFacultyManagement']);
+    }
 
     
 }
