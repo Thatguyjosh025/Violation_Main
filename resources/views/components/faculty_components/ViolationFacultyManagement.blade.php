@@ -27,25 +27,25 @@ use App\Models\users;
                                 <div class="student-info">
                                 <div class="row mb-1">
                                     <label class="form-label">Student name</label>
-                                    <input type="text" class="form-control" id="incident_report_name" name="student_name">
+                                    <input type="text" class="form-control" id="incident_report_name" name="student_name"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
                                 </div>
                                     <div class="row mb-1">
                                         <label class="form-label">Student No.</label>
-                                        <input type="text" class="form-control" id="incident_report_studentno" name="student_no">
+                                        <input type="text" class="form-control" id="incident_report_studentno" name="student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
                                     </div>
                                     <div class="row mb-1">
                                         <label class="form-label">Course and section</label>
-                                        <input type="text" class="form-control" id="incident_report_course" name="course_section">
+                                        <input type="text" class="form-control" id="incident_report_course" name="course_section"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
                                     </div>
                                     <div class="row mb-1">
                                         <label class="form-label">School email</label>
-                                        <input type="email" class="form-control" id="incident_report_email" name="school_email">
+                                        <input type="email" class="form-control" id="incident_report_email" name="school_email"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
                                     </div>
                                 </div>
 
                                 <div class="violation-process mb-3">
                                     <label class="form-label">Faculty Name</label>
-                                    <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}">
+                                    <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}"  pattern="[A-Za-z]+" title="Only letters are allowed" required>
                                 </div>
 
                                 <!-- Violation Dropdown Section -->
@@ -65,22 +65,22 @@ use App\Models\users;
                                 <!-- RuleName, Description, Severity auto populate -->
                                     <label class="fw mt-2">Rule Name:</label>
                                     <p id="ruleName">-</p>
-                                    <input type="hidden" id="incident_report_ruleNAme" name="rule_Name" style="display: none;"> 
+                                    <input type="hidden" id="incident_report_ruleNAme" name="rule_Name" style="display: none;" readonly required> 
 
                                     <label class="fw mt-2">Description: </label>
                                     <p id="descriptionName">-</p>
-                                    <input type="hidden" id="incident_report_desc" name="description_Name" style="display: none;">
+                                    <input type="hidden" id="incident_report_desc" name="description_Name" style="display: none;" readonly required>
 
                                     <div class="Severity mb-2">
                                         <label class="fw">Severity of Offense: </label>
                                         <p id="severityName">-</p> 
-                                        <input type="hidden" id="incident_report_severity" name="severity_Name" style="display: none;"> 
+                                        <input type="hidden" id="incident_report_severity" name="severity_Name" style="display: none;" readonly required> 
                                     </div>
                                 <!-- RuleName, Description, Severity auto populate END -->
 
                                 <div class="form-group mt-3">
                                     <label for="floatingTextarea">Details</label>
-                                    <textarea class="form-control" id="incident_report_remarks" style="height: 100px; resize: none; font-size: 14px;" maxlength="200"></textarea>
+                                    <textarea class="form-control" id="incident_report_remarks" style="height: 100px; resize: none; font-size: 14px;" maxlength="150"></textarea>
                                 </div>
 
                                 <div class="mb-3">
@@ -212,6 +212,8 @@ $(document).ready(function () {
             success: function (response) {
                 console.log("Incident report submitted successfully!");
                 $('#IncidentReportForm')[0].reset();
+
+                
             },
             error: function (xhr) {
                 console.log("Error submitting form.");

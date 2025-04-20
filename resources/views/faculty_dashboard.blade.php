@@ -23,13 +23,14 @@
             </nav>
 
             <div class="logout-container">
-                <a class="logout-link" href="#" onclick="document.getElementById('logout-form').submit();">
-                    <i class="bi bi-box-arrow-left"></i> <span>Log Out</span>
-                </a>
+                    <a id="logout-link" class="logout-link" href="#" onclick="logout();">
+                        <i class="bi bi-box-arrow-left"></i> <span>Log Out</span>
+                    </a>
 
-                <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
+                    <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -40,4 +41,29 @@
 </body>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('./js/faculty_js/FacultyDashboard.js') }}"></script>
+<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function logout() {
+    Swal.fire({
+        title: "Are you sure you want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $('#logout-link').addClass('disabled').css('pointer-events', 'none');
+
+            $('#logout-form').submit();
+
+            setTimeout(function() {
+                window.location.href = "{{ url('login') }}"; 
+            }, 2000); 
+        }
+    });
+}
+</script>
+
 </html>

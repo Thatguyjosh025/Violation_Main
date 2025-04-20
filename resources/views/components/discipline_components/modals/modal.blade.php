@@ -20,10 +20,10 @@ use App\Models\users;
                 <div class="modal-body">
                     <form action="" method="POST" id="postviolationForm">
                     @csrf
-                    <input type="hidden" class="form-control mb-2" id="modal_student_no" name="student_no">
-                    <input type="hidden" class="form-control mb-2" id="modal_student_name" name="student_name">
-                    <input type="hidden" class="form-control mb-2" id="modal_student_course" name="course">
-                    <input type="hidden" class="form-control mb-2" id="modal_student_email" name="school_email">
+                    <input type="hidden" class="form-control mb-2" id="modal_student_no" name="student_no" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                    <input type="hidden" class="form-control mb-2" id="modal_student_name" name="student_name" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                    <input type="hidden" class="form-control mb-2" id="modal_student_course" name="course"pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                    <input type="hidden" class="form-control mb-2" id="modal_student_email" name="school_email"pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
 
                     <label class="fw-bold mb-1">Reason/s for Referral</label>
 
@@ -241,19 +241,19 @@ use App\Models\users;
           <input type="" id="edit_student_id" name="update_id">
           <div class="mb-3">
             <label for="edit_student_no" class="form-label">Student Number</label>
-            <input id="edit_student_no" class="form-control" name="update_student_no">
+            <input id="edit_student_no" class="form-control" name="update_student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
           <div class="mb-3">
             <label for="edit_student_name" class="form-label">Student Name</label>
-            <input id="edit_student_name" class="form-control" name="update_name">
+            <input id="edit_student_name" class="form-control" name="update_name" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
           <div class="mb-3">
             <label for="edit_course" class="form-label">Course</label>
-            <input id="edit_course" class="form-control" name="update_course">
+            <input id="edit_course" class="form-control" name="update_course" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
           <div class="mb-3">
             <label for="edit_school_email" class="form-label">School Email</label>
-            <input id="edit_school_email" class="form-control" name="update_school_email">
+            <input id="edit_school_email" class="form-control" name="update_school_email" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
           <div class="mb-3">
             <label for="edit_violation_type" class="form-label">Violation Type</label>
@@ -261,15 +261,15 @@ use App\Models\users;
           </div>
           <div class="mb-3">
             <label for="edit_rule_Name" class="form-label">Rule Name</label>
-            <input id="edit_rule_Name" class="form-control" name="update_rule_name">
+            <input id="edit_rule_Name" class="form-control" name="update_rule_name" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
           <div class="mb-3">
             <label for="edit_description_Name" class="form-label">Description</label>
-            <input id="edit_description_Name" class="form-control" name="update_description">
+            <input id="edit_description_Name" class="form-control" name="update_description" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
           <div class="mb-3">
             <label for="edit_severity_Name" class="form-label">Severity</label>
-            <input id="edit_severity_Name" class="form-control" name="update_severity">
+            <input id="edit_severity_Name" class="form-control" name="update_severity" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
           <div class="mb-3">
             <label for="edit_penalty_type" class="form-label">Penalty Type</label>
@@ -309,7 +309,7 @@ use App\Models\users;
           </div>
           <div class="mb-3">
             <label for="edit_Remarks" class="form-label">Remarks</label>
-            <input id="edit_Remarks" class="form-control" name="update_remarks">
+            <textarea class="form-control" name="update_remarks" id="edit_Remarks" style="height: 100px; resize: none;" maxlength="200"></textarea>
           </div>
           <div class="mb-3">
             <label for="Date_Created" class="form-label">Date Created</label>
@@ -481,6 +481,7 @@ $(document).on('click', '.btn-edit-post', function(){
       {
         console.log(response);
 
+        //fetching the selected value
         $('#edit_violation_type').val(response.data.violation_type);
         if (!$('#edit_violation_type').val()) {
             $('#edit_violation_type').append(

@@ -37,9 +37,9 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $(document).ready(function () {
-    $('#loginButton').click(function (e) {
-        e.preventDefault();
+   $(document).ready(function () {
+    function login() {
+        event.preventDefault();
 
         // Clear previous errors
         $('#login_email').removeClass('is-invalid');
@@ -47,12 +47,10 @@
         $('#emailError').text('');
         $('#passwordError').text('');
 
-        //getting the value of fields and assigning them into another variable
         var email = $('#login_email').val();
         var password = $('#login_password').val();
         var _token = $('input[name="_token"]').val();
 
-        // Check if fields are empty validation for frontend
         if (email == '' || password == '') {
             if (email == '') {
                 $('#login_email').addClass('is-invalid');
@@ -65,7 +63,7 @@
             return false;
         }
 
-       
+        // AJAX request to login
         $.ajax({
             url: "{{ url('login') }}",
             type: 'POST',
@@ -86,8 +84,6 @@
                         window.location.href = "{{ url('faculty_dashboard') }}";
                     }
                 } else {
-
-                    // getting the error response this time from the server-side
                     if (response.errors) {
                         if (response.errors.email) {
                             $('#login_email').addClass('is-invalid');
@@ -114,6 +110,16 @@
                 });
             }
         });
+    }
+
+    $('#loginButton').click(function (e) {
+        login();
+    });
+
+    $(document).keypress(function (e) {
+        if (e.which == 13) { 
+            login();
+        }
     });
 });
 

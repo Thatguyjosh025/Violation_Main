@@ -230,7 +230,15 @@
             formData.append('counseling_required', $("input[name='counseling_required']:checked").val());
             formData.append('referal_type', $("#referal_type").val());
             formData.append('Remarks', $("#remarks").val());
-            formData.append('upload_evidence', $("#uploadEvidence")[0].files[0]);
+            //formData.append('upload_evidence', $("#uploadEvidence")[0].files[0]);
+
+            const fileInput = $('#uploadEvidence')[0];
+            const file = fileInput.files[0];
+
+
+            if (file) {
+                formData.append('upload_evidence', file);
+            }
 
             $.ajax({
                 url: "/post_violation",

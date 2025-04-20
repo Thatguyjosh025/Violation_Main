@@ -22,6 +22,7 @@ class incident extends Model
         'severity',
         'remarks',
         'upload_evidence',
+        'is_visible',
         'Date_Created'
     ];
     public function violation()

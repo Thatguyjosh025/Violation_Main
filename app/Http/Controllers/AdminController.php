@@ -58,10 +58,14 @@ class AdminController extends Controller
             'faculty_name' => 'required|string',
             'referal_type' => 'required|string',
             'Remarks' => 'required|string|max:500',
-            'upload_evidence' => 'required|file',
+            'upload_evidence' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048'
         ]);
     
-        $evidencePath = $request->file('upload_evidence')->store('evidence', 'public');
+        if ($request->hasFile('upload_evidence')) {
+            $evidencePath = $request->file('upload_evidence')->store('evidence', 'public');
+        } else {
+            $evidencePath = null;
+        }
     
         $create = postviolation::create([
             'student_no' => $request->student_no,
@@ -93,7 +97,9 @@ class AdminController extends Controller
                 'violation_name' => $create->violation->violations, 
                 'status_name' => $create->status->status,
                 'Date_Created' => $create->Date_Created->format('y-m-d')
-            ]
+            ],
+            'message' => 'test',
+            'related_id' => $create->id
         ]);
     }
 
@@ -197,6 +203,7 @@ class AdminController extends Controller
         'severity' => $request->severity,
         'remarks' => $request->remarks,
         'upload_evidence' => $evidencePath,
+        'is_visible' => 'show',
         'Date_Created' => Carbon::now(),
     ]);
 
@@ -208,6 +215,46 @@ class AdminController extends Controller
             'violation_type' => $create->violation->violations, 
         ]
     ]);
+}
+// View incident report info
+public function getIncidentInfo(Request $request)
+{
+    $incident = incident::with('violation')->find($request->query('id'));
+
+    if (!$incident) {
+        return response()->json(['status' => 500, 'message' => 'Incident not found']);
+    }
+
+    return response()->json([
+        'status' => 200,
+        'data' => [
+            'id' => $incident->id,
+            'student_name' => $incident->student_name,
+            'student_no' => $incident->student_no,
+            'course_section' => $incident->course_section,
+            'school_email' => $incident->school_email,
+            'violation_type' => $incident->violation_type,
+            'violation_name' => $incident->violation->violations,
+            'rule_name' => $incident->rule_name,
+            'description' => $incident->description,
+            'severity' => $incident->severity,
+            'faculty_name' => $incident->faculty_name,
+            'remarks' => $incident->remarks,
+            'upload_evidence' => $incident->upload_evidence ?? 'N/A',
+            'Date_Created' => $incident->Date_Created,
+        ]
+    ]);
+
+}
+
+public function updateVisibility(Request $request) {
+    $record = incident::find($request->id);
+    if ($record) {
+        $record->is_visible = 'hide';
+        $record->save();
+        return response()->json(['message' => 'Updated']);
+    }
+    return response()->json(['message' => 'Not found'], 404);
 }
 
 
