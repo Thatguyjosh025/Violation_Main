@@ -123,7 +123,7 @@ use App\Models\users;
                 </div>
             </div>
         </div>
-    </div>
+</div>
 
 
 <!-- Violation Process View Modal -->
@@ -238,53 +238,64 @@ use App\Models\users;
       <form id="editStudentForm">
         @csrf
         <div class="modal-body">
-          <input type="" id="edit_student_id" name="update_id">
-          <div class="mb-3">
+          <input type="hidden" id="edit_student_id" name="update_id">
+
+          <div class="mb-3" style="display: none;">
             <label for="edit_student_no" class="form-label">Student Number</label>
             <input id="edit_student_no" class="form-control" name="update_student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
-          <div class="mb-3">
+
+          <div class="mb-3" style="display: none;">
             <label for="edit_student_name" class="form-label">Student Name</label>
             <input id="edit_student_name" class="form-control" name="update_name" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
-          <div class="mb-3">
+
+          <div class="mb-3" style="display: none;">
             <label for="edit_course" class="form-label">Course</label>
             <input id="edit_course" class="form-control" name="update_course" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
-          <div class="mb-3">
+
+          <div class="mb-3" style="display: none;">
             <label for="edit_school_email" class="form-label">School Email</label>
             <input id="edit_school_email" class="form-control" name="update_school_email" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
+
           <div class="mb-3">
             <label for="edit_violation_type" class="form-label">Violation Type</label>
             <select id="edit_violation_type" class="form-select" name="update_violation_type"></select>
           </div>
-          <div class="mb-3">
+
+          <div class="mb-3" style="display: none;">
             <label for="edit_rule_Name" class="form-label">Rule Name</label>
             <input id="edit_rule_Name" class="form-control" name="update_rule_name" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
-          <div class="mb-3">
+
+          <div class="mb-3" style="display: none;">
             <label for="edit_description_Name" class="form-label">Description</label>
             <input id="edit_description_Name" class="form-control" name="update_description" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
-          <div class="mb-3">
+
+          <div class="mb-3" style="display: none;">
             <label for="edit_severity_Name" class="form-label">Severity</label>
             <input id="edit_severity_Name" class="form-control" name="update_severity" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
           </div>
+
           <div class="mb-3">
             <label for="edit_penalty_type" class="form-label">Penalty Type</label>
             <select id="edit_penalty_type" class="form-select" name="update_penalty_type"></select>
           </div>
+
           <div class="mb-3">
             <label for="edit_status_type" class="form-label">Status</label>
             <select id="edit_status_type" class="form-select" name="update_status"></select>
           </div>
+
           <div class="mb-3">
           <h5>Faculty Involvement</h5>
             <div class="form-check">
                 <input class="form-check-input" type="radio" id="edit_faculty_yes" name="edit_faculty_involvement" value="Yes">
                 <label class="form-check-label" for="faculty_yes">Yes</label>
-            </div>
+            </div> 
             <div class="form-check">
                 <input class="form-check-input" type="radio" id="edit_faculty_no" name="edit_faculty_involvement" value="No" checked>
                 <label class="form-check-label" for="faculty_no">No</label>
@@ -292,6 +303,7 @@ use App\Models\users;
             <label for="" id="editfacultyLabel" style="display: none;"></label>
             <input type="text" name="edit_faculty_name" id="edit_faculty_Name" class="form-control mt-2" style="display: none;">
           </div>
+
           <div class="mb-3">
           <h5>Counseling Required</h5>
             <div class="form-check">
@@ -303,18 +315,22 @@ use App\Models\users;
                 <label class="form-check-label" for="counseling_no">No</label>
           </div>
           </div>
+
           <div class="mb-3">
             <label for="edit_referal_type" class="form-label">Referral Type</label>
             <select id="edit_referal_type" class="form-control" name="update_referral_type"></select>
           </div>
+
           <div class="mb-3">
             <label for="edit_Remarks" class="form-label">Remarks</label>
             <textarea class="form-control" name="update_remarks" id="edit_Remarks" style="height: 100px; resize: none;" maxlength="200"></textarea>
           </div>
+
           <div class="mb-3">
             <label for="Date_Created" class="form-label">Date Created</label>
             <p id="Date_Created" class="form-control"></p>
           </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -395,14 +411,13 @@ use App\Models\users;
     });
 });
 
-//dropdown loader
+// dropdown loader
 function loadViolationDropdown(url, id, selectedValue) {
   $.ajax({
     url: url,
     success: function(response) {
       var dropdown = $(id);
       dropdown.empty(); 
-      dropdown.append('<option value="">Select</option>');
 
       response.violation_data.forEach(function(item) {
         var isSelected = item.violation_id == selectedValue ? 'selected' : '';
@@ -420,7 +435,6 @@ function loadPenaltyDropdown(url, id, selectedValue){
       var dropdown = $(id);
 
       dropdown.empty();
-      dropdown.append('<option value="">Select</option>') ;
 
       response.penalties_data.forEach(function(item){
         var isSelected = item.penalties_id == selectedValue ? 'selected' : '';
@@ -437,7 +451,6 @@ function loadStatusDropdown(url, id, selectedValue){
       var dropdown = $(id);
 
       dropdown.empty();
-      dropdown.append('<option value="">Select</option>');
 
       response.status_data.forEach(function(item){
 
@@ -455,7 +468,6 @@ function loadReferalDropdown(url, id, selectedValue){
       var dropdown = $(id);
 
       dropdown.empty();
-      dropdown.append('<option value="">Select</option>');
 
       response.referals_data.forEach(function(item){
         var isSelected = item.referal_id == selectedValue ? 'selected' : '';
@@ -464,6 +476,35 @@ function loadReferalDropdown(url, id, selectedValue){
     }
   });
 }
+// End dropdown loader
+
+//populate selected violation for edit form
+  $(document).on("change", "#edit_violation_type", function (e) {
+        e.preventDefault();
+
+        var violation_id = $(this).val();
+
+        if (!violation_id) {
+            updateRuleDetails("-", "-", "-");
+            return;
+        }
+
+        $.get("/get_rule/" + violation_id, function (response) {
+            if (response.error) {
+                updateRuleDetails("", "", "");
+            } else {
+                updateRuleDetails(response.rule_name, response.description, response.severity_name);
+            }
+        });
+
+        function updateRuleDetails(rule, desc, severity) {
+       
+            $("#edit_description_Name").val(desc);
+            $("#edit_severity_Name").val(severity);
+            $("#edit_rule_Name").val(rule);
+        }
+  });
+
 
 //Preview edit
 $(document).on('click', '.btn-edit-post', function(){
@@ -568,6 +609,7 @@ $(document).on('click', '.btn-edit-post', function(){
         $('#editStudentModal').modal('show');
 });
 
+//submit student edit form
 $('#editStudentForm').submit(function(e) {
     e.preventDefault();
 

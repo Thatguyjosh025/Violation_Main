@@ -211,18 +211,18 @@
 });
 
 
-    //faculty Inolvement
-    $(document).ready(function () {
-        $('input[name="faculty_involvement"]').change(function () {
-            if ($('#faculty_yes').is(':checked')) {
-                $('#facultyName').show();
-                $("#facultyLabel").show().text('Enter Faculty Name:');
-            } else {
-                $("#facultyLabel").hide();
-                $('#facultyName').hide().val('');
-            }
-        });
+//faculty Inolvement
+$(document).ready(function () {
+    $('input[name="faculty_involvement"]').change(function () {
+        if ($('#faculty_yes').is(':checked')) {
+            $('#facultyName').show();
+            $("#facultyLabel").show().text('Enter Faculty Name:');
+        } else {
+            $("#facultyLabel").hide();
+            $('#facultyName').hide().val('');
+        }
     });
+});
 
 //submit form
 $(document).ready(function () {
@@ -395,6 +395,13 @@ $(document).ready(function () {
 
                 for (let field of clearallfield) {
                     $(`#${field}`).val("");
+                }
+
+                var violation_id = $("#violation_type").val();
+                if (!violation_id) {
+                    $("#ruleName").text("-");
+                    $("#descriptionName").text("-");
+                    $("#severityName").text("-");
                 }
             },
             error: function (xhr) {

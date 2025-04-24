@@ -51,4 +51,4 @@
                 </table>
             </div>
 
-            @include('components.discipline_components.modals.modal')
+        @include('components.discipline_components.modals.modal')
