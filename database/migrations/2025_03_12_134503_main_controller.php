@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('firstname');
             $table->string('lastname');
+            $table->string('middlename');
             $table->string('email')->unique();
             $table->string('student_no');
             $table->string('course_and_section')->nullable();
@@ -29,8 +30,19 @@ return new class extends Migration
         DB::table('tb_users')->insert([
             ['firstname' => 'Josh',
              'lastname' => 'Calinog',
+             'middlename' => 'Artamia',
              'email' => 'student@gmail.com',
              'student_no' => '02000782190',
+             'course_and_section' => 'BSIT 611',
+             'password' => bcrypt('123456789'),
+             'role' => 'student',
+             'status' => 'active'
+            ],
+            ['firstname' => 'Vince',
+             'lastname' => 'Mangampo',
+             'middlename' => 'Nolasco',
+             'email' => 'vince@gmail.com',
+             'student_no' => '02000782193',
              'course_and_section' => 'BSIT 611',
              'password' => bcrypt('123456789'),
              'role' => 'student',
@@ -39,6 +51,7 @@ return new class extends Migration
 
             ['firstname' => 'Aiah',
              'lastname' => 'Arceta',
+             'middlename' => 'Queen',
              'email' => 'admin@gmail.com',
              'student_no' => '02000782191',
              'course_and_section' => 'Faculty',
@@ -48,6 +61,7 @@ return new class extends Migration
             ],
             ['firstname' => 'John',
              'lastname' => 'Baybay',
+             'middlename' => 'Renaund',
              'email' => 'super@gmail.com',
              'student_no' => '02000782196',
              'course_and_section' => 'Faculty',
@@ -57,6 +71,7 @@ return new class extends Migration
             ],
             ['firstname' => 'Rod',
              'lastname' => 'Rufino',
+             'middlename' => 'Mark',
              'email' => 'faculty@gmail.com',
              'student_no' => '02000782192',
              'course_and_section' => 'Faculty',

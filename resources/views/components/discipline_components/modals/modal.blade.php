@@ -12,21 +12,20 @@ use App\Models\users;
 <!-- Violation Process Form Modal -->
 <div class="modal fade" id="violationModal" tabindex="-1" aria-labelledby="violationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content" style="background-color: #2c698d; color: white; padding: 20px; border-radius: 10px;">
+            <div class="modal-content" style="background-color:rgb(255, 255, 255); color: white; padding: 20px; border-radius: 10px;">
                 <div class="modal-header border-0">
-                    <h4 class="modal-title fw-bold" id="violationModalLabel">Violation Process</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-bs-theme="dark"></button>
+                  <h4 class="modal-title fw-bold text text-dark" id="violationModalLabel">Violation Process</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-bs-theme="dark"></button>
                 </div>
                 <div class="modal-body">
                     <form action="" method="POST" id="postviolationForm">
                     @csrf
-                    <input type="hidden" class="form-control mb-2" id="modal_student_no" name="student_no" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
-                    <input type="hidden" class="form-control mb-2" id="modal_student_name" name="student_name" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
-                    <input type="hidden" class="form-control mb-2" id="modal_student_course" name="course"pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
-                    <input type="hidden" class="form-control mb-2" id="modal_student_email" name="school_email"pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                    <input type="hidden" class="form-control mb-2" id="modal_student_no" name="student_no"  readonly required>
+                    <input type="hidden" class="form-control mb-2" id="modal_student_name" name="student_name"  readonly required>
+                    <input type="hidden" class="form-control mb-2" id="modal_student_course" name="course" readonly required>
+                    <input type="hidden" class="form-control mb-2" id="modal_student_email" name="school_email" readonly required>
 
-                    <label class="fw-bold mb-1">Reason/s for Referral</label>
-
+                    <label class="fw-bold mb-1 text text-dark">Reason/s for Referral</label>
                     <!-- Violation Dropdown Section -->
                     <div class="dropdown" id="dropdown1">
                         <select name="violation_type" id="violation_type" class="form-select">
@@ -39,24 +38,24 @@ use App\Models\users;
                     <!-- End of Dropdown Section -->
 
                     <!-- RuleName, Description, Severity auto populate -->
-                    <label class="fw-bold mt-2">Rule Name:</label>
-                    <p id="ruleName">-</p>
+                    <label class="fw-bold mt-2 text text-dark">Rule Name:</label>
+                    <p id="ruleName" class="text text-dark">-</p>
                     <input type="hidden" id="ruleNameInput" name="rule_Name" style="display: none;"> 
 
-                    <label class="fw-bold mt-2">Description: </label>
-                    <p id="descriptionName">-</p>
+                    <label class="fw-bold mt-2 text text-dark">Description: </label>
+                    <p id="descriptionName" class="text text-dark">-</p>
                     <input type="hidden" id="descriptionNameInput" name="description_Name" style="display: none;">
 
-                    <div class="Severity mb-2">
-                        <label class="fw-bold">Severity of Offense: </label>
-                        <p id="severityName">-</p> 
+                    <div class="Severity mb-2 text text-dark">
+                        <label class="fw-bold text text-dark">Severity of Offense: </label>
+                        <p id="severityName" class="text text-dark">-</p> 
                         <input type="hidden" id="severityNameInput" name="severity_Name" style="display: none;"> 
                     </div>
                     <!-- RuleName, Description, Severity auto populate END -->
 
                     
                     <!-- Referral Dropdown Section -->
-                    <label class="fw-bold mb-1">Action Taken Prior to Referral</label>
+                    <label class="fw-bold mb-1 text text-dark">Action Taken Prior to Referral</label>
                     <select class="form-select" id="referal_type" name="referal_type">
                         <option value="">Select Referals</option>
                        @foreach ( $ref as $referaldata )
@@ -66,7 +65,7 @@ use App\Models\users;
                     <!-- End of Dropdown Section -->
 
                     <!-- Penalty Dropdown Section -->
-                    <label class="fw-bold mt-2">Penalty</label>
+                    <label class="fw-bold mt-2 text text-dark">Penalty</label>
                     <select class="form-select" id="penalty_type" name="penalty_type">
                         <option value="">Select Penalty</option>
                        @foreach ( $pen as $pendata )
@@ -77,52 +76,51 @@ use App\Models\users;
 
                     <div class="d-flex justify-content-between mt-3">
                         <div>
-                            <label class="fw-bold">Faculty Involvement?</label><br>
+                            <label class="fw-bold text text-dark">Faculty Involvement?</label><br>
                             <div>
-                                <input class="form-check-input" type="radio" id="faculty_yes" name="faculty_involvement" value="Yes">
-                                <label class="form-check-label" for="faculty_yes">Yes</label>
+                                <input class="form-check-input text text-dark" type="radio" id="faculty_yes" name="faculty_involvement" value="Yes">
+                                <label class="form-check-label text text-dark" for="faculty_yes">Yes</label>
                             </div>
                             <div>
-                                <input class="form-check-input" type="radio" id="faculty_no" name="faculty_involvement" value="No">
-                                <label class="form-check-label" for="faculty_no">No</label>
+                                <input class="form-check-input text text-dark" type="radio" id="faculty_no" name="faculty_involvement" value="No">
+                                <label class="form-check-label text text-dark" for="faculty_no">No</label>
                             </div>
-                            <label for="" id="facultyLabel" style="display: none;"></label>
+                            <label for="" id="facultyLabel" class="text text-dark" style="display: none;"></label>
                         </div>
                         <div>
-                            <label class="fw-bold">Counseling Required?</label><br>
+                            <label class="fw-bold text text-dark">Counseling Required?</label><br>
                             <div>
-                                <input class="form-check-input" type="radio" id="counseling_yes" name="counseling_required" value="Yes">
-                                <label class="form-check-label" for="counseling_yes">Yes</label>
+                                <input class="form-check-input text text-dark" type="radio" id="counseling_yes" name="counseling_required" value="Yes">
+                                <label class="form-check-label text text-dark" for="counseling_yes">Yes</label>
                             </div>
                             <div>
-                                <input class="form-check-input" type="radio" id="counseling_no" name="counseling_required" value="No">
-                                <label class="form-check-label" for="counseling_no">No</label>
+                                <input class="form-check-input text text-dark" type="radio" id="counseling_no" name="counseling_required" value="No">
+                                <label class="form-check-label text text-dark" for="counseling_no">No</label>
                             </div>
                         </div>
                     </div>
 
                         <!-- faculty involvement name -->
-                        <input type="text" name="faculty_name" id="facultyName" class="form-control mt-2" style="display: none;">
+                        <input type="text" name="faculty_name" id="facultyName" class="form-control mt-2 text text-dark" style="display: none;">
     
-
+                        <!-- Remarks-->
                         <div class="form-group mt-3">
-                            <label for="floatingTextarea">Remarks</label>
+                            <label for="floatingTextarea" class="text text-dark">Remarks</label>
                             <textarea class="form-control" id="remarks" style="height: 100px; resize: none;" maxlength="200"></textarea>
                         </div>
                     
+                        <textarea class="form-control" id="appeal" name="appeal" style="display: none;" maxlength="200">N/A</textarea>
+
                         <!-- file upload -->
                         <div class="mb-3">
-                            <label for="uploadEvidence" class="form-label">Upload Evidence</label>
+                            <label for="uploadEvidence" class="form-label text text-dark">Upload Evidence</label>
                             <input type="file" class="form-control" id="uploadEvidence" name="upload_evidence">
                         </div>
 
-                        <button type="submit" id="submit_violation" class="btn btn-primary ">Create Violation</button> 
+                        <button type="submit" id="submit_violation" class="btn btn-primary">Create Violation</button> 
 
                     </form>
                 </div>
-                
-
-
             </div>
         </div>
     </div>
@@ -165,7 +163,7 @@ use App\Models\users;
           </div>
           <div class="col-md-6">
             <label for="penaltyType" class="form-label">Penalty Type</label>
-            <select id="viewpenalty_type" class="form-select"></select>
+            <select id="viewpenalty_type" class="form-control"></select>
           </div>
         </div>
         <div class="row">
@@ -214,14 +212,16 @@ use App\Models\users;
             <textarea id="viewRemarks" class="form-control" style="resize: none;" readonly></textarea>
           </div>
           <div class="col-md-6">
+            <label for="remarks" class="form-label">Appeal Description</label>
+            <textarea id="viewappeal" class="form-control" style="resize: none;" readonly></textarea>
+          </div>
+          <div class="col-md-6">
             <label for="dateCreated" class="form-label">Date Created</label>
             <p id="viewDate_Created" class="form-control"></p>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -384,6 +384,7 @@ use App\Models\users;
               $('#viewfaculty_name').text(response.data.faculty_name);
               $('#viewcounseling_required').text(response.data.counseling_required);
               $('#viewRemarks').text(response.data.Remarks);
+              $('#viewappeal').text(response.data.appeal);
               $('#viewupload_evidence').text(response.data.upload_evidence);
               $('#viewDate_Created').text(response.data.Date_Created);
 
@@ -544,21 +545,21 @@ $(document).on('click', '.btn-edit-post', function(){
 
         if ($('#edit_faculty_yes').is(':checked')) {
             $('#edit_faculty_Name').show().val(response.data.faculty_name);
-            $("#editfacultyLabel").show().text('Enter Faculty Name:');
-        }
+            $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');        
+          }
         else {
             $('#edit_faculty_Name').hide().val('N/A');
-            $("#editfacultyLabel").hide().text('Faculty Name:');
-        }
+            $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');        
+          }
 
         $('input[name="edit_faculty_involvement"]').change(function () {
             if ($('#edit_faculty_yes').is(':checked')) {
                 $('#edit_faculty_Name').show().val(''); 
-                $("#editfacultyLabel").show().text('Enter Faculty Name:');
-            } else {
+                $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');            
+              } else {
                 $('#edit_faculty_Name').hide().val('N/A');
-                $("#editfacultyLabel").hide().text('Faculty Name:');
-            }
+                $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');            
+              }
         });
 
       }

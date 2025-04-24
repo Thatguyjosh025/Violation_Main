@@ -246,10 +246,6 @@ label {
     padding: 1rem;
 }
 
-.student-info {
-    padding: 1rem;
-}
-
 .student-list {
     max-height: 31.25rem;
     overflow-y: auto;

@@ -10,6 +10,7 @@ use App\Http\Controllers\ViewController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ViewControllerDiscipline;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
 
@@ -27,7 +28,7 @@ Route::post('/logout',[AuthController::class,'logout']);
 
 //Auth Dashboard routes
 Route::get('/discipline_dashboard',[ViewController::class, 'admin_dashboard'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('discipline_dashboard');
-Route::get('/student_dashboard',[ViewController::class, 'student_dash'])->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
+Route::get('/student_dashboard',[ViewController::class, 'student_dashboard'])->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
 Route::get('/super_dashboard', [ViewController::class, 'authorization'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super'])->name('super_dashboard');
 Route::get('/faculty_dashboard', [ViewController::class, 'faculty_dashboard'])->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty'])->name('faculty_dashboard');
 
@@ -47,6 +48,10 @@ Route::get('/violation_records', [ViewController::class, 'violation_records'])->
 
 //view routes faculty
 Route::get('/faculty_violation', [ViewController::class, 'faculty_violation'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
+
+//view student faculty
+Route::get('/violation_history', [ViewController::class, 'violation_history'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
+Route::get('/violation_tracking', [ViewController::class, 'violation_tracking'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
 
 
 //Create routes
@@ -75,3 +80,9 @@ Route::get('/get_referal', [DataController::class, 'getReferals']);
 Route::get('/get_status', [DataController::class, 'getStatus']);
 Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
 Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
+
+//students
+Route::get('/get_violations_records', [StudentController::class, 'getViolationsRecords']);
+Route::post('/update_appeal_reason', [StudentController::class, 'updateAppealReason']);
+
+

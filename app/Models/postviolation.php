@@ -25,6 +25,7 @@ class postviolation extends Model
         'referal_type',
         'Remarks',
         'upload_evidence',
+        'appeal',
         'Date_Created'
     ];
 

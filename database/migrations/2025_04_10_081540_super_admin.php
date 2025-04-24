@@ -50,6 +50,21 @@ return new class extends Migration
             $table -> id('referal_id');
             $table -> string('referals');
         });
+
+
+        DB::table('tb_violation')->insert([
+            ['violations' => 'Cheating'],
+            ['violations' => 'Gambling'],
+            ['violations' => 'Imporper Uniform'],
+        ]);
+
+        DB::table('tb_penalties')->insert([
+            ['penalties' => 'Verbal / Oral Warning'],
+            ['penalties' => 'Written Apology'],
+            ['penalties' => 'Written Reprimand'],
+            ['penalties' => 'Suspension'],
+            ['penalties' => 'Expulsion'],
+        ]);
         
         DB::table('tb_severity')->insert([
             ['severity' => 'Minor A'],
@@ -65,7 +80,6 @@ return new class extends Migration
         ]);
 
         DB::table('tb_status')->insert([
-            ['status' => 'Draft'],
             ['status' => 'Pending'],
             ['status' => 'Under Review'],
             ['status' => 'Confirmed'],
@@ -75,6 +89,28 @@ return new class extends Migration
             ['status' => 'Appeal Denied'],
             ['status' => 'Resolved'],
             ['status' => 'Archived'],
+        ]);
+
+        DB::table('tb_rules')->insert([
+            [
+                'violation_id' => 1,
+                'severity_id' => 4, // assuming this exists
+                'rule_name' => 'No Cheating Allowed',
+                'description' => 'Any form of cheating during exams or assignments is prohibited.'
+            ],
+            [
+                'violation_id' => 2,
+                'severity_id' => 4,
+                'rule_name' => 'No Gambling',
+                'description' => 'Gambling in any form is strictly prohibited within school grounds.'
+            ],
+            [
+                'violation_id' => 3,
+                'severity_id' => 1,
+                'rule_name' => 'No Uniform',
+                'description' => 'Failure to wear the prescribed school uniform without a valid excuse, in violation of the institution’s dress code policy'
+            ],
+            
         ]);
 
     }

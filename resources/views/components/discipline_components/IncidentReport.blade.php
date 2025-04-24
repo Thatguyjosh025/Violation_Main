@@ -138,6 +138,7 @@ $reports = incident::get();
                             <input type="hidden" class="" id="incident_sev_input" name="severity_Name">
                             <input type="radio" name="faculty_involvement" value="Yes" id="faculty_involvement" style="display: none;" checked>
                             <input type="hidden" id="faculty_name" name="faculty_name">
+                            <textarea class="form-control" id="appeal" name="appeal" style="display: none;" maxlength="200">N/A</textarea>
                                                                                                                       
                             <hr>
                            
@@ -358,6 +359,8 @@ $(document).ready(function () {
         formData.append('penalty_type', $("#penalty_type").val());
         formData.append('counseling_required', $("input[name='counseling_required']:checked").val());
         formData.append('Remarks', $("#Remarks").val());
+        formData.append('appeal', $("#appeal").val());
+
 
         $.ajax({
             url: "/post_violation",

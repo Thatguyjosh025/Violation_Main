@@ -37,6 +37,7 @@ return new class extends Migration
             $table->string('counseling_required');
             $table->string('faculty_name');
             $table->string('Remarks',length:500);
+            $table->string('appeal');
             $table->string('upload_evidence')->nullable();
             $table->date('Date_Created');
         });

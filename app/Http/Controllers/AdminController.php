@@ -58,6 +58,7 @@ class AdminController extends Controller
             'faculty_name' => 'required|string',
             'referal_type' => 'required|string',
             'Remarks' => 'required|string|max:500',
+            'appeal' => 'required|string|max:500',
             'upload_evidence' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048'
         ]);
     
@@ -75,7 +76,7 @@ class AdminController extends Controller
             'violation_type' => $request->violation_type,
             'penalty_type' => $request->penalty_type,
             'severity_Name' => $request->severity_Name,
-            'status_name' => 2,
+            'status_name' => 1,
             'rule_Name' => $request->rule_Name,
             'description_Name' => $request->description_Name,
             'faculty_involvement' => $request->faculty_involvement,
@@ -83,6 +84,7 @@ class AdminController extends Controller
             'faculty_name' => $request->faculty_name,
             'referal_type' => $request->referal_type,
             'Remarks' => $request->Remarks,
+            'appeal' => $request->appeal,
             'upload_evidence' => $evidencePath,
             'Date_Created' => Carbon::now()
         ]);
@@ -135,6 +137,7 @@ class AdminController extends Controller
                 'referal_type' => $student->referal->referal_id,
                 'referal_name' => $student->referal->referals,
                 'Remarks' => $student->Remarks,
+                'appeal' => $student->appeal,
                 'upload_evidence' => $student->upload_evidence,
                 'Date_Created' => $student->Date_Created,
             ]
@@ -250,12 +253,10 @@ public function getIncidentInfo(Request $request)
 public function updateVisibility(Request $request) {
     $record = incident::find($request->id);
     if ($record) {
-        $record->is_visible = 'hide';
-        $record->save();
+        $record->update(['is_visible' => 'hide']);
         return response()->json(['message' => 'Updated']);
     }
     return response()->json(['message' => 'Not found'], 404);
 }
-
 
 }

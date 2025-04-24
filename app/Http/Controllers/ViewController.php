@@ -82,5 +82,20 @@ class ViewController extends Controller
         return view('faculty_dashboard', ['views' => 'ViolationFacultyManagement']);
     }
 
+    //student components
+    public function student_dashboard()
+    {
+        return view('student_dashboard', ['views' => 'StudentDashboard']);
+    }
+    public function violation_history()
+    {
+        return view('student_dashboard', ['views' => 'ViolationHistory']);
+    }
+    public function violation_tracking()
+    {
+        return view('student_dashboard', ['views' => 'ViolationTracking']);
+    }
+
+
     
 }

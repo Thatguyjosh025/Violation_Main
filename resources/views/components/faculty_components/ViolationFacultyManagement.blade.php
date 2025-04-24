@@ -24,29 +24,26 @@ use App\Models\users;
                     <div class="container-box p-3">
                         <h5>Student Information</h5>
                             <form action="" id="IncidentReportForm">
+                                
                                 <div class="student-info">
-                                <div class="row mb-1">
+
                                     <label class="form-label">Student name</label>
                                     <input type="text" class="form-control" id="incident_report_name" name="student_name"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
-                                </div>
-                                    <div class="row mb-1">
-                                        <label class="form-label">Student No.</label>
-                                        <input type="text" class="form-control" id="incident_report_studentno" name="student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
-                                    </div>
-                                    <div class="row mb-1">
-                                        <label class="form-label">Course and section</label>
-                                        <input type="text" class="form-control" id="incident_report_course" name="course_section"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
-                                    </div>
-                                    <div class="row mb-1">
-                                        <label class="form-label">School email</label>
-                                        <input type="email" class="form-control" id="incident_report_email" name="school_email"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
-                                    </div>
+
+                                    <label class="form-label">Student No.</label>
+                                    <input type="text" class="form-control" id="incident_report_studentno" name="student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                                
+                                    <label class="form-label">Course and section</label>
+                                    <input type="text" class="form-control" id="incident_report_course" name="course_section"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+
+                                    <label class="form-label">School email</label>
+                                    <input type="email" class="form-control" id="incident_report_email" name="school_email"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+
+                                    <label class="form-label">Faculty Name</label>
+                                    <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}"  pattern="[A-Za-z ]+" title="Only letters are allowed" required>
                                 </div>
 
-                                <div class="violation-process mb-3">
-                                    <label class="form-label">Faculty Name</label>
-                                    <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}"  pattern="[A-Za-z]+" title="Only letters are allowed" required>
-                                </div>
+    
 
                                 <!-- Violation Dropdown Section -->
                                 <div class="mb-3">
@@ -88,6 +85,7 @@ use App\Models\users;
                                     <input type="file" class="form-control form-control-sm" id="uploadEvidence" name="upload_evidence">
                                 </div>
 
+
                                 <button type="submit" class="btn btn-primary mt-2 btn-submit-incident">Submit</button>
                             </form>
                         </div>
@@ -128,22 +126,22 @@ use App\Models\users;
 <script>
 
 $(document).ready(function () {
-        $(".view-btn-incident").on("click", function (e) {
+    $(".view-btn-incident").on("click", function (e) {
         e.preventDefault();
 
         var studentId = $(this).data("id");
         var studentName = $(this).data("name");
         var email = $(this).data("email");
-        var studentNo = $(this).data("student_no"); 
+        var studentNo = $(this).data("student_no");
         var course = $(this).data("course");
 
-        $("#incident_report_name").val(studentName);
-        $("#incident_report_email").val(email);
-        $("#incident_report_studentno").val(studentNo);
-        $("#incident_report_course").val(course);
+        // Populate fields and remove error styling
+        $("#incident_report_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
+        $("#incident_report_email").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
+        $("#incident_report_studentno").val(studentNo).removeClass("is-invalid").next(".invalid-feedback").remove();
+        $("#incident_report_course").val(course).removeClass("is-invalid").next(".invalid-feedback").remove();
     });
 });
-
 
 $(document).on("change", "#incident_report_violationType", function (e) {
         e.preventDefault();
@@ -176,9 +174,58 @@ $(document).on("change", "#incident_report_violationType", function (e) {
   
 });
 
+//Incident Report
 $(document).ready(function () {
+
+    // removes the errors when field have inputs
+    $("#incident_report_name, #incident_report_studentno, #incident_report_course, #incident_report_email, #incident_report_violationType, #incident_report_remarks").on("input change", function () {
+        if ($(this).val()) {
+            $(this).removeClass("is-invalid");
+            $(this).next(".invalid-feedback").remove();
+        }
+    });
+
     $("#IncidentReportForm").on('submit', function (e) {
         e.preventDefault();
+
+        let isValid = true;
+
+        // Validate required fields
+        if (!$("#incident_report_name").val()) {
+            $("#incident_report_name").addClass("is-invalid");
+            $("#incident_report_name").after('<div class="invalid-feedback">Please enter the student name.</div>');
+            isValid = false;
+        }
+
+        if (!$("#incident_report_studentno").val()) {
+            $("#incident_report_studentno").addClass("is-invalid");
+            $("#incident_report_studentno").after('<div class="invalid-feedback">Please enter the student number.</div>');
+            isValid = false;
+        }
+
+        if (!$("#incident_report_course").val()) {
+            $("#incident_report_course").addClass("is-invalid");
+            $("#incident_report_course").after('<div class="invalid-feedback">Please enter the course and section.</div>');
+            isValid = false;
+        }
+
+        if (!$("#incident_report_email").val()) {
+            $("#incident_report_email").addClass("is-invalid");
+            $("#incident_report_email").after('<div class="invalid-feedback">Please enter the school email.</div>');
+            isValid = false;
+        }
+
+        if (!$("#incident_report_violationType").val()) {
+            $("#incident_report_violationType").addClass("is-invalid");
+            $("#incident_report_violationType").after('<div class="invalid-feedback">Please select a violation type.</div>');
+            isValid = false;
+        }
+
+        if (!$("#incident_report_remarks").val()) {
+            $("#incident_report_remarks").addClass("is-invalid");
+            $("#incident_report_remarks").after('<div class="invalid-feedback">Please provide a detailed description.</div>');
+            isValid = false;
+        }
 
         let formData = new FormData();
 
@@ -193,30 +240,44 @@ $(document).ready(function () {
         formData.append('description', $('#incident_report_desc').val());
         formData.append('severity', $('#incident_report_severity').val());
         formData.append('remarks', $('#incident_report_remarks').val());
-        //formData.append('upload_evidence', $('#uploadEvidence')[0].files[0]);
 
         const fileInput = $('#uploadEvidence')[0];
         const file = fileInput.files[0];
-
 
         if (file) {
             formData.append('upload_evidence', file);
         }
 
         $.ajax({
-            url: "/submit_incident_report", 
-            type: "POST", 
+            url: "/submit_incident_report",
+            type: "POST",
             data: formData,
-            contentType: false, 
-            processData: false, 
+            contentType: false,
+            processData: false,
             success: function (response) {
                 console.log("Incident report submitted successfully!");
                 $('#IncidentReportForm')[0].reset();
 
-                
+                var violation_id = $("#incident_report_violationType").val();
+                if (!violation_id) {
+                    $("#ruleName").text("-");
+                    $("#descriptionName").text("-");
+                    $("#severityName").text("-");
+                }
+
+                Swal.fire({
+                    icon: "success",
+                    text: "Incident report submitted successfully!",
+                    timer: 5000
+                });
             },
             error: function (xhr) {
                 console.log("Error submitting form.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Oops! It looks like some required fields are missing or incorrect. Please check your inputs.",
+                });
                 console.log(xhr.responseText);
             }
         });

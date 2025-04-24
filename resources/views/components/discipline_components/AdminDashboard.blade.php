@@ -18,7 +18,7 @@
                                 <img src="{{ asset('./Photos/aiah.jpg') }}" alt="Profile Picture" class="profile-img">
                                 <div class="flex-grow-1">
                                     <span class="badge badge-custom">{{ Auth::user()->role }}</span>
-                                    <h4 class="mt-2 mb-1">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h4>
+                                    <h4 class="mt-2 mb-1">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }} {{ Auth::user() -> middlename }}</h4>
                                     <p class="mb-1">School ID: {{ Auth::user()-> student_no }}</p>
                                     <p class="mb-1">Bachelor of Science in Information Technology</p>
                                     <span>{{Auth::user()-> course_and_section}}</span>
