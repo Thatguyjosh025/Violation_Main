@@ -90,6 +90,7 @@ $reports = incident::get();
                             <p id="view_incident_severity"><strong>Severity of Offense/s:</strong></p>
                             <p id="view_incident_facultyname"><strong>Submitted by:</strong>    </p>
                             <p><strong>Evidence/s:</strong> <span class="fw-bold">N/A</span></p>
+                            <input type="text" id="incident_id">
                             <input type="hidden" class="form-control" id="incident_name">
                             <input type="hidden" class="form-control" id="incident_no">
                             <input type="hidden" class="form-control" id="incident_course">
@@ -211,6 +212,7 @@ $(document).ready(function(){
                     $('#view_incident_remarks').html(`<strong>Remarks:</strong> ${data.remarks}`);
                     $('#view_incident_date').html(`<strong>Date Submitted:</strong> ${data.Date_Created}`);
 
+                    $('#incident_id').val(response.data.id);
                     $('#incident_name').val(response.data.student_name);
                     $('#incident_no').val(response.data.student_no);
                     $('#incident_course').val(response.data.course_section);
@@ -251,7 +253,7 @@ $(document).ready(function(){
         $('#violationProcess').modal('show');
         $('#viewIncidentModal').modal('hide');
    
-
+        var incidentID = $('#incident_id').val();
         var studentnameinput = $('#incident_name').val();
         var studentno = $('#incident_no').val();
         var studentcourse = $('#incident_course').val();
@@ -344,6 +346,8 @@ $(document).ready(function () {
 
         let formData = new FormData();
 
+        formData.append('incident_id', $("#incident_id").val()); 
+
         formData.append('_token', $('input[name="_token"]').val());
         formData.append('student_name', $("#incident_name_input").val());
         formData.append('student_no', $("#incident_no_input").val());
@@ -372,26 +376,8 @@ $(document).ready(function () {
                 $('#violationProcess').modal('hide');
                 console.log("Incident recorded successfully!");
 
-                //second ajax requesttttttttt
-                $.ajax({
-                    url: "/update_visibility", 
-                    type: "POST",
-                    data: {
-                        _token: $('input[name="_token"]').val(),
-                        id: response.related_id,
-                        is_visible: 'hide'
-                    },
-                    success: function (res) {
-                        console.log("Visibility updated to 'hide'.");
-                        $('#viewIncidentModal').modal('hide');
-                        $("#active-incidents").load(location.href + " #active-incidents > *");
-                        $("#archives").load(location.href + " #archives > *");
-                    },
-                    error: function (xhr) {
-                        console.log("Error updating visibility.");
-                        console.log(xhr.responseText);
-                    }
-                });
+                $("#active-incidents").load(location.href + " #active-incidents > *");
+                $("#archives").load(location.href + " #archives > *");
                 
             },
             error: function (xhr) {

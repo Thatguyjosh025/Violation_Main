@@ -10,6 +10,7 @@ body {
     overflow-x: hidden;
 }
 
+/* Start of SideBar CSS */
 .sidebar {
     width: 15.6rem;
     height: 100%;
@@ -178,21 +179,18 @@ body {
         margin-bottom: 1rem;
     }
 }
-
-
 /* End of Side Bar CSS */
 
 img {
     width: 12rem;
     height: 12rem;
     object-fit: cover;
-    border-radius: 0.8rem;
     margin-right: 2rem;
 }
 .card-custom {
     background-color: #2c698d;
     color: white;
-    border-radius: 0.9rem;
+    border-radius: 7px;
     padding: 1.2rem;
 }
 .badge-custom {
@@ -210,7 +208,7 @@ img {
     width: 10rem;
     height: 10rem;
     object-fit: cover;
-    border-radius: 0.8rem;
+    border-radius: 7px;
     flex-shrink: 0;
 }
 
@@ -221,8 +219,6 @@ img {
         margin: 0 auto;
     }
 }
-
-
 
 /* Calendar CSS */
 .calendar-container {
@@ -235,7 +231,7 @@ img {
     font-family: 'Segoe UI', sans-serif;
     width: 100%;
     background-color: white;
-    border-radius: 1rem;
+    border-radius: 7px;
     padding: 1rem;
 }
 
@@ -282,3 +278,50 @@ img {
     }
 }
 /* End of Calendar CSS */
+
+/* Notification CSS */
+.notification-card {
+    padding: 0.8rem 1rem !important;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+}
+
+.card.shadow-sm {
+    padding: 16px 0 16px 16px;
+}
+
+.notification-card img {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.notification-card h6 {
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+}
+
+.notification-card p {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+}
+
+.notif-scrollable {
+    max-height: 15rem;
+    min-height: 15rem;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.notification-card small {
+    font-size: 0.75rem;
+}
+
+.card h6 {
+    font-size: 1rem;
+}
+
+@media (max-width: 993px) {
+    .card.shadow-sm.notif {
+        margin-top: 1.5rem;
+    }
+}

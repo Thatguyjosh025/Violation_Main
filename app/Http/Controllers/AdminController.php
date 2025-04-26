@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\incident;
+use Log;
 use Carbon\Carbon;
 use App\Models\rules;
+use App\Models\incident;
 use App\Models\violation;
 use Illuminate\Http\Request;
 use App\Models\postviolation;
@@ -90,6 +91,15 @@ class AdminController extends Controller
         ]);
     
         $create->load('referal', 'violation', 'penalty', 'status');
+
+         // Check if the incident_id is provided
+        if ($request->filled('incident_id')) { 
+            $incident = incident::find($request->incident_id); //then this line finds if the id input is matched in the other table
+            if ($incident) {
+                $incident->update(['is_visible' => 'hide']);
+                return response()->json(['message' => 'Updated']);
+            }
+        }
     
         return response()->json([
             'postviolation' => [
@@ -251,6 +261,7 @@ public function getIncidentInfo(Request $request)
 }
 
 public function updateVisibility(Request $request) {
+
     $record = incident::find($request->id);
     if ($record) {
         $record->update(['is_visible' => 'hide']);
@@ -258,5 +269,4 @@ public function updateVisibility(Request $request) {
     }
     return response()->json(['message' => 'Not found'], 404);
 }
-
 }

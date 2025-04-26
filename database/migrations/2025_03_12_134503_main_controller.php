@@ -26,6 +26,15 @@ return new class extends Migration
             $table->enum('status',['active','archive']);
         });
 
+        Schema::create('tb_notifications', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('message');
+            $table->string('role');
+            $table->boolean('is_read')->default(false);
+            $table->timestamps();
+        });
+
 
         DB::table('tb_users')->insert([
             ['firstname' => 'Josh',

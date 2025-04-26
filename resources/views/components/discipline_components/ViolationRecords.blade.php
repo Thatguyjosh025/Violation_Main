@@ -1,7 +1,6 @@
 <link rel="stylesheet" href="{{ asset('./css/discipline_css/ViolationRecords.css') }}">
 @php
-    use App\Models\postviolation;
-    
+    use App\Models\postviolation; 
     $violators = postviolation::get();
 @endphp
         <div class="d-flex align-items-center">

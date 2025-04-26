@@ -15,13 +15,11 @@
                         <div class="card card-custom shadow-sm h-100">
                             <h4>Welcome</h4>
                             <div class="d-flex align-items-center mt-4 flex-md-nowrap flex-wrap">
-                                <img src="{{ asset('./Photos/aiah.jpg') }}" alt="Profile Picture" class="profile-img">
+                                <img src="/Photos/UserPic.jpg" alt="Profile Picture" class="profile-img">
                                 <div class="flex-grow-1">
-                                    <span class="badge badge-custom">{{ Auth::user()->role }}</span>
-                                    <h4 class="mt-2 mb-1">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }} {{ Auth::user() -> middlename }}</h4>
-                                    <p class="mb-1">School ID: {{ Auth::user()-> student_no }}</p>
-                                    <p class="mb-1">Bachelor of Science in Information Technology</p>
-                                    <span>{{Auth::user()-> course_and_section}}</span>
+                                    <span class="badge badge-custom">{{Auth::user()-> role}}</span>
+                                    <h4 class="mt-2 mb-1">Name: {{Auth::user()-> firstname}} {{Auth::user()-> lastname}} {{Auth::user()-> middlename}}</h4>
+                                    <p class="mb-1">ID: {{Auth::user()-> student_no}}</p>
                                 </div>
                             </div>
                         </div>
@@ -39,9 +37,9 @@
                             <div id="calendarDates" class="calendar-dates d-grid mt-2"></div>
                         </div>
                     </div>
-
+                </div>
                 <div class="row mt-4">
-                    <!-- Chart Card --> 
+                    <!-- Chart Card -->
                     <div class="col-lg-7">
                         <div class="card p-3 shadow-sm">
                             <h6>Overall Violation</h6>
@@ -53,8 +51,22 @@
 
                     <!-- Empty Card -->
                     <div class="col-lg-5">
-                        <div class="card p-3 shadow-sm" style="height: 250px;"></div>
+                    <div class="card shadow-sm notif">
+                        <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
+                        <div class="notif-scrollable">
+                            
+                            <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Student Appeal</h6>
+                                    <p class="mb-1 text-muted small">You’ve received an appeal from a student</p>
+                                    <small class="text-muted">20h ago</small>
+                                </div>
+                                <button class="btn-close ms-2 mt-1" aria-label="Close" onclick="dismissNotification(this)"></button>
+                            </div>
+    
+                        </div>
                     </div>
                 </div>
-            </div>
+                </div>
         </div>
+    </div>
