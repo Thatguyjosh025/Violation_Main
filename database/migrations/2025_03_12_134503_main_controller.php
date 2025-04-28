@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('firstname');
             $table->string('lastname');
-            $table->string('middlename');
+            $table->string('middlename')->nullable();
             $table->string('email')->unique();
             $table->string('student_no');
             $table->string('course_and_section')->nullable();
@@ -31,8 +31,11 @@ return new class extends Migration
             $table->string('title');
             $table->string('message');
             $table->string('role');
+            $table->string('type');
+            $table->string('student_no')->nullable();
             $table->boolean('is_read')->default(false);
-            $table->timestamps();
+            $table->date('date_created');
+            $table->string('created_time');
         });
 
 
@@ -58,8 +61,8 @@ return new class extends Migration
              'status' => 'active'
             ],
 
-            ['firstname' => 'Aiah',
-             'lastname' => 'Arceta',
+            ['firstname' => 'Jeff',
+             'lastname' => 'Caber',
              'middlename' => 'Queen',
              'email' => 'admin@gmail.com',
              'student_no' => '02000782191',

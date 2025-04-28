@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\notifications;
 use Log;
 use Carbon\Carbon;
 use App\Models\rules;
@@ -89,6 +90,16 @@ class AdminController extends Controller
             'upload_evidence' => $evidencePath,
             'Date_Created' => Carbon::now()
         ]);
+        $notif = notifications::create([
+            'title' => 'New Active Violation',
+            'message' => 'A new violation has been assigned to you',
+            'role' => 'student',
+            'student_no' => $request->student_no,
+            'type' => 'posted',
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+        ]);
+
     
         $create->load('referal', 'violation', 'penalty', 'status');
 
@@ -97,6 +108,17 @@ class AdminController extends Controller
             $incident = incident::find($request->incident_id); //then this line finds if the id input is matched in the other table
             if ($incident) {
                 $incident->update(['is_visible' => 'hide']);
+
+                $notif = notifications::create([
+                    'title' => 'Incident Approval',
+                    'message' => 'Your Incident Report has been approve',
+                    'role' => 'faculty',
+                    'student_no' => null,
+                    'type' => 'approve',
+                    'date_created' => Carbon::now()->format('Y-m-d'),
+                    'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+                ]);
+            
                 return response()->json(['message' => 'Updated']);
             }
         }
@@ -217,10 +239,20 @@ class AdminController extends Controller
         'remarks' => $request->remarks,
         'upload_evidence' => $evidencePath,
         'is_visible' => 'show',
-        'Date_Created' => Carbon::now(),
+        'Date_Created' => Carbon::now()
     ]);
 
     $create->load('violation');
+
+    $notif = notifications::create([
+        'title' => 'Incident Report',
+        'message' => 'You have new incident report',
+        'role' => 'admin',
+        'student_no' => null,
+        'type' => 'incident',
+        'date_created' => Carbon::now()->format('Y-m-d'),
+        'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+    ]);
 
     return response()->json([
         'incidentreport' => [

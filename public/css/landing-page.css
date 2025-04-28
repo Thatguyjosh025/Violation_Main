@@ -343,3 +343,8 @@ button.btnSignIn:hover {
 button#loginButton {
     color: white;
 }
+button.btn.btn-primary {
+    color: white;
+    width: 100%;
+}
+

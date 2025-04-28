@@ -174,10 +174,6 @@ body {
     .close-btn {
         display: block !important;
     }
-
-    .dashboard-container .col-lg-7 {
-        margin-bottom: 1rem;
-    }
 }
 /* End of Side Bar CSS */
 
@@ -279,6 +275,42 @@ img {
 }
 /* End of Calendar CSS */
 
+/* Minor/Major Progress Card */
+.custom-card {
+    background: white;
+    border-radius: 7px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    min-width: 250px;
+    flex: 1 1 0;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .card-number {
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--main-color);
+    margin-bottom: 1.2rem;
+  }
+  
+  .progress {
+    height: 12px;
+    border-radius: 6px;
+    background-color: #e9ecef;
+    overflow: hidden;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    border-radius: 6px;
+  }
+
 /* Notification CSS */
 .notification-card {
     padding: 0.8rem 1rem !important;
@@ -318,10 +350,4 @@ img {
 
 .card h6 {
     font-size: 1rem;
-}
-
-@media (max-width: 993px) {
-    .card.shadow-sm.notif {
-        margin-top: 1.5rem;
-    }
 }

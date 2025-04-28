@@ -15,8 +15,8 @@ class AuthController extends Controller
         $request->validate([
             'firstname' => ['required', 'string', 'max:255', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
             'lastname' => ['required', 'string', 'max:255', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
-            'middlename' => ['required', 'string', 'max:255', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:tb_users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'middlename' => ['nullable', 'max:255', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
+            'email' => ['required','string', 'email', 'max:255', 'unique:tb_users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
             'student_no' => ['required', 'string', 'max:11', 'unique:tb_users'],
             'course_and_section' => ['required', 'string', 'max:55'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -39,33 +39,33 @@ class AuthController extends Controller
         return redirect()->intended('/');
     }
 
-    public function login(Request $request){
-    $credentials = $request->only('email', 'password');
-
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
-
-    if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-
-        // Return success response with the userssssss roleeeee
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+    
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+    
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+    
+            return response()->json([
+                'success' => true,
+                'role' => $user->role,
+            ]);
+        }
+    
+        // Correct error array
         return response()->json([
-            'success' => true,
-            'role' => $user->role,
+            'success' => false,
+            'errors' => [
+                'email' => 'The provided credentials do not match our records.',
+                'password' => 'The provided credentials do not match our records.'
+            ]
         ]);
     }
-
-    // Return error message if credentials are invalid
-    return response()->json([
-        'success' => false,
-        'errors' => [
-            'email' => 'The provided credentials do not match our records.',
-            '   password' => 'The provided credentials do not match our records.'
-        ]
-    ]);
-}
 
 public function logout(Request $request) {
     Auth::logout(); 

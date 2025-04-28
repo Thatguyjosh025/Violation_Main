@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ViewControllerDiscipline;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
 
@@ -84,5 +85,8 @@ Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
 //students
 Route::get('/get_violations_records', [StudentController::class, 'getViolationsRecords']);
 Route::post('/update_appeal_reason', [StudentController::class, 'updateAppealReason']);
+
+//notif
+Route::post('/update_notification_status', [NotificationController::class, 'updateNotificationStatus']);
 
 

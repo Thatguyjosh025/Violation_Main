@@ -84,11 +84,11 @@ $reports = incident::get();
                             <p id="view_incident_studentno"><strong>Student No:</strong></p>
                             <p id="view_incident_course"><strong>Section:</strong></p>
                             <p id="view_incident_email"><strong>School email:</strong></p>
-                            <hr>    
+                            <hr>
                             <p id="view_incident_violation"><strong>Reason/s for Referral:</strong></p>
                             <p id="view_incident_details"><strong>Details:</strong></p>
                             <p id="view_incident_severity"><strong>Severity of Offense/s:</strong></p>
-                            <p id="view_incident_facultyname"><strong>Submitted by:</strong>    </p>
+                            <p id="view_incident_facultyname"><strong>Submitted by:</strong></p>
                             <p><strong>Evidence/s:</strong> <span class="fw-bold">N/A</span></p>
                             <input type="text" id="incident_id">
                             <input type="hidden" class="form-control" id="incident_name">
@@ -100,10 +100,10 @@ $reports = incident::get();
                             <input type="hidden" class="form-control" id="incident_faculty">
                             <input type="hidden" class="form-control" id="incident_details">
                             <select name="" id="incident_violation" style="display: none;"></select>
-
+                        </div>
                         <div class="modal-footer">
-                                <button class="btn btn-success" id="approve-btn">Approve</button>
-                                <button class="btn btn-danger">Reject</button>
+                            <button class="btn btn-success" id="approve-btn" data-bs-dismiss="modal">Approve</button>
+                            <button class="btn btn-danger">Reject</button>
                         </div>
                     </div>
                 </div>
@@ -183,7 +183,9 @@ $reports = incident::get();
                     </div>
                 </div>
             </div>
+
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function(){
     $('.btn-view-incident').on('click', function(e){
@@ -379,6 +381,11 @@ $(document).ready(function () {
                 $("#active-incidents").load(location.href + " #active-incidents > *");
                 $("#archives").load(location.href + " #archives > *");
                 
+                Swal.fire({
+                    icon: "success",
+                    text: "Incident recorded successfully!",
+                    timer: 5000
+                });
             },
             error: function (xhr) {
                 console.log("Error submitting form. Please check the inputs.");

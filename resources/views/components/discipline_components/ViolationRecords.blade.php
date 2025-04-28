@@ -38,7 +38,7 @@
                             <td data-label="Name">{{$data -> student_name}}</td>
                             <td data-label="Email">{{$data -> school_email}}</td>
                             <td data-label="Violation">{{$data -> violation -> violations}}</td>
-                            <td data-label="Status"><span class="badge-ongoing">{{$data -> status -> status}}</span></td>
+                            <td data-label="Status"><span class="">{{$data -> status -> status}}</span></td>
                             <td data-label="Date">{{$data -> Date_Created}}</td>
                             <td>
                                 <button class="btn btn-primary btn-view-post" value="{{ $data -> id }}">View</button>
