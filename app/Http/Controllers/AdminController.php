@@ -86,9 +86,11 @@ class AdminController extends Controller
             'faculty_name' => $request->faculty_name,
             'referal_type' => $request->referal_type,
             'Remarks' => $request->Remarks,
+            'Notes' => null,
             'appeal' => $request->appeal,
             'upload_evidence' => $evidencePath,
-            'Date_Created' => Carbon::now()
+            'Date_Created' => Carbon::now('Asia/Manila'),
+            'Update_at' => Carbon::now('Asia/Manila')
         ]);
         $notif = notifications::create([
             'title' => 'New Active Violation',
@@ -107,7 +109,7 @@ class AdminController extends Controller
         if ($request->filled('incident_id')) { 
             $incident = incident::find($request->incident_id); //then this line finds if the id input is matched in the other table
             if ($incident) {
-                $incident->update(['is_visible' => 'hide']);
+                $incident->update(['is_visible' => 'approve']);
 
                 $notif = notifications::create([
                     'title' => 'Incident Approval',
@@ -199,7 +201,8 @@ class AdminController extends Controller
         'counseling_required' => $request->update_counseling_required,
         'referal_type' => $request->update_referral_type,
         'Remarks' => $request->update_remarks,
-        'Date_Created' => Carbon::now()
+        'Notes' => $request->update_notes,
+        'Update_at' => Carbon::now('Asia/Manila')
     ]);
 
         return response()->json(['status' => 200, 'message' => 'Student information updated successfully']);
@@ -300,5 +303,24 @@ public function updateVisibility(Request $request) {
         return response()->json(['message' => 'Updated']);
     }
     return response()->json(['message' => 'Not found'], 404);
+}
+
+public function UpdateRejected(Request $request)
+{
+    $incident = incident::findOrFail($request->id);
+    $incident->is_visible = 'reject'; 
+    $incident->save();
+
+    $notif = notifications::create([
+        'title' => 'Incident Rejected',
+        'message' => 'Your Incident Report has been rejected',
+        'role' => 'faculty',
+        'student_no' => null,
+        'type' => 'approve',
+        'date_created' => Carbon::now()->format('Y-m-d'),
+        'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+    ]);
+
+    return response()->json(['message' => 'Incident rejected successfully.']);
 }
 }

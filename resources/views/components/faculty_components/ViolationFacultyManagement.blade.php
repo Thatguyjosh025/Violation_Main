@@ -12,7 +12,6 @@ use App\Models\users;
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Incident Report</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
             <!-- Faculty Violation Managament Section -->
@@ -27,20 +26,25 @@ use App\Models\users;
                                 
                                 <div class="student-info">
 
-                                    <label class="form-label">Student name</label>
-                                    <input type="text" class="form-control" id="incident_report_name" name="student_name"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
-
-                                    <label class="form-label">Student No.</label>
-                                    <input type="text" class="form-control" id="incident_report_studentno" name="student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                                    <label class="form-label fw-bold">Student name:</label>
+                                    <p id="displaystudentname" class="mt-1 ms-1">-</p>
+                                    <input type="hidden" class="form-control" id="incident_report_name" name="student_name"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                                  
+                                    <label class="form-label fw-bold">Student No.</label>
+                                    <p id="displaystudentno" class="mt-1 ms-1">-</p>
+                                    <input type="hidden" class="form-control" id="incident_report_studentno" name="student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
                                 
-                                    <label class="form-label">Course and section</label>
-                                    <input type="text" class="form-control" id="incident_report_course" name="course_section"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                                    <label class="form-label  fw-bold ">Course and section</label>
+                                    <p id="displaycourse" class="mt-1 ms-1">-</p>
+                                    <input type="hidden" class="form-control" id="incident_report_course" name="course_section"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
 
-                                    <label class="form-label">School email</label>
-                                    <input type="email" class="form-control" id="incident_report_email" name="school_email"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                                    <label class="form-label  fw-bold ">School email</label>
+                                    <p id="displayemail" class="mt-1 ms-1">-</p>
+                                    <input type="email" class="form-control" id="incident_report_email" name="school_email"  pattern="[A-Za-z]+" title="Only letters are allowed" style="display: none;" readonly required>
+                                    <p class="text-muted fw-bold">Kindly select a student from the list before submitting a violation.</p>
 
                                     <label class="form-label">Faculty Name</label>
-                                    <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}"  pattern="[A-Za-z ]+" title="Only letters are allowed" required>
+                                    <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}"  pattern="[A-Za-z ]+" title="Only letters are allowed" disabled>
                                 </div>
 
     
@@ -100,7 +104,7 @@ use App\Models\users;
                                     @if ($userdata -> role === 'student')
                                     <div class="student-item">
                                         <div class="d-flex align-items-center">
-                                            <img src="/Photos/UserPic.jpg" alt="Student">
+                                            <img src="{{ asset('./Photos/avatar.png') }}" alt="Student">
                                             <div class="ms-2">
                                                 <p class="mb-0 fw-bold">{{$userdata -> firstname}} {{$userdata -> lastname}}</p>
                                                 <small>{{$userdata -> student_no}}</small>
@@ -112,7 +116,7 @@ use App\Models\users;
                                         data-email="{{ $userdata->email }}"
                                         data-student_no="{{ $userdata->student_no }}"
                                         data-course="{{ $userdata->course_and_section }}">
-                                        View
+                                        Select
                                         </button>
                                     </div>
                                     @endif
@@ -136,6 +140,12 @@ $(document).ready(function () {
         var course = $(this).data("course");
 
         // Populate fields and remove error styling
+
+        $('#displaystudentname').text(studentName);
+        $('#displaystudentno').text(studentNo);
+        $('#displaycourse').text(course);
+        $('#displayemail').text(email);
+
         $("#incident_report_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
         $("#incident_report_email").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
         $("#incident_report_studentno").val(studentNo).removeClass("is-invalid").next(".invalid-feedback").remove();
@@ -193,38 +203,68 @@ $(document).ready(function () {
         // Validate required fields
         if (!$("#incident_report_name").val()) {
             $("#incident_report_name").addClass("is-invalid");
-            $("#incident_report_name").after('<div class="invalid-feedback">Please enter the student name.</div>');
+            if ($("#incident_report_name").next(".invalid-feedback").length === 0) {
+                $("#incident_report_name").after('<div class="invalid-feedback">Please enter the student name.</div>');
+            }
             isValid = false;
+        } else {
+            $("#incident_report_name").removeClass("is-invalid");
+            $("#incident_report_name").next(".invalid-feedback").remove();
         }
 
         if (!$("#incident_report_studentno").val()) {
             $("#incident_report_studentno").addClass("is-invalid");
-            $("#incident_report_studentno").after('<div class="invalid-feedback">Please enter the student number.</div>');
+            if ($("#incident_report_studentno").next(".invalid-feedback").length === 0) {
+                $("#incident_report_studentno").after('<div class="invalid-feedback">Please enter the student number.</div>');
+            }
             isValid = false;
+        } else {
+            $("#incident_report_studentno").removeClass("is-invalid");
+            $("#incident_report_studentno").next(".invalid-feedback").remove();
         }
 
         if (!$("#incident_report_course").val()) {
             $("#incident_report_course").addClass("is-invalid");
-            $("#incident_report_course").after('<div class="invalid-feedback">Please enter the course and section.</div>');
+            if ($("#incident_report_course").next(".invalid-feedback").length === 0) {
+                $("#incident_report_course").after('<div class="invalid-feedback">Please enter the course and section.</div>');
+            }
             isValid = false;
+        } else {
+            $("#incident_report_course").removeClass("is-invalid");
+            $("#incident_report_course").next(".invalid-feedback").remove();
         }
 
         if (!$("#incident_report_email").val()) {
             $("#incident_report_email").addClass("is-invalid");
-            $("#incident_report_email").after('<div class="invalid-feedback">Please enter the school email.</div>');
+            if ($("#incident_report_email").next(".invalid-feedback").length === 0) {
+                $("#incident_report_email").after('<div class="invalid-feedback">Please enter the school email.</div>');
+            }
             isValid = false;
+        } else {
+            $("#incident_report_email").removeClass("is-invalid");
+            $("#incident_report_email").next(".invalid-feedback").remove();
         }
 
         if (!$("#incident_report_violationType").val()) {
             $("#incident_report_violationType").addClass("is-invalid");
-            $("#incident_report_violationType").after('<div class="invalid-feedback">Please select a violation type.</div>');
+            if ($("#incident_report_violationType").next(".invalid-feedback").length === 0) {
+                $("#incident_report_violationType").after('<div class="invalid-feedback">Please select a violation type.</div>');
+            }
             isValid = false;
+        } else {
+            $("#incident_report_violationType").removeClass("is-invalid");
+            $("#incident_report_violationType").next(".invalid-feedback").remove();
         }
 
         if (!$("#incident_report_remarks").val()) {
             $("#incident_report_remarks").addClass("is-invalid");
-            $("#incident_report_remarks").after('<div class="invalid-feedback">Please provide a detailed description.</div>');
+            if ($("#incident_report_remarks").next(".invalid-feedback").length === 0) {
+                $("#incident_report_remarks").after('<div class="invalid-feedback">Please provide a detailed description.</div>');
+            }
             isValid = false;
+        } else {
+            $("#incident_report_remarks").removeClass("is-invalid");
+            $("#incident_report_remarks").next(".invalid-feedback").remove();
         }
 
         let formData = new FormData();

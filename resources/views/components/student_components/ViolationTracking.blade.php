@@ -7,7 +7,6 @@ $info = postviolation::get();
             <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Active Violation</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
             <div class="container mt-4">
@@ -66,22 +65,34 @@ $info = postviolation::get();
             let cardsContainer = $('#violation-cards');
             cardsContainer.empty();
 
-            data.forEach(function(violation) {
-                let cardHtml = `
-                    <div class="col">
-                        <div class="card p-3">
-                            <h5>${violation.type}</h5>
-                            <p><small>Status: ${violation.status}</small></p>
-                            <p><small>Date: ${violation.date}</small></p>
-                            <div class="d-grid gap-2 d-md-flex">
-                                <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#appealModal"
-                                        data-violation='${JSON.stringify(violation)}'>View</button>
-                            </div>
+            const unresolvedViolations = data.filter(v => v.status !== 'Resolved');
+
+            if (unresolvedViolations.length === 0) {
+                cardsContainer.append(`
+                    <div class="alignment" style="justify-content: center; width: 100%;">
+                        <div class="col-12 text-center mt-5" style="justify-content: center;">
+                            <p>No active violations found.</p>
                         </div>
                     </div>
-                `;
-                cardsContainer.append(cardHtml);
-            });
+                `);
+            } else {
+                unresolvedViolations.forEach(function(violation) {
+                    let cardHtml = `
+                        <div class="col">
+                            <div class="card p-3">
+                                <h5>${violation.type}</h5>
+                                <p><small>Status: ${violation.status}</small></p>
+                                <p><small>Date: ${violation.date}</small></p>
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#appealModal"
+                                            data-violation='${JSON.stringify(violation)}'>View</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    cardsContainer.append(cardHtml);
+                });
+            }
         },
         error: function(xhr, status, error) {
             console.error('Error fetching violations:', error);

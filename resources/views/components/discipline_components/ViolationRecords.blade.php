@@ -1,4 +1,7 @@
 <link rel="stylesheet" href="{{ asset('./css/discipline_css/ViolationRecords.css') }}">
+<link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
+
+
 @php
     use App\Models\postviolation; 
     $violators = postviolation::get();
@@ -6,7 +9,6 @@
         <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Violation Records</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
             <!-- Violation Records Section -->
@@ -27,27 +29,34 @@
                             <th>Email</th>
                             <th>Violation</th>
                             <th>Status</th>
-                            <th>Date</th>
+                            <th>Date_Created</th>
+                            <th>Updated_at</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="violationTable">
-                        @foreach ($violators as $data )
-                        <tr>
-                            <td data-label="Student No.">{{$data -> student_no}}</td>
-                            <td data-label="Name">{{$data -> student_name}}</td>
-                            <td data-label="Email">{{$data -> school_email}}</td>
-                            <td data-label="Violation">{{$data -> violation -> violations}}</td>
-                            <td data-label="Status"><span class="">{{$data -> status -> status}}</span></td>
-                            <td data-label="Date">{{$data -> Date_Created}}</td>
-                            <td>
-                                <button class="btn btn-primary btn-view-post" value="{{ $data -> id }}">View</button>
-                                <button class="btn btn-primary btn-edit-post" value="{{ $data -> id }}">Edit</button>
-                            </td>
-                        </tr>
-                        @endforeach
+                      
                     </tbody>
                 </table>
             </div>
-
         @include('components.discipline_components.modals.modal')
+<script>
+   $(document).ready(function() {
+    $('#violationrecordstable').DataTable({
+        responsive: true, // <-- Enable responsiveness
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('violation_records.data') }}",
+        columns: [
+            { data: 'student_no', name: 'student_no' },
+            { data: 'student_name', name: 'student_name' },
+            { data: 'school_email', name: 'school_email' },
+            { data: 'violation', name: 'violation' },
+            { data: 'status', name: 'status' },
+            { data: 'Date_Created', name: 'Date_Created' },
+            { data: 'Update_at', name: 'Update_at' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ]
+    });
+});
+</script>

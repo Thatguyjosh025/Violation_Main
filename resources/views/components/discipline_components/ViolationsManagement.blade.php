@@ -13,7 +13,6 @@
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Violation Management</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
             <!-- Violation Management Section -->
@@ -22,12 +21,25 @@
                     <div class="col-lg-8">
                         <div class="card card-custom mt-3 p-4">
                             <div class="d-flex flex-column flex-md-row align-items-center gap-3">
-                                <img src="/Photos/UserPic.jpg" class="profile-img" alt="Profile Picture">
+                                <img src="{{ asset('./Photos/avatar.png') }}" class="profile-img" alt="Profile Picture">
                                 <div class="studentinfo w-100">
-                                    <input type="text" class="form-control" placeholder="Student No." id="student_no" required readonly>
-                                    <input type="text" class="form-control mt-1" placeholder="Student Name" id="student_name" readonly required>
-                                    <input type="text" class="form-control mt-1" placeholder="Course and Section" id="course_and_section" readonly required>
-                                    <input type="email" class="form-control mt-1" placeholder="Student School Email" id="schoolEmail" readonly required>
+                                    <label for="student_no" class="fw-bold">Student No:</label>
+                                    <p id="displaystudentno">-</p>
+
+                                    <label for="student_name" class="fw-bold">Student Name:</label>
+                                    <p id="displaystudentname">-</p>
+
+                                    <label for="course_section" class="fw-bold">Course and Section:</label>
+                                    <p id="displaycourse">-</p>
+
+                                    <label for="school_email" class="fw-bold">School Email:</label>
+                                    <p id="displayemail">-</p>
+
+                                    <small class="text-muted fw-bold">Please select a student from the list before creating a violation.</small>
+                                    <input type="text" class="form-control" placeholder="Student No." id="student_no" style="display: none;" required readonly>
+                                    <input type="text" class="form-control mt-1" placeholder="Student Name" id="student_name" style="display: none;" readonly required>
+                                    <input type="text" class="form-control mt-1" placeholder="Course and Section" id="course_and_section" style="display: none;" readonly required>
+                                    <input type="email" class="form-control mt-1" placeholder="Student School Email" id="schoolEmail" style="display: none;" readonly required>
                                 </div>
                             </div>
                             <div class="createviolation mt-1">
@@ -36,8 +48,9 @@
                         </div>
                         
                         <h5 class="mt-4 pb-2">Recent Violations</h5>
-                        <div class="recent-violation">
-                            
+                        <div class="recent-violation" style="height: 50%; max-height: 50%; overflow-y: auto;">
+                            <!-- Violation of selected user will be generated here -->
+                            <div class="violation-card-no" style="text-align: center;"><p>No selected student.</p></div>
                         </div>
                     </div>
 
@@ -50,7 +63,7 @@
                                     @if ($data -> role === 'student')
                                     <div class="student-item">
                                         <div class="d-flex align-items-center">
-                                            <img src="/Photos/UserPic.jpg" alt="Student">
+                                            <img src="{{ asset('./Photos/avatar.png') }}" alt="Student">
                                             <div class="ms-2">
                                                 <p class="mb-0 fw-bold">Student No.</p>
                                                 <small>{{ $data -> student_no}}</small>
@@ -91,7 +104,7 @@
         });
     });
 
-    $(document).ready(function () {
+$(document).ready(function () {
     // Populate fields from student list
     $(".view-btn").on("click", function (e) {
         e.preventDefault();
@@ -101,6 +114,12 @@
         var email = $(this).data("email");
         var studentNo = $(this).data("student_no");
         var course = $(this).data("course");
+
+        $('#displaystudentno').text(studentNo);
+        $('#displaystudentname').text(studentName);
+        $('#displaycourse').text(course);
+        $('#displayemail').text(email);
+
 
         $("#student_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
         $("#schoolEmail").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
@@ -140,29 +159,29 @@
     $("#createViolationbtn").on('click', function (e) {
         e.preventDefault();
 
-        let isValid = true;
+        // let isValid = true;
 
-        // Fields to validate
-        const fields = [
-            { id: "student_no", message: "Student No. is required." },
-            { id: "student_name", message: "Student Name is required." },
-            { id: "course_and_section", message: "Course and Section is required." },
-            { id: "schoolEmail", message: "Student School Email is required." }
-        ];
+        // // Fields to validate
+        // const fields = [
+        //     { id: "student_no", message: "Student No. is required." },
+        //     { id: "student_name", message: "Student Name is required." },
+        //     { id: "course_and_section", message: "Course and Section is required." },
+        //     { id: "schoolEmail", message: "Student School Email is required." }
+        // ];
 
-        fields.forEach(field => {
-            const el = $(`#${field.id}`);
-            if (!el.val()) {
-                el.addClass("is-invalid");
-                if (el.next(".invalid-feedback").length === 0) {
-                    el.after(`<div class="invalid-feedback">${field.message}</div>`);
-                }
-                isValid = false;
-            } else {
-                el.removeClass("is-invalid");
-                el.next(".invalid-feedback").remove();
-            }
-        });
+        // fields.forEach(field => {
+        //     const el = $(`#${field.id}`);
+        //     if (!el.val()) {
+        //         el.addClass("is-invalid");
+        //         if (el.next(".invalid-feedback").length === 0) {
+        //             el.after(`<div class="invalid-feedback">${field.message}</div>`);
+        //         }
+        //         isValid = false;
+        //     } else {
+        //         el.removeClass("is-invalid");
+        //         el.next(".invalid-feedback").remove();
+        //     }
+        // });
 
         // Transfer values to modal
         $('#modal_student_no').val($('#student_no').val());
@@ -315,10 +334,14 @@ $(document).ready(function () {
         // Validate remarks
         if (!$("#remarks").val()) {
             $("#remarks").addClass("is-invalid");
-            $("#remarks").after('<div class="invalid-feedback">Please provide a remarks.</div>');
+
+            // Prevent duplicate invalid-feedback
+            if ($("#remarks").next('.invalid-feedback').length === 0) {
+                $("#remarks").after('<div class="invalid-feedback">Please provide a remarks.</div>');
+            }
+
             isValid = false;
         }
-
         if (!isValid) {
             Swal.fire({
                 icon: "error",

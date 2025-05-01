@@ -1,23 +1,31 @@
 <link rel="stylesheet" href="{{ asset('./css/student_css/ViolationHistory.css') }}">
+@php
+ use App\Models\postviolation;
+
+ $violationhistory = postviolation::get();
+@endphp
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Violation History</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
             <div class="container mt-4">
-                <!-- Violation Card Template -->
-                <div class="violation-card d-flex justify-content-between align-items-center">
-                    <div class="text-start">
-                        <div class="fw-bold date-text">Today - Saturday, February 22, 2025</div>
-                        <div class="violation-details">01:56 PM &nbsp;&nbsp; Violation: Improper Uniform</div>
-                    </div>
-                    <div class="text-end">
-                        <div class="fw-semibold violation-title fs-5">Student Uniform</div>
-                        <button class="btn view-btn" data-bs-toggle="modal" data-bs-target="#violationModal">View</button>
-                    </div>
-                </div>
-                <!-- Add more cards here if needed -->
+                @foreach ( $violationhistory as $history )
+                    @if ($history->student_no === Auth::user()->student_no && $history->status->status === 'Resolved')
+                        <!-- Violation Card Template -->
+                        <div class="violation-card d-flex justify-content-between align-items-center">
+                            <div class="text-start">
+                                <div class="fw-bold date-text">Date: {{ $history->Date_Created }}</div>
+                                <div class="violation-details">Description: {{ $history->description_Name }}</div>
+                                <div class="status-details">Status: {{ $history->status->status }}</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-semibold violation-title fs-5">{{ $history->violation->violations }}</div>
+                                <button class="btn view-btn" data-bs-toggle="modal" data-bs-target="#violationModal">View</button>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
             </div>
             
             <!-- Modal Section -->

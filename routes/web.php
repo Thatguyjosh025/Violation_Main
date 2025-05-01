@@ -14,6 +14,8 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ViewControllerDiscipline;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
+use App\Models\postviolation;
+use Yajra\DataTables\DataTables;
 
 
 //Landing routes
@@ -49,6 +51,7 @@ Route::get('/violation_records', [ViewController::class, 'violation_records'])->
 
 //view routes faculty
 Route::get('/faculty_violation', [ViewController::class, 'faculty_violation'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
+Route::get('/faculty_incident', [ViewController::class, 'faculty_incident'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
 
 //view student faculty
 Route::get('/violation_history', [ViewController::class, 'violation_history'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
@@ -71,6 +74,8 @@ Route::post('/update_violation/{id}', [SuperController::class, 'updateViolation'
 Route::post('/update_rule/{id}', [SuperController::class, 'updateRule'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
 Route::post('/update_referral/{id}', [SuperController::class, 'updateReferral'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
 Route::post('/update_visibility', [AdminController::class, 'updateVisibility']);
+Route::post('/incident_rejected', [AdminController::class, 'UpdateRejected']);
+
 
 //get routes
 Route::get('/get_rule/{violation_id}', [AdminController::class, 'getRule']);
@@ -89,4 +94,27 @@ Route::post('/update_appeal_reason', [StudentController::class, 'updateAppealRea
 //notif
 Route::post('/update_notification_status', [NotificationController::class, 'updateNotificationStatus']);
 
-
+//datatables
+Route::get('/violation_records/data', function () {
+    return DataTables::of(postviolation::with(['violation', 'status']))
+    ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
+    ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
+    ->addColumn('actions', function ($data) {
+        return '
+            <button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>
+            <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
+        ';
+    })
+    ->rawColumns(['actions']) // important: allow HTML in "actions"
+    ->filterColumn('violation', function($query, $keyword) {
+        $query->whereHas('violation', function($q) use ($keyword) {
+            $q->where('violations', 'like', "%{$keyword}%");
+        });
+    })
+    ->filterColumn('status', function($query, $keyword) {
+        $query->whereHas('status', function($q) use ($keyword) {
+            $q->where('status', 'like', "%{$keyword}%");
+        });
+    })
+    ->make(true);
+})->middleware(['auth', 'permission:discipline'])->name('violation_records.data');

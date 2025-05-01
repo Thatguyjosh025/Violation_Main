@@ -31,25 +31,25 @@ closeBtn.addEventListener("click", function() {
 window.addEventListener('load', handleResize);
 window.addEventListener('resize', handleResize);
 
-document.addEventListener("DOMContentLoaded", function () {
-    const navLinks = document.querySelectorAll(".sidebar .nav-link");
-    const currentPage = window.location.pathname.split("/").pop();
+// document.addEventListener("DOMContentLoaded", function () {
+//     const navLinks = document.querySelectorAll(".sidebar .nav-link");
+//     const currentPage = window.location.pathname.split("/").pop();
 
-    navLinks.forEach(link => {
-        const linkPage = link.getAttribute("href");
+//     navLinks.forEach(link => {
+//         const linkPage = link.getAttribute("href");
 
-        if (linkPage === currentPage) {
-            link.classList.add("active");
-        } else {
-            link.classList.remove("active");
-        }
+//         if (linkPage === currentPage) {
+//             link.classList.add("active");
+//         } else {
+//             link.classList.remove("active");
+//         }
 
-        link.addEventListener("click", function () {
-            navLinks.forEach(nav => nav.classList.remove("active"));
-            this.classList.add("active");
-        });
-    });
-});
+//         link.addEventListener("click", function () {
+//             navLinks.forEach(nav => nav.classList.remove("active"));
+//             this.classList.add("active");
+//         });
+//     });
+// });
 // End of Side Bar JS
  
 // Calendar JS

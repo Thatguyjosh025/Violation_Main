@@ -7,7 +7,6 @@
  <div class="d-flex align-items-center">
         <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
         <h3 class="mb-0">Dashboard</h3>
-        <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
       </div>
 
       <div class="container dashboard-container mt-4">
@@ -18,7 +17,7 @@
             <div class="card card-custom shadow-sm h-100">
               <h4>Welcome</h4>
               <div class="d-flex align-items-center mt-4 flex-md-nowrap flex-wrap">
-                <img src="/Photos/UserPic.jpg" alt="Profile Picture" class="profile-img">
+                <img src="{{ asset('./Photos/avatar.png') }}" alt="Profile Picture" class="profile-img">
                 <div class="flex-grow-1">
                   <span class="badge badge-custom">Student</span>
                   <h4 class="mt-2 mb-1">{{ Auth::user()-> firstname }} {{ Auth::user()-> lastname}} {{ Auth::user()-> middlename }}</h4>
@@ -80,24 +79,32 @@
             </div>
         
             <!-- Notifications -->
-              <div class="card shadow-sm notif" id="notif-container">
-                <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
-                <div class="notif-scrollable">
-                  @foreach ($notif as $notifdata)
-                    @if ($notifdata->student_no === Auth::user()->student_no && $notifdata->is_read === 0)
-                      <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{$notifdata->id}}">
-                        <div class="flex-grow-1">
-                          <h6 class="mb-1">{{$notifdata->title}}</h6>
-                          <p class="mb-1 text-muted small">{{$notifdata->message}}</p>
-                          <small class="text-muted">{{$notifdata->created_time}}</small>
-                          <small class="text-muted">{{$notifdata->date_created}}</small>
-                        </div>
-                        <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
+            <div class="card shadow-sm notif" id="notif-container">
+              <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
+              <div class="notif-scrollable">
+                  @php
+                      $studentNotifs = $notif->where('student_no', Auth::user()->student_no)->where('is_read', 0);
+                  @endphp
+
+                  @if ($studentNotifs->isEmpty())
+                      <div class="text-center py-4 text-muted">
+                          You have no notifications.
                       </div>
-                    @endif
-                  @endforeach
-                </div>
+                  @else
+                      @foreach ($studentNotifs as $notifdata)
+                          <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
+                              <div class="flex-grow-1">
+                                  <h6 class="mb-1">{{ $notifdata->title }}</h6>
+                                  <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
+                                  <small class="text-muted">{{ $notifdata->created_time }}</small>
+                                  <small class="text-muted">{{ $notifdata->date_created }}</small>
+                              </div>
+                              <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
+                          </div>
+                      @endforeach
+                  @endif
               </div>
+          </div>
         
           </div>
         </div>

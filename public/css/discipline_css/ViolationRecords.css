@@ -145,13 +145,12 @@ body {
 }
 /* End of Side Bar CSS */
 
-
 /* Table Styles */
 .table-container {
     background: white;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 7px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -179,113 +178,102 @@ body {
     background-color: white;
 }
 
-.sort-dropdown {
-    border-radius: 5px;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
+.table tr:hover td {
+    background-color: #f8f9fa;
 }
 
-/* Status Badges */
+label {
+    margin-bottom: 0.5rem;
+}
+
+.btn-action-consistent {
+    min-width: 80px;
+    padding: 0.25rem 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
 .badge-ongoing {
     background-color: #ffc107;
     color: #212529;
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
 .badge-resolved {
     background-color: #198754;
     color: white;
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
 }
 
 /* Mobile View */
 @media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-        width: 15.6rem;
-    }
+.table-container {
+    padding: 10px;
+    overflow-x: hidden;
+}
 
-    .sidebar.show {
-        transform: translateX(0);
-    }
+.table thead {
+    display: none;
+}
 
-    .sidebar.collapsed {
-        width: 15.6rem;
-        transform: translateX(-100%);
-    }
+.table tbody tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
 
-    .sidebar.collapsed.show {
-        transform: translateX(0);
-    }
+.table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+}
 
-    .sidebar.collapsed ~ .dashboard-content,
-    .sidebar ~ .dashboard-content {
-        margin-left: 0;
-        width: 100%;
-    }
+.table tbody td:last-child {
+    border-bottom: none;
+}
 
-    .close-btn {
-        display: block !important;
-    }
+.table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--main-color);
+    margin-right: auto;
+    padding-right: 20px;
+    text-align: left;
+}
 
-    /* Responsive Table Styles for Mobile */
-    .table-container {
-        overflow-x: hidden;
-        padding: 0;
-    }
-    
-    .table thead {
-        display: none;
-    }
-    
-    .table, .table tbody, .table tr, .table td {
-        display: block;
-        width: 100%;
-    }
-    
-    .table tr {
-        margin-bottom: 0.9;
-        border: 1px solid #dee2e6;
-        border-radius: 5px;
-        background-color: #f8f9fa;
-        padding: 0;
-    }
-    
-    .table td {
-        text-align: right;
-        padding: 8px 15px 8px 50%;
-        position: relative;
-        border: none;
-        border-bottom: 1px solid #dee2e6;
-    }
-    
-    .table td:last-child {
-        border-bottom: none;
-    }
-    
-    .table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0.9rem;
-        width: calc(50% - 15px);
-        padding-right: 10px;
-        font-weight: bold;
-        text-align: left;
-        color: var(--main-color);
-    }
+.table tbody td[data-label="Action"] {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.table tbody td[data-label="Action"]::before {
+    display: none;
+}
 }
 
 @media (max-width: 576px) {
-    .sort-dropdown, #searchInput {
-        width: 100% !important;
-        margin-bottom: 0.6rem;
-    }
-    
-    .d-flex.justify-content-between {
-        flex-direction: column;
-    }
+.form-select {
+    width: 100%;
+    margin-bottom: 10px;
+}
 }

@@ -20,7 +20,6 @@
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Dashboard</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
             <div class="container dashboard-container mt-4">
@@ -30,7 +29,7 @@
                         <div class="card card-custom shadow-sm h-100">
                             <h4>Welcome</h4>
                             <div class="d-flex align-items-center mt-4 flex-md-nowrap flex-wrap">
-                                <img src="/Photos/UserPic.jpg" alt="Profile Picture" class="profile-img">
+                                <img src="{{ asset('./Photos/avatar.png') }}" alt="Profile Picture" class="profile-img">
                                 <div class="flex-grow-1">
                                     <span class="badge badge-custom">Disciplinary Officer</span>
                                     <h4 class="mt-2 mb-1">Name:{{ Auth::user()->firstname }} {{ Auth::user()->lastname }} {{ Auth::user()->middlename}}</h4>
@@ -91,19 +90,23 @@
                         <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
                         <div class="notif-scrollable">
                             <!-- notif cards -->
-                            @foreach ( $notif as $notifdata )
-                                @if ($notifdata->role === 'admin' && $notifdata->is_read === 0)
-                                    <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{$notifdata->id}}">
+                            @if ($notif->where('role', 'admin')->where('is_read', 0)->isEmpty())
+                                <div class="text-center py-4 text-muted">
+                                    You have no notifications.
+                                </div>
+                            @else
+                                @foreach ($notif->where('role', 'admin')->where('is_read', 0) as $notifdata)
+                                    <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-1">{{$notifdata->title}}</h6>
-                                            <p class="mb-1 text-muted small">{{$notifdata->message}}</p>
-                                            <small class="text-muted">{{$notifdata->created_time}}</small>
-                                            <small class="text-muted">{{$notifdata->date_created}}</small>
+                                            <h6 class="mb-1">{{ $notifdata->title }}</h6>
+                                            <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
+                                            <small class="text-muted">{{ $notifdata->created_time }}</small>
+                                            <small class="text-muted">{{ $notifdata->date_created }}</small>
                                         </div>
                                         <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
                                     </div>
-                                @endif
-                            @endforeach
+                                @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -112,8 +115,9 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
 $(document).ready(function() {
-    $('.btn-close').on('click', function() {
-        var notifId = $(this).closest('.notification-card').data('notif-id');
+    $('#notif-container').on('click', '.btn-close', function() {
+        var self = this;
+        var notifId = $(self).closest('.notification-card').data('notif-id');
 
         $.ajax({
             url: '/update_notification_status',
@@ -124,11 +128,12 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    console.log('notif removed');
-                    $(this).closest('.notification-card').fadeOut();
+                    console.log('Notification marked as read');
 
-                    // Reload the notifications container
-                    $("#notif-container").load(window.location.href + " #notif-container > *");
+                    // Fade out and remove the notification card
+                    $(self).closest('.notification-card').fadeOut(300, function() {
+                        $(this).remove();
+                    });
                 }
             },
             error: function(xhr, status, error) {

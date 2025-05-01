@@ -13,7 +13,6 @@
             <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Rule Management</h3>
-                <input type="text" id="search" class="form-control search-bar ms-auto w-25 w-md-50 w-sm-75" placeholder="Search...">
             </div>
 
             <div class="container py-4">

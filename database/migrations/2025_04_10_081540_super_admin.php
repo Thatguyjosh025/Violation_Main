@@ -88,7 +88,6 @@ return new class extends Migration
             ['status' => 'Appeal Approved'],
             ['status' => 'Appeal Denied'],
             ['status' => 'Resolved'],
-            ['status' => 'Archived'],
         ]);
 
         DB::table('tb_rules')->insert([

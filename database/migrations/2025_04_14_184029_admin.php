@@ -37,9 +37,11 @@ return new class extends Migration
             $table->string('counseling_required');
             $table->string('faculty_name');
             $table->string('Remarks',length:500);
+            $table->string('Notes',length:500)->nullable();
             $table->string('appeal');
             $table->string('upload_evidence')->nullable();
             $table->date('Date_Created');
+            $table->date('Update_at');
         });
 
         Schema::create('tb_incidentreport', function (Blueprint $table) {

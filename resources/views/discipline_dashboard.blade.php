@@ -17,7 +17,7 @@
             <button class="close-btn" id="closeSidebar"><i class="bi bi-list"></i></button>
         </div>
         <nav class="nav flex-column mt-3 flex-grow-1">
-            <a class="nav-link active" href={{ route('discipline_dashboard') }}><i class="bi bi-columns-gap"></i> <span>Dashboard</span></a>
+            <a class="nav-link" href={{ route('discipline_dashboard') }}><i class="bi bi-columns-gap"></i> <span>Dashboard</span></a>
             <a class="nav-link" href="{{ route('violation_manage')}}"><i class="bi bi-person-exclamation"></i> <span>Violation Management</span></a>
             <a class="nav-link" href="{{ route('incident_report') }}"><i class='bx bxs-report'></i> <span>Incident Report</span></a>
             <a class="nav-link" href="{{ route('violation_records') }}"><i class="bi bi-people"></i> <span>Violation Record</span></a>
@@ -42,7 +42,6 @@
 
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('./js/discipline_js/AdminDashboard.js') }}"></script>
-<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   function logout() {
@@ -67,4 +66,8 @@
 }
 </script>
 </body>
+<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+<script src="https://cdn.datatables.net/2.3.0/js/dataTables.min.js"></script>
+
+
 </html>

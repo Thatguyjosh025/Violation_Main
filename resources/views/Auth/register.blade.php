@@ -33,15 +33,18 @@
                         <label for="course_and_section" class="form-label">Course and Section:</label>
                         <input type="text" class="form-control" id="course_and_section" name="course_and_section" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="userPassword" class="form-label">Password:</label>
                         <div class="input-group" style="position: relative;">
-                            <input type="password" class="form-control" id="userPassword" name="password" required style="border-radius: 6px;">
-                            <span id="toggleUserPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                            <input type="password" class="form-control" id="userPassword" name="password" required style="border-radius: 6px; padding-right: 40px;">
+                            <span id="toggleUserPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; z-index: 10;">
                                 <i class="fas fa-eye"></i>
                             </span>
+                            <div class="invalid-feedback" style="margin-top: 5px;"></div>
                         </div>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="password_confirmation" class="form-label">Confirm Password:</label>
                         <div class="input-group" style="position: relative;">
@@ -64,7 +67,6 @@
 
 <script>
 $(document).ready(function () {
-    $(document).ready(function () {
     // Toggle visibility of password when the eye icon is clicked
     $('#toggleUserPassword').on('click', function () {
         var passwordField = $('#userPassword');
@@ -81,7 +83,7 @@ $(document).ready(function () {
         $(this).find('i').toggleClass('fa-eye fa-eye-slash');
     });
 
-    var nameRegex = /^(Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;
+    var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;    
     var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     $("#registerModal form").submit(function (e) {
@@ -118,7 +120,13 @@ $(document).ready(function () {
         // Password match validation
         if (password !== confirmPassword) {
             $("#password_confirmation").addClass("is-invalid").after('<div class="invalid-feedback">Passwords do not match.</div>');
+            $('#toggleConfirmPassword').hide();
             isValid = false;
+        }else {
+            $("#password_confirmation").removeClass("is-invalid");
+            $("#password_confirmation").next(".invalid-feedback").remove(); // remove error message
+            // Show the eye icon
+            $('#toggleConfirmPassword').show();
         }
 
         // Student number validation detects the first 4 digits
@@ -129,11 +137,19 @@ $(document).ready(function () {
             isValid = false;
         }
 
-        // Password strength validation
-        var passwordRegex = /^(?!\d{8}$)(?!admin123$)(?!admin$)(?!12345678$)(?!123456789$)(?!1234567890$)(?!user1234$).{8,}$/;
+        var passwordRegex = /^(?!.*\s)(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
         if (!passwordRegex.test(password)) {
-            $("#userPassword").addClass("is-invalid").after('<div class="invalid-feedback">Password is invalid. Please choose a more secure password.</div>');
+            $("#userPassword").addClass("is-invalid").next(".invalid-feedback").remove(); 
+            $("#userPassword").after('<div class="invalid-feedback">Password must be at least 8 characters long, include at least one uppercase letter, one number, one special character, and should not contain spaces.</div>');
+
+            $('#toggleUserPassword').hide();
+
             isValid = false;
+        } else {
+            $("#userPassword").removeClass("is-invalid");
+            $("#userPassword").next(".invalid-feedback").remove(); // remove error message
+
+            $('#toggleUserPassword').show();
         }
 
         if (!isValid) return;
@@ -166,6 +182,20 @@ $(document).ready(function () {
     // Remove error messages when typing
     $(document).on("input", ".form-control", function () {
         $(this).removeClass("is-invalid").next(".invalid-feedback").remove();
+        // Show the eye icon if the password field is valid
+        if ($(this).attr('id') === 'userPassword') {
+            $('#toggleUserPassword').show();
+        }
+
+    });
+
+    $(document).on("input", ".form-control", function () {
+        $(this).removeClass("is-invalid").next(".invalid-feedback").remove();
+        // Show the eye icon if the password field is valid
+       
+        if ($(this).attr('id') === 'password_confirmation') {
+            $('#toggleConfirmPassword').show();
+        }
     });
 
     // Password confirmation check
@@ -175,13 +205,18 @@ $(document).ready(function () {
         if ($(this).hasClass("is-invalid")) {
             $(this).after('<div class="invalid-feedback">Passwords do not match.</div>');
         }
+        if ($(this).attr('id') === 'password_confirmation') {
+            $('#toggleConfirmPassword').show();
+        }
     });
 
     // Reset the form when the modal is closed
     $('#registerModal').on('hidden.bs.modal', function () {
         $(this).find('form')[0].reset(); // Reset form fields
         $(".form-control").removeClass("is-invalid").next(".invalid-feedback").remove(); // Remove error messages
+
+        // Show the eye icon
+        $('#toggleUserPassword').show();
     });
-});
 });
 </script>

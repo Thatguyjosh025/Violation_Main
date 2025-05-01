@@ -13,7 +13,7 @@ class AuthController extends Controller
     //roles = faculty,counselor,dicipline,registar,student
     public function register(Request $request){
         $request->validate([
-            'firstname' => ['required', 'string', 'max:255', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
+            'firstname' => ['required', 'string', 'max:255', 'regex:/^(ma\.|Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
             'lastname' => ['required', 'string', 'max:255', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
             'middlename' => ['nullable', 'max:255', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
             'email' => ['required','string', 'email', 'max:255', 'unique:tb_users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],

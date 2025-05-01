@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="{{ asset('./css/discipline_css/IncidentReport.css') }}">
+
 @php
 use App\Models\incident;
 use App\Models\referals;
@@ -11,65 +12,121 @@ $reports = incident::get();
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Incident Report</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
-            <div class="container mt-5">
+            <div class="container mt-5 ">
                 <ul class="nav nav-tabs ms-auto mb-3" id="incidentTabs" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" id="active-tab" data-bs-toggle="tab" href="#active-incidents" role="tab">Active Incidents</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="archives-tab" data-bs-toggle="tab" href="#archives" role="tab">Archives</a>
+                        <a class="nav-link" id="archives-tab" data-bs-toggle="tab" href="#archives" role="tab">Approved</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="archives-tab" data-bs-toggle="tab" href="#Reject" role="tab">Rejected</a>
                     </li>
                 </ul>
 
-                <div class="tab-content">
+                <div class="tab-content" style="height: 45rem; background: white; border-radius: 7px; max-height: 50%;">
                     <!-- Active Incidents -->
                     <div class="tab-pane fade show active" id="active-incidents" role="tabpanel">
                         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
-                            @foreach ($reports->where('is_visible', '===','show') as $datareport)
-                                <div class="col">
-                                    <input type="hidden" value="{{ $datareport->id }}">
-                                    <div class="card p-3 position-relative">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <h5 class="mb-0">{{ $datareport->violation->violations }}</h5>
-                                            <span class="badge badge-minor">{{ $datareport->severity }}</span>
-                                        </div>
-                                        <p>{{ $datareport->student_name }}<br>{{ $datareport->student_no }}</p>
-                                        <p><small>Submitted by: {{ $datareport->faculty_name }}</small></p>
-                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                            <button class="btn btn-view-incident" data-source="active" value="{{ $datareport->id }}" style="background: #376881; color: white;">Review</button>
-                                        </div>
+                            @php $activeReports = $reports->where('is_visible', '===', 'show'); @endphp
+                            @if ($activeReports->isEmpty())          
+                                <div class="alignment" style="justify-content: center; width: 100%;">
+                                    <div class="col-12 text-center mt-5" style="justify-content: center;">
+                                        <p>No active incident reports found.</p>
                                     </div>
                                 </div>
-                            @endforeach
+                            @else
+                                @foreach ($activeReports as $datareport)    
+                                    <div class="col incident-card" data-id="{{ $datareport->id }}">
+                                        <input type="hidden" value="{{ $datareport->id }}">
+                                        <div class="card p-3 position-relative">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <h5 class="mb-0">{{ $datareport->violation->violations }}</h5>
+                                                <span class="badge badge-minor">{{ $datareport->severity }}</span>
+                                            </div>
+                                            <p>{{ $datareport->student_name }}<br>{{ $datareport->student_no }}</p>
+                                            <p><small>Submitted by: {{ $datareport->faculty_name }}</small></p>
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                <button class="btn btn-view-incident" data-source="active" value="{{ $datareport->id }}" style="background: #376881; color: white;">Review</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
                         </div>
                     </div>
 
                     <!-- Archives -->
                     <div class="tab-pane fade" id="archives" role="tabpanel">
                         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
-                            @foreach ($reports->where('is_visible', '===','hide') as $datareport)
-                                <div class="col">
-                                    <input type="hidden" value="{{ $datareport->id }}">
-                                    <div class="card p-3 position-relative">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <h5 class="mb-0">{{ $datareport->violation->violations }}</h5>
-                                            <span class="badge badge-minor">{{ $datareport->severity }}</span>
-                                        </div>
-                                        <p>{{ $datareport->student_name }}<br>{{ $datareport->student_no }}</p>
-                                        <p><small>Submitted by: {{ $datareport->faculty_name }}</small></p>
-                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                            <button class="btn btn-view-incident" data-source="archive" value="{{ $datareport->id }}" style="background: #376881; color: white;">Review</button>
+                            @php $archivedReports = $reports->where('is_visible', '===', 'approve'); @endphp
+                            @if ($archivedReports->isEmpty())
+                                <div class="alignment" style="justify-content: center; width: 100%;">
+                                    <div class="col-12 text-center mt-5" style="justify-content: center;">
+                                        <p>No archived incident reports found.</p>
+                                    </div>
+                                </div> 
+                            @else
+                                @foreach ($archivedReports as $datareport)
+                                    <div class="col">
+                                        <input type="hidden" value="{{ $datareport->id }}">
+                                        <div class="card p-3 position-relative">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <h5 class="mb-0">{{ $datareport->violation->violations }}</h5>
+                                                <span class="badge badge-minor">{{ $datareport->severity }}</span>
+                                            </div>
+                                            <p>{{ $datareport->student_name }}<br>{{ $datareport->student_no }}</p>
+                                            <p><small>Submitted by: {{ $datareport->faculty_name }}</small></p>
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                <button class="btn btn-view-incident" data-source="archive" value="{{ $datareport->id }}" style="background: #376881; color: white;">Review</button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            @endif
                         </div>
                     </div>
+
+                    <!-- Reject -->
+                    <div class="tab-pane fade" id="Reject" role="tabpanel">
+                        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
+                            @php $archivedReports = $reports->where('is_visible', '===', 'reject'); @endphp
+                            @if ($archivedReports->isEmpty())
+                                <div class="alignment" style="justify-content: center; width: 100%;">
+                                    <div class="col-12 text-center mt-5" style="justify-content: center;">
+                                        <p>No rejected incident reports found.</p>
+                                    </div>
+                                </div>
+                            @else
+                                @foreach ($archivedReports as $datareport)
+                                    <div class="col">
+                                        <input type="hidden" value="{{ $datareport->id }}">
+                                        <div class="card p-3 position-relative">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <h5 class="mb-0">{{ $datareport->violation->violations }}</h5>
+                                                <span class="badge badge-minor">{{ $datareport->severity }}</span>
+                                            </div>
+                                            <p>{{ $datareport->student_name }}<br>{{ $datareport->student_no }}</p>
+                                            <p><small>Submitted by: {{ $datareport->faculty_name }}</small></p>
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                <button class="btn btn-view-incident" data-source="archive" value="{{ $datareport->id }}" style="background: #376881; color: white;">Review</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+
                 </div>
             </div>
+                </div>
+            </div>
+
+            
         
             <!-- Modal Violation Process (View) -->
             <div class="modal fade" id="violationModalview" tabindex="-1" aria-hidden="true">
@@ -90,7 +147,7 @@ $reports = incident::get();
                             <p id="view_incident_severity"><strong>Severity of Offense/s:</strong></p>
                             <p id="view_incident_facultyname"><strong>Submitted by:</strong></p>
                             <p><strong>Evidence/s:</strong> <span class="fw-bold">N/A</span></p>
-                            <input type="text" id="incident_id">
+                            <input type="hidden" id="incident_id">
                             <input type="hidden" class="form-control" id="incident_name">
                             <input type="hidden" class="form-control" id="incident_no">
                             <input type="hidden" class="form-control" id="incident_course">
@@ -103,7 +160,7 @@ $reports = incident::get();
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-success" id="approve-btn" data-bs-dismiss="modal">Approve</button>
-                            <button class="btn btn-danger">Reject</button>
+                            <button class="btn btn-danger" id="reject-btn">Reject</button>
                         </div>
                     </div>
                 </div>
@@ -380,6 +437,8 @@ $(document).ready(function () {
 
                 $("#active-incidents").load(location.href + " #active-incidents > *");
                 $("#archives").load(location.href + " #archives > *");
+                $("#Reject").load(location.href + " #Reject > *");
+
                 
                 Swal.fire({
                     icon: "success",
@@ -394,6 +453,38 @@ $(document).ready(function () {
         });
     });
 });
+
+//reject button
+$(document).ready(function () {
+    $('#reject-btn').on('click', function () {
+        let incidentId = $('#incident_id').val(); 
+
+        $.ajax({
+            url: '/incident_rejected',
+            type: 'POST',
+            data: {
+                id: incidentId,
+                _token: $('input[name="_token"]').val()
+            },
+            success: function (response) {
+                console.log('Violation marked as rejected.');
+
+                $('#violationModalview').modal('hide');
+
+                $('.incident-card[data-id="' + incidentId + '"]').fadeOut(500, function () {
+                    $("#active-incidents").load(location.href + " #active-incidents > *");
+                    $("#archives").load(location.href + " #archives > *");
+                    $("#Reject").load(location.href + " #Reject > *");
+                });
+            },
+            error: function (xhr) {
+                console.log('Something went wrong.');
+                console.log(xhr.responseText);
+            }
+        });
+    });
+});
+
 
 $(document).on('click', '.btn-view-incident', function () {
 
