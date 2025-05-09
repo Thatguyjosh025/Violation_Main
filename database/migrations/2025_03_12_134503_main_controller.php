@@ -17,13 +17,25 @@ return new class extends Migration
             $table->id();
             $table->string('firstname');
             $table->string('lastname');
-            $table->string('middlename');
+            $table->string('middlename')->nullable();
             $table->string('email')->unique();
             $table->string('student_no');
             $table->string('course_and_section')->nullable();
             $table->string('password');
             $table->enum('role',['student','counselor','discipline','faculty','registar','super']);
             $table->enum('status',['active','archive']);
+        });
+
+        Schema::create('tb_notifications', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('message');
+            $table->string('role');
+            $table->string('type');
+            $table->string('student_no')->nullable();
+            $table->boolean('is_read')->default(false);
+            $table->date('date_created');
+            $table->string('created_time');
         });
 
 
@@ -49,8 +61,8 @@ return new class extends Migration
              'status' => 'active'
             ],
 
-            ['firstname' => 'Aiah',
-             'lastname' => 'Arceta',
+            ['firstname' => 'Jeff',
+             'lastname' => 'Caber',
              'middlename' => 'Queen',
              'email' => 'admin@gmail.com',
              'student_no' => '02000782191',

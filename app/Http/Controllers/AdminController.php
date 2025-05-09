@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\incident;
+use Log;
 use Carbon\Carbon;
 use App\Models\rules;
+use App\Models\users;
+use App\Models\incident;
 use App\Models\violation;
 use Illuminate\Http\Request;
+use App\Models\notifications;
 use App\Models\postviolation;
 
 class AdminController extends Controller
@@ -42,6 +45,7 @@ class AdminController extends Controller
 
     return response()->json($violations);
 }
+
     public function postviolation(Request $request){
         $request->validate([
             'student_no' => 'required|string',
@@ -84,12 +88,47 @@ class AdminController extends Controller
             'faculty_name' => $request->faculty_name,
             'referal_type' => $request->referal_type,
             'Remarks' => $request->Remarks,
+            'Notes' => null,
             'appeal' => $request->appeal,
             'upload_evidence' => $evidencePath,
-            'Date_Created' => Carbon::now()
+            'Date_Created' => Carbon::now('Asia/Manila'),
+            'Update_at' => Carbon::now('Asia/Manila'),
+            'is_active' => true
         ]);
+
+        //notification handler
+        $notif = notifications::create([
+            'title' => 'New Active Violation',
+            'message' => 'A new violation has been assigned to you',
+            'role' => 'student',
+            'student_no' => $request->student_no,
+            'type' => 'posted',
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+        ]);
+
     
         $create->load('referal', 'violation', 'penalty', 'status');
+
+        // incident report update contoller Check if the incident_id is provided
+        if ($request->filled('incident_id')) { 
+            $incident = incident::find($request->incident_id); //then this line finds if the id input is matched in the other table
+            if ($incident) {
+                $incident->update(['is_visible' => 'approve']);
+
+                $notif = notifications::create([
+                    'title' => 'Incident Approval',
+                    'message' => 'Your Incident Report has been approve',
+                    'role' => 'faculty',
+                    'student_no' => null,
+                    'type' => 'approve',
+                    'date_created' => Carbon::now()->format('Y-m-d'),
+                    'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+                ]);
+            
+                return response()->json(['message' => 'Updated']);
+            }
+        }
     
         return response()->json([
             'postviolation' => [
@@ -167,58 +206,14 @@ class AdminController extends Controller
         'counseling_required' => $request->update_counseling_required,
         'referal_type' => $request->update_referral_type,
         'Remarks' => $request->update_remarks,
-        'Date_Created' => Carbon::now()
+        'Notes' => $request->update_notes,
+        'Update_at' => Carbon::now('Asia/Manila')
     ]);
 
         return response()->json(['status' => 200, 'message' => 'Student information updated successfully']);
     }
 
-    public function submitIncidentReport(Request $request){
-    $request->validate([
-        'student_name' => 'required|string',
-        'student_no' => 'required|string',
-        'course_section' => 'required|string',
-        'school_email' => 'required|email',
-        'violation_type' => 'required|integer',
-        'rule_name' => 'required|string',
-        'description' => 'required|string',
-        'severity' => 'required|string',
-        'faculty_name' => 'required|string',
-        'remarks' => 'required|string|max:500',
-        'upload_evidence' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048',
-    ]);
 
-    if ($request->hasFile('upload_evidence')) {
-        $evidencePath = $request->file('upload_evidence')->store('incident_evidence', 'public');
-    } else {
-        $evidencePath = null;
-    }
-
-    $create = incident::create([
-        'student_name' => $request->student_name,
-        'student_no' => $request->student_no,
-        'course_section' => $request->course_section,
-        'school_email' => $request->school_email,
-        'faculty_name' => $request->faculty_name,
-        'violation_type' => $request->violation_type,
-        'rule_name' => $request->rule_name,
-        'description' => $request->description,
-        'severity' => $request->severity,
-        'remarks' => $request->remarks,
-        'upload_evidence' => $evidencePath,
-        'is_visible' => 'show',
-        'Date_Created' => Carbon::now(),
-    ]);
-
-    $create->load('violation');
-
-    return response()->json([
-        'incidentreport' => [
-            'message' => 'Incident report submitted successfully.',
-            'violation_type' => $create->violation->violations, 
-        ]
-    ]);
-}
 // View incident report info
 public function getIncidentInfo(Request $request)
 {
@@ -238,6 +233,7 @@ public function getIncidentInfo(Request $request)
             'school_email' => $incident->school_email,
             'violation_type' => $incident->violation_type,
             'violation_name' => $incident->violation->violations,
+            'penalty_name' => $incident->penalties,
             'rule_name' => $incident->rule_name,
             'description' => $incident->description,
             'severity' => $incident->severity,
@@ -250,13 +246,51 @@ public function getIncidentInfo(Request $request)
 
 }
 
-public function updateVisibility(Request $request) {
-    $record = incident::find($request->id);
-    if ($record) {
-        $record->update(['is_visible' => 'hide']);
-        return response()->json(['message' => 'Updated']);
-    }
-    return response()->json(['message' => 'Not found'], 404);
+public function UpdateRejected(Request $request)
+{
+    $incident = incident::findOrFail($request->id);
+    $incident->is_visible = 'reject'; 
+    $incident->save();
+
+    $notif = notifications::create([
+        'title' => 'Incident Rejected',
+        'message' => 'Your Incident Report has been rejected',
+        'role' => 'faculty',
+        'student_no' => null,
+        'type' => 'approve',
+        'date_created' => Carbon::now()->format('Y-m-d'),
+        'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+    ]);
+
+    return response()->json(['message' => 'Incident rejected successfully.']);
 }
 
+public function archive($id)
+{
+    $violation = postviolation::find($id);
+
+    if (!$violation) {
+        return response()->json(['message' => 'Record not found'], 404);
+    }
+
+    $violation->is_active = false;
+    $violation->save();
+
+    return response()->json(['message' => 'Violation archived successfully.']);
+}
+
+//student search
+public function student_search(Request $request)
+{
+    $query = $request->get('query');
+
+    $students = users::where('role', 'student')
+        ->where(function($q) use ($query) {
+            $q->where('firstname', 'LIKE', "%{$query}%")
+              ->orWhere('lastname', 'LIKE', "%{$query}%")
+              ->orWhere('student_no', 'LIKE', "%{$query}%");
+        })->get();
+
+    return response()->json($students);
+}
 }

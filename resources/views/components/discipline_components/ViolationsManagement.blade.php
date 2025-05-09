@@ -13,7 +13,6 @@
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Violation Management</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
             <!-- Violation Management Section -->
@@ -22,12 +21,25 @@
                     <div class="col-lg-8">
                         <div class="card card-custom mt-3 p-4">
                             <div class="d-flex flex-column flex-md-row align-items-center gap-3">
-                                <img src="/Photos/UserPic.jpg" class="profile-img" alt="Profile Picture">
+                                <img src="{{ asset('./Photos/avatar.png') }}" class="profile-img" alt="Profile Picture">
                                 <div class="studentinfo w-100">
-                                    <input type="text" class="form-control" placeholder="Student No." id="student_no" required readonly>
-                                    <input type="text" class="form-control mt-1" placeholder="Student Name" id="student_name" readonly required>
-                                    <input type="text" class="form-control mt-1" placeholder="Course and Section" id="course_and_section" readonly required>
-                                    <input type="email" class="form-control mt-1" placeholder="Student School Email" id="schoolEmail" readonly required>
+                                    <label for="student_no" class="fw-bold">Student No:</label>
+                                    <p id="displaystudentno">-</p>
+
+                                    <label for="student_name" class="fw-bold">Student Name:</label>
+                                    <p id="displaystudentname">-</p>
+
+                                    <label for="course_section" class="fw-bold">Course and Section:</label>
+                                    <p id="displaycourse">-</p>
+
+                                    <label for="school_email" class="fw-bold">School Email:</label>
+                                    <p id="displayemail">-</p>
+
+                                    <small class="text-muted fw-bold">Please select a student from the list before creating a violation.</small>
+                                    <input type="text" class="form-control" placeholder="Student No." id="student_no" style="display: none;" required readonly>
+                                    <input type="text" class="form-control mt-1" placeholder="Student Name" id="student_name" style="display: none;" readonly required>
+                                    <input type="text" class="form-control mt-1" placeholder="Course and Section" id="course_and_section" style="display: none;" readonly required>
+                                    <input type="email" class="form-control mt-1" placeholder="Student School Email" id="schoolEmail" style="display: none;" readonly required>
                                 </div>
                             </div>
                             <div class="createviolation mt-1">
@@ -36,38 +48,18 @@
                         </div>
                         
                         <h5 class="mt-4 pb-2">Recent Violations</h5>
-                        <div class="recent-violation">
-                            
+                        <div class="recent-violation" style="height: 50%; max-height: 50%; overflow-y: auto;">
+                            <!-- Violation of selected user will be generated here -->
+                            <div class="violation-card-no" style="text-align: center;"><p>No selected student.</p></div>
                         </div>
                     </div>
 
                     <!-- Student List Section -->
                     <div class="col-lg-4">
                         <div class="card card-custom p-3 mt-3">
-                            <input type="text" class="form-control mb-3" placeholder="Search Student">
+                            <input type="text" id="search-student" class="form-control mb-3" placeholder="Search Student">
                             <div class="student-list">
-                                @foreach ($accounts as $data )
-                                    @if ($data -> role === 'student')
-                                    <div class="student-item">
-                                        <div class="d-flex align-items-center">
-                                            <img src="/Photos/UserPic.jpg" alt="Student">
-                                            <div class="ms-2">
-                                                <p class="mb-0 fw-bold">Student No.</p>
-                                                <small>{{ $data -> student_no}}</small>
-                                                <p>{{ $data->firstname }} {{ $data->lastname }}</p>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-outline-primary btn-sm view-btn"
-                                        data-id="{{ $data->id }}"
-                                        data-name="{{ $data->firstname }} {{ $data->lastname }}"
-                                        data-email="{{ $data->email }}"
-                                        data-student_no="{{ $data->student_no }}"
-                                        data-course="{{ $data->course_and_section }}">
-                                        View
-                                        </button>
-                                    </div>
-                                    @endif
-                                @endforeach
+                                <p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>
                             </div>
                         </div>
                     </div>
@@ -83,17 +75,15 @@
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
-    $(document).ready(function(){
-        $('#createViolationbtn').on('click', function(e){
-            e.preventDefault();
-            $('#violationModal').modal('show');
-        });
+$(document).ready(function(){
+    // Show violation modal
+    $('#createViolationbtn').on('click', function(e){
+        e.preventDefault();
+        $('#violationModal').modal('show');
     });
 
-    $(document).ready(function () {
-    // Populate fields from student list
-    $(".view-btn").on("click", function (e) {
+    // View button functionality
+    $(document).on("click", ".view-btn", function (e) {
         e.preventDefault();
 
         var studentId = $(this).data("id");
@@ -101,6 +91,11 @@
         var email = $(this).data("email");
         var studentNo = $(this).data("student_no");
         var course = $(this).data("course");
+
+        $('#displaystudentno').text(studentNo);
+        $('#displaystudentname').text(studentName);
+        $('#displaycourse').text(course);
+        $('#displayemail').text(email);
 
         $("#student_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
         $("#schoolEmail").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
@@ -136,42 +131,16 @@
         });
     });
 
-    // Pass populated data to modal
+    // Pre-fill modal fields on createViolation click
     $("#createViolationbtn").on('click', function (e) {
         e.preventDefault();
-
-        let isValid = true;
-
-        // Fields to validate
-        const fields = [
-            { id: "student_no", message: "Student No. is required." },
-            { id: "student_name", message: "Student Name is required." },
-            { id: "course_and_section", message: "Course and Section is required." },
-            { id: "schoolEmail", message: "Student School Email is required." }
-        ];
-
-        fields.forEach(field => {
-            const el = $(`#${field.id}`);
-            if (!el.val()) {
-                el.addClass("is-invalid");
-                if (el.next(".invalid-feedback").length === 0) {
-                    el.after(`<div class="invalid-feedback">${field.message}</div>`);
-                }
-                isValid = false;
-            } else {
-                el.removeClass("is-invalid");
-                el.next(".invalid-feedback").remove();
-            }
-        });
-
-        // Transfer values to modal
         $('#modal_student_no').val($('#student_no').val());
         $('#modal_student_name').val($('#student_name').val());
         $('#modal_student_course').val($('#course_and_section').val());
         $('#modal_student_email').val($('#schoolEmail').val());
     });
 
-    // removes the error in the fields when they have input
+    // Remove error on input
     $("#student_no, #student_name, #course_and_section, #schoolEmail,#remarks").on("input change", function () {
         if ($(this).val()) {
             $(this).removeClass("is-invalid");
@@ -179,10 +148,9 @@
         }
     });
 
-    // Violation rule/severity/description population
+    // Update rule details
     $(document).on("change", "#violation_type", function (e) {
         e.preventDefault();
-
         var violation_id = $(this).val();
 
         if (!violation_id) {
@@ -208,26 +176,8 @@
             $("#ruleNameInput").val(rule);
         }
     });
-});
 
-
-//faculty Inolvement
-$(document).ready(function () {
-    $('input[name="faculty_involvement"]').change(function () {
-        if ($('#faculty_yes').is(':checked')) {
-            $('#facultyName').show();
-            $("#facultyLabel").show().text('Enter Faculty Name:');
-        } else {
-            $("#facultyLabel").hide();
-            $('#facultyName').hide().val('');
-        }
-    });
-});
-
-//submit form
-$(document).ready(function () {
-
-    // Toggle faculty name input
+    // Faculty involvement toggle
     $('input[name="faculty_involvement"]').change(function () {
         if ($('#faculty_yes').is(':checked')) {
             $('#facultyName').show();
@@ -238,7 +188,7 @@ $(document).ready(function () {
         }
     });
 
-    // Auto remove error styling when user interacts with fields
+    // Remove validation error for select and radio inputs
     $("#violation_type, #penalty_type, #referal_type").on("change", function () {
         if ($(this).val() !== "") {
             $(this).removeClass("is-invalid");
@@ -246,95 +196,59 @@ $(document).ready(function () {
         }
     });
 
-    $("input[name='faculty_involvement']").on("change", function () {
-        if ($("input[name='faculty_involvement']:checked").val()) {
-            $("input[name='faculty_involvement']").removeClass("is-invalid");
-            $("input[name='faculty_involvement']").parent().find(".invalid-feedback").remove();
+    // Remove validation error for radio inputs
+    $("input[name='faculty_involvement'], input[name='counseling_required']").on("change", function () {
+        if ($(this).is(':checked')) {
+            $(this).removeClass("is-invalid");
+            $(this).closest('.form-check').find(".invalid-feedback").remove();
         }
     });
-
-    $("input[name='counseling_required']").on("change", function () {
-        if ($("input[name='counseling_required']:checked").val()) {
-            $("input[name='counseling_required']").removeClass("is-invalid");
-            $("input[name='counseling_required']").parent().find(".invalid-feedback").remove();
-        }
-    });
-
+    
+    // Submit violation form
     $("#submit_violation").click(function (e) {
         e.preventDefault();
-
         let isValid = true;
 
-        $("#violation_type, #referal_type, #penalty_type, #remarks").removeClass("is-invalid");
-        $("input[name='faculty_involvement']").removeClass("is-invalid");
-        $("input[name='counseling_required']").removeClass("is-invalid");
+       // Remove existing error messages
+        $(".invalid-feedback").remove();
+        $("#violation_type, #referal_type, #penalty_type, #remarks, input[name='faculty_involvement'], input[name='counseling_required']").removeClass("is-invalid");
 
-        // Validate dropdowns
-        if (!$("#violation_type").val()) {
-            $("#violation_type").addClass("is-invalid");
-            if ($("#violation_type").next(".invalid-feedback").length === 0) {
-                $("#violation_type").after('<div class="invalid-feedback">Please select a violation.</div>');
-            }
-            isValid = false;
-        }
+        // Validate form fields
+        const fieldsToValidate = [
+            { id: "#violation_type", message: "Please select a violation." },
+            { id: "#penalty_type", message: "Please select a penalty." },
+            { id: "#referal_type", message: "Please select a referral action." },
+            { id: "#remarks", message: "Please provide a remarks." }
+        ];
 
-        if (!$("#penalty_type").val()) {
-            $("#penalty_type").addClass("is-invalid");
-            if ($("#penalty_type").next(".invalid-feedback").length === 0) {
-                $("#penalty_type").after('<div class="invalid-feedback">Please select a penalty.</div>');
+        fieldsToValidate.forEach(field => {
+            if (!$(field.id).val()) {
+                $(field.id).addClass("is-invalid").after(`<div class="invalid-feedback">${field.message}</div>`);
+                isValid = false;
             }
-            isValid = false;
-        }
-        if (!$("#referal_type").val()) {
-            $("#referal_type").addClass("is-invalid");
-            if ($("#referal_type").next(".invalid-feedback").length === 0) {
-                $("#referal_type").after('<div class="invalid-feedback">Please select a referral action.</div>');
-            }
-            isValid = false;
-        }
+        });
 
-        // Validate radio buttons
-        if (!$("input[name='faculty_involvement']:checked").val()) {
-            $("input[name='faculty_involvement']").addClass("is-invalid");
-            if ($("input[name='faculty_involvement']").parent().find(".invalid-feedback").length === 0) {
-                $("input[name='faculty_involvement']").first().parent()
-                    .append('<div class="invalid-feedback">Please select faculty involvement.</div>');
-            }
-            isValid = false;
-        }
+        const radioFieldsToValidate = [
+            { name: "faculty_involvement", message: "Please select faculty involvement." },
+            { name: "counseling_required", message: "Please select counseling requirement." }
+        ];
 
-        if (!$("input[name='counseling_required']:checked").val()) {
-            $("input[name='counseling_required']").addClass("is-invalid");
-            if ($("input[name='counseling_required']").parent().find(".invalid-feedback").length === 0) {
-                $("input[name='counseling_required']").first().parent()
-                    .append('<div class="invalid-feedback">Please select counseling requirement.</div>');
+        radioFieldsToValidate.forEach(field => {
+            if (!$(`input[name='${field.name}']:checked`).val()) {
+                $(`input[name='${field.name}']`).addClass("is-invalid")
+                    .first().parent().append(`<div class="invalid-feedback">${field.message}</div>`);
+                isValid = false;
             }
-            isValid = false;
-        }
-
-        // Validate remarks
-        if (!$("#remarks").val()) {
-            $("#remarks").addClass("is-invalid");
-            $("#remarks").after('<div class="invalid-feedback">Please provide a remarks.</div>');
-            isValid = false;
-        }
+        });
 
         if (!isValid) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Please fill out all required fields before submitting."
-            });
+            Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
             return;
         }
 
-        let facultyName = "N/A";
-        if ($('#faculty_yes').is(':checked')) {
-            facultyName = $("#facultyName").val();
-        }
+        let facultyName = $('#faculty_yes').is(':checked') ? $("#facultyName").val() : "N/A";
 
         let formData = new FormData();
-
         formData.append('_token', $('input[name="_token"]').val());
         formData.append('student_no', $("#modal_student_no").val());
         formData.append('student_name', $("#modal_student_name").val());
@@ -353,9 +267,8 @@ $(document).ready(function () {
         formData.append('Remarks', $("#remarks").val());
 
         const fileInput = $('#uploadEvidence')[0];
-        const file = fileInput.files[0];
-        if (file) {
-            formData.append('upload_evidence', file);
+        if (fileInput.files[0]) {
+            formData.append('upload_evidence', fileInput.files[0]);
         }
 
         $.ajax({
@@ -364,58 +277,73 @@ $(document).ready(function () {
             data: formData,
             contentType: false,
             processData: false,
-            success: function (response) {
-                console.log("Violation recorded successfully!");
+            success: function () {
                 $('#violationModal').modal('hide');
+
                 $('#postviolationForm').trigger('reset');
                 $("#facultyLabel").hide();
                 $('#facultyName').hide().val('');
 
-                Swal.fire({
-                    icon: "success",
-                    text: "Violation recorded successfully!",
-                    timer: 5000
-                });
+                $("input[name='faculty_involvement']").prop('checked', false);  // Reset Faculty Involvement
+                $("input[name='counseling_required']").prop('checked', false);   // Reset Counseling Required
 
-                const clearallfield = [
-                    "student_no",
-                    "student_name",
-                    "course_and_section",
-                    "schoolEmail",
-                    "violation_type",
-                    "penalty_type",
-                    "severityNameInput",
-                    "ruleNameInput",
-                    "descriptionNameInput",
-                    "referal_type",
-                    "remarks",
-                    "facultyName",
-                    "uploadEvidence"
-                ];
+                Swal.fire({ icon: "success", text: "Violation recorded successfully!", timer: 5000 });
 
-                for (let field of clearallfield) {
-                    $(`#${field}`).val("");
-                }
-
-                var violation_id = $("#violation_type").val();
-                if (!violation_id) {
-                    $("#ruleName").text("-");
-                    $("#descriptionName").text("-");
-                    $("#severityName").text("-");
-                }
+                ["#ruleName", "#descriptionName", "#severityName"].forEach(sel => $(sel).text("-"));
+                $('#displaystudentno').text("-");
+                $('#displaystudentname').text("-");
+                $('#displaycourse').text("-");
+                $('#displayemail').text("-");
             },
             error: function (xhr) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Oops! It looks like some required fields are missing or incorrect. Please check your inputs.",
-                });
-                console.log("Error submitting form. Please check the inputs.");
+                Swal.fire({ icon: "error", title: "Oops...", text: "Oops! It looks like some required fields are missing or incorrect. Please check your inputs." });
                 console.log(xhr.responseText);
             }
         });
     });
+
+    // Student search
+    $('#search-student').on('keypress', function(e) {
+        const query = $(this).val().trim();
+
+        if (e.which === 13 && query) {
+            e.preventDefault(); 
+
+            $.ajax({
+                url: "/student_search",
+                method: 'GET',
+                data: { query: query },
+                success: function(response) {
+                    if (response.length === 0) {
+                        $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
+                    } else {
+                        let html = '';
+                        response.forEach(function(data) {
+                            html += `
+                                <div class="student-item">
+                                    <div class="d-flex align-items-center">
+                                        <img src="/Photos/avatar.png" alt="Student">
+                                        <div class="ms-2">
+                                            <p class="mb-0 fw-bold">Student No.</p>
+                                            <small>${data.student_no}</small>
+                                            <p>${data.firstname} ${data.lastname}</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline-primary btn-sm view-btn"
+                                        data-id="${data.id}"
+                                        data-name="${data.firstname} ${data.lastname}"
+                                        data-email="${data.email}"
+                                        data-student_no="${data.student_no}"
+                                        data-course="${data.course_and_section}">
+                                        View
+                                    </button>
+                                </div>`;
+                        });
+                        $('.student-list').html(html);
+                    }
+                }
+            });
+        }
+    });
 });
-
-
 </script>

@@ -13,14 +13,13 @@
             <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Rule Management</h3>
-                <input type="text" id="search" class="form-control search-bar ms-auto w-25 w-md-50 w-sm-75" placeholder="Search...">
             </div>
 
             <div class="container py-4">
 
                 <!-- Create Rule Button (moved to left) -->
                 <div class="create-rule-container">
-                    <button class="btn btn-primary" id="addrule">
+                    <button class="btn btn-primary btn-md" id="addrule">
                         <i class="bi bi-plus-circle"></i> Create Rule
                     </button>
                 </div>
@@ -30,7 +29,7 @@
                         <table class="table table-hover" id="ruleTable">
                             <thead>
                             <tr>
-                                <th scope="col">Rule ID</th>
+                                <th scope="col">ID</th>
                                 <th scope="col">Rule Name</th>
                                 <th scope="col">Description</th>
                                 <th scope="col">Violation</th>
@@ -47,7 +46,7 @@
                                     <td>{{ $rule->violation->violations }}</td> <!-- Displaying violation name -->
                                     <td>{{ $rule->severity->severity }}</td>   <!-- Displaying severity name -->
                                     <td>
-                                        <button class="btn btn-warning btn-sm edit-btn-rule">Edit</button>
+                                        <button class="btn btn-primary btn-sm edit-btn-rule">Edit</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -105,24 +104,6 @@
                 </div>
             </div>
         
-            <!-- Archive Confirmation Modal
-            <div class="modal fade" id="archiveConfirmModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Confirm Archive</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure you want to archive this rule?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-archive text-white" id="confirmArchive">Archive</button>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
 
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
@@ -157,18 +138,8 @@ $(document).ready(function(){
                     $('.modal-backdrop').remove();  // Remove the backdrop
 
                     // Append new row to the table
-                    $("#ruleTable tbody").append(
-                        "<tr>" +
-                            "<th scope='row'>" + response.rule.rule_id + "</th>" +
-                            "<td>" + response.rule.rule_name + "</td>" +
-                            "<td>" + response.rule.description + "</td>" +
-                            "<td>" + response.rule.violation_name + "</td>" +
-                            "<td>" + response.rule.severity_name + "</td>" +  
-                            "<td>" +
-                                "<button class='btn btn-warning btn-sm edit-btn-rule'>Edit</button>" +
-                            "</td>" +
-                        "</tr>"
-                    );
+                    $("#ruleTable").load(location.href + " #ruleTable");
+
 
                     // Reset form fields after submission
                     $("#rule_name").val(""); 

@@ -17,4 +17,5 @@ class penalties extends Model
     {
         return $this->belongsTo(Violation::class, 'violation_id');
     }
+    
 }

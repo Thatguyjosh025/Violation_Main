@@ -28,7 +28,7 @@ section {
 }
 
 img {
-    width: 100%;
+    width: 90%;
 }
 
 nav.navbar.navbar-expand-lg {
@@ -343,3 +343,8 @@ button.btnSignIn:hover {
 button#loginButton {
     color: white;
 }
+button.btn.btn-primary {
+    color: white;
+    width: 100%;
+}
+

@@ -76,7 +76,11 @@ return new class extends Migration
         ]);
         
         DB::table('tb_referals')->insert([
-            ['referals' => 'Verbal Reprimand']
+            ['referals' => 'Verbal Reprimand'],
+            ['referals' => 'Held conference with the student'],
+            ['referals' => 'Consulted DO/GA'],
+            ['referals' => 'Contacted Parents'],
+            ['referals' => 'Held Conference with the Parent'],
         ]);
 
         DB::table('tb_status')->insert([
@@ -88,7 +92,6 @@ return new class extends Migration
             ['status' => 'Appeal Approved'],
             ['status' => 'Appeal Denied'],
             ['status' => 'Resolved'],
-            ['status' => 'Archived'],
         ]);
 
         DB::table('tb_rules')->insert([

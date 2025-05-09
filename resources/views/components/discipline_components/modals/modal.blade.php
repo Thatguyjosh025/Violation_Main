@@ -29,7 +29,7 @@ use App\Models\users;
                     <!-- Violation Dropdown Section -->
                     <div class="dropdown" id="dropdown1">
                         <select name="violation_type" id="violation_type" class="form-select">
-                            <option value="">Select Violation</option>
+                            <option value="" hidden>Select Violation</option>
                             @foreach ($violate as $data)
                                 <option value="{{ $data->violation_id }}">{{ $data->violations }}</option>
                             @endforeach
@@ -57,7 +57,7 @@ use App\Models\users;
                     <!-- Referral Dropdown Section -->
                     <label class="fw-bold mb-1 text text-dark">Action Taken Prior to Referral</label>
                     <select class="form-select" id="referal_type" name="referal_type">
-                        <option value="">Select Referals</option>
+                        <option value="" hidden>Select Referals</option>
                        @foreach ( $ref as $referaldata )
                         <option value="{{ $referaldata -> referal_id }}">{{ $referaldata -> referals }}</option>
                        @endforeach
@@ -67,7 +67,7 @@ use App\Models\users;
                     <!-- Penalty Dropdown Section -->
                     <label class="fw-bold mt-2 text text-dark">Penalty</label>
                     <select class="form-select" id="penalty_type" name="penalty_type">
-                        <option value="">Select Penalty</option>
+                        <option value="" hidden>Select Penalty</option>
                        @foreach ( $pen as $pendata )
                         <option value="{{ $pendata -> penalties_id }}">{{ $pendata -> penalties }}</option>
                        @endforeach
@@ -82,7 +82,7 @@ use App\Models\users;
                                 <label class="form-check-label text text-dark" for="faculty_yes">Yes</label>
                             </div>
                             <div>
-                                <input class="form-check-input text text-dark" type="radio" id="faculty_no" name="faculty_involvement" value="No">
+                                <input class="form-check-input text text-dark" type="radio" id="faculty_no" name="faculty_involvement" value="No" checked>
                                 <label class="form-check-label text text-dark" for="faculty_no">No</label>
                             </div>
                             <label for="" id="facultyLabel" class="text text-dark" style="display: none;"></label>
@@ -94,7 +94,7 @@ use App\Models\users;
                                 <label class="form-check-label text text-dark" for="counseling_yes">Yes</label>
                             </div>
                             <div>
-                                <input class="form-check-input text text-dark" type="radio" id="counseling_no" name="counseling_required" value="No">
+                                <input class="form-check-input text text-dark" type="radio" id="counseling_no" name="counseling_required" value="No" checked>
                                 <label class="form-check-label text text-dark" for="counseling_no">No</label>
                             </div>
                         </div>
@@ -286,11 +286,6 @@ use App\Models\users;
           </div>
 
           <div class="mb-3">
-            <label for="edit_status_type" class="form-label">Status</label>
-            <select id="edit_status_type" class="form-select" name="update_status"></select>
-          </div>
-
-          <div class="mb-3">
           <h5>Faculty Involvement</h5>
             <div class="form-check">
                 <input class="form-check-input" type="radio" id="edit_faculty_yes" name="edit_faculty_involvement" value="Yes">
@@ -327,8 +322,13 @@ use App\Models\users;
           </div>
 
           <div class="mb-3">
-            <label for="Date_Created" class="form-label">Date Created</label>
-            <p id="Date_Created" class="form-control"></p>
+            <label for="edit_notes" class="form-label">Note:</label>
+            <textarea class="form-control" name="update_remarks" id="edit_notes" style="height: 100px; resize: none;" maxlength="200" placeholder="Leave a reminder"></textarea>
+          </div>
+          
+          <div class="mb-3">
+            <label for="edit_status_type" class="form-label">Status</label>
+            <select id="edit_status_type" class="form-select" name="update_status"></select>
           </div>
 
         </div>
@@ -343,10 +343,13 @@ use App\Models\users;
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <script>
   
 // View student
-  $(document).on('click', '.btn-view-post', function () {
+$(document).on('click', '.btn-view-post', function () {
     var id = $(this).val();
     console.log("test", id);
 
@@ -479,7 +482,7 @@ function loadReferalDropdown(url, id, selectedValue){
 // End dropdown loader
 
 //populate selected violation for edit form
-  $(document).on("change", "#edit_violation_type", function (e) {
+$(document).on("change", "#edit_violation_type", function (e) {
         e.preventDefault();
 
         var violation_id = $(this).val();
@@ -504,7 +507,6 @@ function loadReferalDropdown(url, id, selectedValue){
             $("#edit_rule_Name").val(rule);
         }
   });
-
 
 //Preview edit
 $(document).on('click', '.btn-edit-post', function(){
@@ -590,7 +592,7 @@ $(document).on('click', '.btn-edit-post', function(){
           }
         else {
             $('#edit_faculty_Name').hide().val('N/A');
-            $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');        
+            $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark');        
           }
 
         $('input[name="edit_faculty_involvement"]').change(function () {
@@ -599,7 +601,7 @@ $(document).on('click', '.btn-edit-post', function(){
                 $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');            
               } else {
                 $('#edit_faculty_Name').hide().val('N/A');
-                $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');            
+                $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark');            
               }
         });
 
@@ -635,7 +637,9 @@ $('#editStudentForm').submit(function(e) {
             update_faculty_name: $('#edit_faculty_Name').val(),
             update_counseling_required: $('input[name="edit_counseling_required"]:checked').val(),
             update_referral_type: $('#edit_referal_type').val(),
-            update_remarks: $('#edit_Remarks').val()
+            update_remarks: $('#edit_Remarks').val(),
+            update_notes: $('#edit_notes').val()
+
         },
         success: function(response) {
             if (response.status == 200) {
@@ -647,7 +651,9 @@ $('#editStudentForm').submit(function(e) {
             } else {
                 console.log("Error updating student info");
             }
-            $("#violationrecordstable").load(location.href + " #violationrecordstable");
+
+            // Reload DataTable via AJAX without resetting pagination it just re-render the specific row
+            $('#violationrecordstable').DataTable().ajax.reload(null, false);
         },
         error: function(xhr) {
             console.log(xhr.responseText);
@@ -656,6 +662,35 @@ $('#editStudentForm').submit(function(e) {
     });
 });
 
+//archive edit button
+$(document).on('click', '.btn-archive-post', function () {
+    const postId = $(this).val();
+
+    Swal.fire({
+        title: "Are you sure you want to archive this violation?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "No"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/violation_records/' + postId,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    Swal.fire("Archived!", response.message, "success");
+                    $('#violationrecordstable').DataTable().ajax.reload(null, false);
+                },
+                error: function () {
+                    Swal.fire("Error", "Something went wrong.", "error");
+                }
+            });
+        }
+    });
+});
 
 </script>
 

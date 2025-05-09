@@ -24,9 +24,11 @@ class postviolation extends Model
         'counseling_required',
         'referal_type',
         'Remarks',
+        'Notes',
         'upload_evidence',
         'appeal',
-        'Date_Created'
+        'Date_Created',
+        'Update_at'
     ];
 
     public $timestamps = false;
