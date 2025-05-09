@@ -19,7 +19,7 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid"> 
             <div class="logo">
-                <img src="Photos/VS_logo.png" alt="">
+                <img src="{{ asset('./Photos/VS_logo.png') }}" alt="">
             </div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -50,7 +50,7 @@
           <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal">Log In</button>
       </div>
       <div class="home-img">
-          <img src="Photos/Background.png" alt="">
+          <img style="width: 90%; margin-left: 10%;" src="Photos/violation-picture-landing.png" alt="">
       </div>
   </section>
 
@@ -58,7 +58,7 @@
     <section class="service" id="service">
       <div class="heading">
           <span>Explore the Features of Our Violation Reporting System</span>
-          <h1>Our Services</h1>
+          <!-- <h1>Our Features</h1> -->
       </div>
       <br>
       <div class="service_container">
@@ -79,10 +79,10 @@
       </div>
   </section>
 
-    <!-- ABOUT SECTION -->
+    <!-- ABOUT SECTION needs to adjust the responsiveness tommorow -->
     <section class="about" id="about">
       <div class="about-img">
-          <img src="Photos/BG.jpg" alt="">
+          <img src="Photos/design2.png" alt="">
       </div>
       <div class="about-text">
           <h2 class="h mt-5">About Our Violation Reporting System</h2>

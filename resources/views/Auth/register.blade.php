@@ -29,6 +29,7 @@
                         <label for="student_no" class="form-label">Student Number:</label>
                         <input type="text" class="form-control" id="student_no" name="student_no" min="11" pattern="[0-9]+" title="Only numbers are allowed" maxlength="11" required>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="course_and_section" class="form-label">Course and Section:</label>
                         <input type="text" class="form-control" id="course_and_section" name="course_and_section" required>
@@ -75,7 +76,6 @@ $(document).ready(function () {
         $(this).find('i').toggleClass('fa-eye fa-eye-slash');
     });
 
-    // Toggle visibility of confirm password when the eye icon is clicked
     $('#toggleConfirmPassword').on('click', function () {
         var confirmPasswordField = $('#password_confirmation');
         var type = confirmPasswordField.attr('type') === 'password' ? 'text' : 'password';
@@ -86,11 +86,39 @@ $(document).ready(function () {
     var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;    
     var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+    function capitalizeName(name) {
+        return name.replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    // start course and section validation
+    $("#course_and_section").on("input", function () {
+        let val = $(this).val().toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+        if (val.length > 4) {
+            val = val.slice(0, 4) + "-" + val.slice(4);
+        }
+
+        val = val.slice(0, 8); // (max 9 characters)
+        $(this).val(val);
+    });
+    // end course and section validation
+
+
     $("#registerModal form").submit(function (e) {
         e.preventDefault(); // Prevent default form submission
 
         var form = $(this);
         var isValid = true;
+
+        // Start Capitalize name fields before validation
+        ["#firstname", "#lastname", "#middlename"].forEach(function(id) {
+            var input = $(id).val().trim();
+            if (input !== "") {
+                var capitalized = capitalizeName(input);
+                $(id).val(capitalized);
+            }
+        });
+        // End Capitalize name fields before validation
 
         $(".form-control").removeClass("is-invalid").next(".invalid-feedback").remove();
 
@@ -102,13 +130,18 @@ $(document).ready(function () {
             { id: "#email", regex: emailRegex, msg: "Invalid email format." }
         ];
 
-        // Validate fields except middlename if empty
         $.each(fields, function(index, field) {
             var input = $(field.id);
-            if (field.id === "#middlename" && input.val().trim() === "") {
+            var value = input.val().trim();
+
+            if (field.id === "#middlename" && value === "") {
                 return; // Skip validation if middle name is empty
             }
-            if (!field.regex.test(input.val().trim())) {
+
+            if (value.length < 2) {
+                input.addClass("is-invalid").after('<div class="invalid-feedback">Must be at least 2 characters long.</div>');
+                isValid = false;
+            } else if (!field.regex.test(value)) {
                 input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.msg + '</div>');
                 isValid = false;
             }
@@ -117,19 +150,16 @@ $(document).ready(function () {
         var password = $("#userPassword").val();
         var confirmPassword = $("#password_confirmation").val();
 
-        // Password match validation
         if (password !== confirmPassword) {
             $("#password_confirmation").addClass("is-invalid").after('<div class="invalid-feedback">Passwords do not match.</div>');
             $('#toggleConfirmPassword').hide();
             isValid = false;
-        }else {
+        } else {
             $("#password_confirmation").removeClass("is-invalid");
-            $("#password_confirmation").next(".invalid-feedback").remove(); // remove error message
-            // Show the eye icon
+            $("#password_confirmation").next(".invalid-feedback").remove();
             $('#toggleConfirmPassword').show();
         }
 
-        // Student number validation detects the first 4 digits
         var studentNumber = $("#student_no").val();
         var studentNumberRegex = /^(0200|1900|1800)\d{7}$/;
         if (!studentNumberRegex.test(studentNumber)) {
@@ -141,14 +171,11 @@ $(document).ready(function () {
         if (!passwordRegex.test(password)) {
             $("#userPassword").addClass("is-invalid").next(".invalid-feedback").remove(); 
             $("#userPassword").after('<div class="invalid-feedback">Password must be at least 8 characters long, include at least one uppercase letter, one number, one special character, and should not contain spaces.</div>');
-
             $('#toggleUserPassword').hide();
-
             isValid = false;
         } else {
             $("#userPassword").removeClass("is-invalid");
-            $("#userPassword").next(".invalid-feedback").remove(); // remove error message
-
+            $("#userPassword").next(".invalid-feedback").remove();
             $('#toggleUserPassword').show();
         }
 
@@ -182,40 +209,26 @@ $(document).ready(function () {
     // Remove error messages when typing
     $(document).on("input", ".form-control", function () {
         $(this).removeClass("is-invalid").next(".invalid-feedback").remove();
-        // Show the eye icon if the password field is valid
         if ($(this).attr('id') === 'userPassword') {
             $('#toggleUserPassword').show();
         }
-
-    });
-
-    $(document).on("input", ".form-control", function () {
-        $(this).removeClass("is-invalid").next(".invalid-feedback").remove();
-        // Show the eye icon if the password field is valid
-       
         if ($(this).attr('id') === 'password_confirmation') {
             $('#toggleConfirmPassword').show();
         }
     });
 
-    // Password confirmation check
     $("#password_confirmation").on("input", function () {
         $(this).toggleClass("is-invalid", $(this).val() !== $("#userPassword").val());
         $(this).next(".invalid-feedback").remove();
         if ($(this).hasClass("is-invalid")) {
             $(this).after('<div class="invalid-feedback">Passwords do not match.</div>');
         }
-        if ($(this).attr('id') === 'password_confirmation') {
-            $('#toggleConfirmPassword').show();
-        }
+        $('#toggleConfirmPassword').show();
     });
 
-    // Reset the form when the modal is closed
     $('#registerModal').on('hidden.bs.modal', function () {
-        $(this).find('form')[0].reset(); // Reset form fields
-        $(".form-control").removeClass("is-invalid").next(".invalid-feedback").remove(); // Remove error messages
-
-        // Show the eye icon
+        $(this).find('form')[0].reset();
+        $(".form-control").removeClass("is-invalid").next(".invalid-feedback").remove();
         $('#toggleUserPassword').show();
     });
 });

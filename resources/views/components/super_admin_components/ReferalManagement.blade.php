@@ -15,9 +15,8 @@ $referalsdata = referals::get();
 <div class="container mt-4">
     <!-- Referral Type Section -->
     <div class="content-section active" id="referral-type-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Referral Type</h4>
-            <button class="btn btn-add px-4 py-2" id="addreferalBtn">+ Add</button>
+        <div class="mb-3"  style="display: flex; justify-content: end;">
+            <button class="btn btn-add btn-md" id="addreferalBtn">+ Add</button>
         </div>
         <div class="card-table bg-white">
             <table class="table table-hover mb-0" id="referalTable">
@@ -34,7 +33,7 @@ $referalsdata = referals::get();
                             <th scope="row">{{ $data->referal_id}}</th>
                             <td contenteditable="false">{{ $data->referals }}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm edit-btn">Edit</button>
+                                <button class="btn btn-primary btn-sm edit-btn">Edit</button>
                             </td>
                         </tr>
                     @endforeach
@@ -97,16 +96,8 @@ $(document).ready(function () {
 
                 $('#referralModal').modal('hide');
                 $('.modal-backdrop').remove();
-                // Append new row to the table
-                $("#referalTable tbody").append(
-                    "<tr>" +
-                        "<th scope='row'>" + response.referals.referal_id + "</th>" +
-                        "<td contenteditable='false'>" + response.referals.referals + "</td>" +
-                        "<td>" +
-                            "<button class='edit-btn btn btn-warning btn-sm'>Edit</button>" +
-                        "</td>" +
-                    "</tr>"
-                );
+
+                $("#referalTable").load(location.href + " #referalTable");
 
                 $("#referals").val(""); 
             },

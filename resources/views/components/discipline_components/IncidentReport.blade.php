@@ -33,14 +33,14 @@ $reports = incident::get();
                         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
                             @php $activeReports = $reports->where('is_visible', '===', 'show'); @endphp
                             @if ($activeReports->isEmpty())          
-                                <div class="alignment" style="justify-content: center; width: 100%;">
+                                <div class="alignment" style="justify-content: cen  ter; width: 100%;">
                                     <div class="col-12 text-center mt-5" style="justify-content: center;">
                                         <p>No active incident reports found.</p>
                                     </div>
                                 </div>
                             @else
                                 @foreach ($activeReports as $datareport)    
-                                    <div class="col incident-card" data-id="{{ $datareport->id }}">
+                                    <div class="col incident-card" style="width: 23rem;" data-id="{{ $datareport->id }}">
                                         <input type="hidden" value="{{ $datareport->id }}">
                                         <div class="card p-3 position-relative">
                                             <div class="d-flex justify-content-between align-items-start">
@@ -59,7 +59,7 @@ $reports = incident::get();
                         </div>
                     </div>
 
-                    <!-- Archives -->
+                    <!-- Approved -->
                     <div class="tab-pane fade" id="archives" role="tabpanel">
                         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
                             @php $archivedReports = $reports->where('is_visible', '===', 'approve'); @endphp
@@ -71,7 +71,7 @@ $reports = incident::get();
                                 </div> 
                             @else
                                 @foreach ($archivedReports as $datareport)
-                                    <div class="col">
+                                    <div class="col" style="width: 23rem;">
                                         <input type="hidden" value="{{ $datareport->id }}">
                                         <div class="card p-3 position-relative">
                                             <div class="d-flex justify-content-between align-items-start">
@@ -102,7 +102,7 @@ $reports = incident::get();
                                 </div>
                             @else
                                 @foreach ($archivedReports as $datareport)
-                                    <div class="col">
+                                    <div class="col" style="width: 23rem;">
                                         <input type="hidden" value="{{ $datareport->id }}">
                                         <div class="card p-3 position-relative">
                                             <div class="d-flex justify-content-between align-items-start">
@@ -126,46 +126,6 @@ $reports = incident::get();
                 </div>
             </div>
 
-            
-        
-            <!-- Modal Violation Process (View) -->
-            <div class="modal fade" id="violationModalview" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Violation Process</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p id="view_incident_name"><strong>Name of violator:</strong></p>
-                            <p id="view_incident_studentno"><strong>Student No:</strong></p>
-                            <p id="view_incident_course"><strong>Section:</strong></p>
-                            <p id="view_incident_email"><strong>School email:</strong></p>
-                            <hr>
-                            <p id="view_incident_violation"><strong>Reason/s for Referral:</strong></p>
-                            <p id="view_incident_details"><strong>Details:</strong></p>
-                            <p id="view_incident_severity"><strong>Severity of Offense/s:</strong></p>
-                            <p id="view_incident_facultyname"><strong>Submitted by:</strong></p>
-                            <p><strong>Evidence/s:</strong> <span class="fw-bold">N/A</span></p>
-                            <input type="hidden" id="incident_id">
-                            <input type="hidden" class="form-control" id="incident_name">
-                            <input type="hidden" class="form-control" id="incident_no">
-                            <input type="hidden" class="form-control" id="incident_course">
-                            <input type="hidden" class="form-control" id="incident_email">
-                            <!-- <input type="hidden" class="form-control" id="incident_violation"> -->
-                            <input type="hidden" class="form-control" id="incident_severity">
-                            <input type="hidden" class="form-control" id="incident_faculty">
-                            <input type="hidden" class="form-control" id="incident_details">
-                            <select name="" id="incident_violation" style="display: none;"></select>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-success" id="approve-btn" data-bs-dismiss="modal">Approve</button>
-                            <button class="btn btn-danger" id="reject-btn">Reject</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Modal Violation Process (Write) -->
             <div class="modal fade" id="violationProcess" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -185,7 +145,9 @@ $reports = incident::get();
                             <p id="write_incident_violation"><strong>Reason/s for Referral:</strong> Cheating</p>
                             <p id="write_incident_details"><strong>Details:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
                             <p id="write_incident_severity"><strong>Severity of Offense/s:</strong> Minor</p>
-                            <p id="write_incident_facultyname"><strong>Submitted by:</strong> Keith Izzam Magante</p>      
+                            <p id="write_incident_facultyname"><strong>Submitted by:</strong> Keith Izzam Magante</p>
+                            <p id="write_incident_date"><strong>Date Created:</strong>-</p>
+                            <input type="hidden" id="incident_id">            
                             <input type="hidden" class="form-control" id="incident_name_input" name="student_name"> 
                             <input type="hidden" class="form-control" id="incident_no_input" name="student_no">                                                                                                                    
                             <input type="hidden" class="form-control" id="incident_course_input" name="course">                                                                                                                    
@@ -200,27 +162,30 @@ $reports = incident::get();
                                                                                                                       
                             <hr>
                            
-                            <!-- Referral Dropdown Section -->
-                            <label class="fw-bold mb-1">Action Taken Prior to Referral</label>
-                            <select class="form-select" id="referal_type" name="referal_type">
-                                <option selected hidden>Select referal...</option>
-                                @foreach ($ref as $refdata )
-                                    <option value="{{ $refdata -> referal_id }}">{{ $refdata -> referals }}</option>
-                                @endforeach 
-                            </select>
-                            <!-- End of Dropdown Section -->
-                         
-                            <!-- Penalty Dropdown Section -->
-                            <label class="fw-bold mt-2">Penalty</label>
-                            <select class="form-select" id="penalty_type" name="penalty_type">
-                                <option selected hidden>Select Penaltyy</option>
-                                @foreach ($pen as $pendata )
-                                    <option value="{{ $pendata -> penalties_id }}">{{ $pendata -> penalties }}</option>
-                                @endforeach
-                            </select>
-                            <!-- End of Dropdown -->
+                            <div id="incident-dropdowns">
+                                <!-- Referral Dropdown Section -->
+                                <label class="fw-bold mb-1">Action Taken Prior to Referral</label>
+                                <select class="form-select" id="referal_type" name="referal_type">
+                                    <option selected hidden>Select referal...</option>
+                                    @foreach ($ref as $refdata )
+                                        <option value="{{ $refdata -> referal_id }}">{{ $refdata -> referals }}</option>
+                                    @endforeach 
+                                </select>
+                                <!-- End of Dropdown Section -->
 
-                            <div>
+                                 <!-- Penalty Dropdown Section -->
+                                <label class="fw-bold mt-2">Penalty</label>
+                                <select class="form-select" id="penalty_type" name="penalty_type">
+                                    <option selected hidden>Select Penaltyy</option>
+                                    @foreach ($pen as $pendata )
+                                        <option value="{{ $pendata -> penalties_id }}">{{ $pendata -> penalties }}</option>
+                                    @endforeach
+                                </select>
+                                <!-- End of Dropdown -->
+                            </div>
+                            
+
+                            <div id="counseling_req">
                                 <label class="fw-bold">Counseling Required</label><br>
                                 <div>
                                     <input type="radio" name="counseling_required" value="Yes" id="counseling_yes">
@@ -231,10 +196,19 @@ $reports = incident::get();
                                     <label for="counselingNo">No</label>
                                 </div>
                             </div>
-        
-                            <label class="fw-bold">Remarks:</label>
+                            
+                            <!-- Remarks -->
+                            <div id="remarks-incident">
+                                <label class="fw-bold">Remarks:</label>
                                 <textarea class="form-control" id="Remarks" name="Remarks" style="height: 100px; resize: none;"></textarea>
-                                <button type="button" class="btn btn-primary mt-2" id="submit_incident">Submit</button>
+                            </div>
+                
+                            <!-- Approve and Reject buttons -->
+                            <div class="write-btn mt-2">
+                                <button class="btn btn-success" id="approve-btn">Approve</button>
+                                <button class="btn btn-danger" id="reject-btn">Reject</button>
+                            </div>
+            
                             </form>
                         </div>
                     </div>
@@ -245,167 +219,108 @@ $reports = incident::get();
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function(){
-    $('.btn-view-incident').on('click', function(e){
+    $(document).on('click', '.btn-view-incident', function(e){
         e.preventDefault();
-        $('#violationModalview').modal('show');
+        resetModal();
+
+        const source = $(this).data('source');
+        $('#violationProcess').modal('show');
+
+        if (source === 'archive') {
+            $('#approve-btn').hide();
+            $('#approve-btn').next('.btn-danger').hide();
+            $('#incident-dropdowns').hide();
+            $('#counseling_req').hide();
+            $('#remarks-incident').hide();
+        } else {
+            $('#approve-btn').show();
+            $('#approve-btn').next('.btn-danger').show();
+        }
 
         var id = $(this).val();
-
         $.ajax({
             type: "GET",
             url: "/get_incident_info?id=" + id,
             success: function (response) {
                 if (response.status == 500) {
                     console.log(response.message);
-                } else if (response.status == 200) {    
+                } else if (response.status == 200) {
                     const data = response.data;
-
-                    $('#view_incident_name').html(`<strong>Name of violator:</strong> ${data.student_name}`);
-                    $('#view_incident_studentno').html(`<strong>Student No:</strong> ${data.student_no}`);
-                    $('#view_incident_course').html(`<strong>Section:</strong> ${data.course_section}`);
-                    $('#view_incident_email').html(`<strong>School email:</strong> ${data.school_email}`);
-                    $('#view_incident_violation').html(`<strong>Reason/s for Referral:</strong> ${data.violation_name}`);
-                    $('#view_incident_details').html(`<strong>Details:</strong> ${data.remarks}`);
-                    $('#view_incident_severity').html(`<strong>Severity of Offense/s:</strong> ${data.severity}`);
-                    $('#view_incident_facultyname').html(`<strong>Submitted by:</strong> ${data.faculty_name}`);
-                    $('#view_incident_remarks').html(`<strong>Remarks:</strong> ${data.remarks}`);
-                    $('#view_incident_date').html(`<strong>Date Submitted:</strong> ${data.Date_Created}`);
-
-                    $('#incident_id').val(response.data.id);
-                    $('#incident_name').val(response.data.student_name);
-                    $('#incident_no').val(response.data.student_no);
-                    $('#incident_course').val(response.data.course_section);
-                    $('#incident_email').val(response.data.school_email);
-                    $('#incident_violation').val(response.data.violation_name);
-                    $('#incident_severity').val(response.data.severity);
-                    $('#incident_faculty').val(response.data.faculty_name);
-                    $('#incident_details').val(response.data.remarks);
-
-                    $('#incident_violation').val(response.data.violation_type);
-                    if (!$('#incident_violation').val()) {
-                        $('#incident_violation').append(
-                            `<option value="${response.data.violation_type}" selected>${response.data.violation_name}</option>`
-                        );
-                    }
-
-                    if (data.upload_evidence !== 'N/A') {
-                        $('#view_incident_evidence').html(
-                            `<strong>Evidence/s:</strong> <a href="/storage/${data.upload_evidence}" target="_blank">View Evidence</a>`
-                        );
-                    } else {
-                        $('#view_incident_evidence').html(`<strong>Evidence/s:</strong> <span class="fw-bold">N/A</span>`);
-                    }
-
-                    loadViolationDropdown('/get_violations', '#incident_violation', response.data.violation_type);
-
-                    $('#viewIncidentModal').modal('show');
+                    updateModalContent(data);
                 }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error loading incident info:", error);
             }
         });
     });
-});
 
-//approve-btn it needs to pull the data from the first modal
-$(document).ready(function(){
-    $('#approve-btn').on('click', function(e){
-        e.preventDefault();
-        $('#violationProcess').modal('show');
-        $('#viewIncidentModal').modal('hide');
-   
-        var incidentID = $('#incident_id').val();
-        var studentnameinput = $('#incident_name').val();
-        var studentno = $('#incident_no').val();
-        var studentcourse = $('#incident_course').val();
-        var studentemail = $('#incident_email').val();
-        var studentviolation = $('#incident_violation').val();
-        var studentseverity = $('#incident_severity').val();
-        var studentfacultyname = $('#incident_faculty').val();
-        var studentdetails = $('#incident_details').val();
+    function resetModal() {
+        $('#approve-btn').show();
+        $('#approve-btn').next('.btn-danger').show();
+        $('#incident-dropdowns').show();
+        $('#counseling_req').show();
+        $('#remarks-incident').show();
+    }
 
-        $('#write_incident_name').html(`<strong>Name of violator:</strong> ${studentnameinput}`);
-        $('#write_incident_no').html(`<strong>Student No:</strong> ${studentno}`);
-        $('#write_incident_course').html(`<strong>Course and section:</strong> ${studentcourse}`);
-        $('#write_incident_email').html(`<strong>School Email:</strong> ${studentemail}`);
-        $('#write_incident_details').html(`<strong>Details:</strong> ${studentdetails}`);
-        $('#write_incident_severity').html(`<strong>Severity of Offense/s:</strong> ${studentseverity}`);
-        $('#write_incident_facultyname').html(`<strong>Submitted by:</strong> ${studentfacultyname}`);
+    function updateModalContent(data) {
+        $('#incident_id').val(data.id);
+        $('#write_incident_name').html(`<strong>Name of violator:</strong> ${data.student_name}`);
+        $('#write_incident_no').html(`<strong>Student No:</strong> ${data.student_no}`);
+        $('#write_incident_course').html(`<strong>Course and section:</strong> ${data.course_section}`);
+        $('#write_incident_email').html(`<strong>School Email:</strong> ${data.school_email}`);
+        $('#write_incident_violation').html(`<strong>Reason for Referral:</strong> ${data.violation_name}`);
+        $('#write_incident_details').html(`<strong>Details:</strong> ${data.remarks}`);
+        $('#write_incident_severity').html(`<strong>Severity of Offense/s:</strong> ${data.severity}`);
+        $('#write_incident_facultyname').html(`<strong>Submitted by:</strong> ${data.faculty_name}`);
+        $('#write_incident_date').html(`<strong>Date Created:</strong> ${data.Date_Created}`);
 
-        
-        $('#incident_name_input').val(studentnameinput);
-        $('#incident_no_input').val(studentno);
-        $('#incident_course_input').val(studentcourse);
-        $('#incident_email_input').val(studentemail);
-        $('#violation_type').val(studentviolation);
-        $('#faculty_name').val(studentfacultyname);
+        $('#incident_name_input').val(data.student_name);
+        $('#incident_no_input').val(data.student_no);
+        $('#incident_course_input').val(data.course_section);
+        $('#incident_email_input').val(data.school_email);
+        $('#violation_type').val(data.violation_type);
+        $('#incident_rule_input').val(data.rule_name);
+        $('#incident_desc_input').val(data.description);
+        $('#incident_sev_input').val(data.severity);
+        $('#faculty_name').val(data.faculty_name);
 
-
-        loadViolationDropdown('/get_violations', '#violation_type', studentviolation);
-
-    });
-});
-
-//dropdown loader
-function loadViolationDropdown(url, id, selectedValue) {
-  $.ajax({
-    url: url,
-    success: function(response) {
-      var dropdown = $(id);
-      dropdown.empty();
-      dropdown.append('<option value="">Select</option>');
-
-      //this block of code loops through a list of violations and adds each one in the option to a dropdown.
-      response.violation_data.forEach(function(item) {
-        var isSelected = item.violation_id == selectedValue ? 'selected' : '';
-        dropdown.append(`<option value="${item.violation_id}" ${isSelected}>${item.violations}</option>`);
-      });
-
-        dropdown.val(selectedValue);
-
-        $.get("/get_rule/" + selectedValue, function (response) {
-        if (response.error) {
-            updateRuleDetails("", "", "");
+        if (data.upload_evidence !== 'N/A') {
+            $('#view_incident_evidence').html(
+                `<strong>Evidence/s:</strong> <a href="/storage/${data.upload_evidence}" target="_blank">View Evidence</a>`
+            );
         } else {
-            updateRuleDetails(response.rule_name, response.description, response.severity_name);
+            $('#view_incident_evidence').html(`<strong>Evidence/s:</strong> <span class="fw-bold">N/A</span>`);
         }
+
+        loadViolationDropdown('/get_violations', '#violation_type', data.violation_type);
+    }
+});
+
+function loadViolationDropdown(url, id, selectedValue) {
+    $.ajax({
+        url: url,
+        success: function(response) {
+        var dropdown = $(id);
+        dropdown.empty();
+
+        response.violation_data.forEach(function(item) {
+            var isSelected = item.violation_id == selectedValue ? 'selected' : '';
+            dropdown.append(`<option value="${item.violation_id}" ${isSelected}>${item.violations}</option>`);
         });
 
-        function updateRuleDetails(rule, desc, severity) {
-            $("#incident_rule_input").val(rule);
-            $("#incident_desc_input").val(desc);
-            $("#incident_sev_input").val(severity);
-        }
-    }
-  });
-}
-
-// Selecting violation populating the rule, desc, severity
-$(document).on("change", "#violation_type", function (e) {
-    e.preventDefault();
-
-    var violation_id = $(this).val();
-
-    if (!violation_id) {
-        updateRuleDetails("-", "-", "-");
-        return;
-    }
-
-    $.get("/get_rule/" + violation_id, function (response) {
-        if (response.error) {
-            updateRuleDetails("", "", "");
-        } else {
-            updateRuleDetails(response.rule_name, response.description, response.severity_name);
         }
     });
-});
+}
 
 //submit incident
 $(document).ready(function () {
-    $("#submit_incident").click(function (e) {
+    $("#approve-btn").click(function (e) {
         e.preventDefault();
 
         let formData = new FormData();
 
-        formData.append('incident_id', $("#incident_id").val()); 
+        formData.append('incident_id', $("#incident_id").val());
 
         formData.append('_token', $('input[name="_token"]').val());
         formData.append('student_name', $("#incident_name_input").val());
@@ -424,7 +339,6 @@ $(document).ready(function () {
         formData.append('Remarks', $("#Remarks").val());
         formData.append('appeal', $("#appeal").val());
 
-
         $.ajax({
             url: "/post_violation",
             type: "POST",
@@ -435,11 +349,11 @@ $(document).ready(function () {
                 $('#violationProcess').modal('hide');
                 console.log("Incident recorded successfully!");
 
+                $('#incidentReportForm')[0].reset();
                 $("#active-incidents").load(location.href + " #active-incidents > *");
                 $("#archives").load(location.href + " #archives > *");
                 $("#Reject").load(location.href + " #Reject > *");
 
-                
                 Swal.fire({
                     icon: "success",
                     text: "Incident recorded successfully!",
@@ -457,7 +371,7 @@ $(document).ready(function () {
 //reject button
 $(document).ready(function () {
     $('#reject-btn').on('click', function () {
-        let incidentId = $('#incident_id').val(); 
+        let incidentId = $('#incident_id').val();
 
         $.ajax({
             url: '/incident_rejected',
@@ -484,20 +398,4 @@ $(document).ready(function () {
         });
     });
 });
-
-
-$(document).on('click', '.btn-view-incident', function () {
-
-        const source = $(this).data('source'); 
-        $('#violationModalview').modal('show');
-
-        if (source === 'archive') {
-            console.log('test hello wold')
-            $('#approve-btn').hide();
-            $('#approve-btn').next('.btn-danger').hide(); 
-        } else {
-            $('#approve-btn').show();
-            $('#approve-btn').next('.btn-danger').show();
-        }
-    });
 </script>

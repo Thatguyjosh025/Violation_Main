@@ -5,16 +5,15 @@ use App\Http\Controllers\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DataController;
-use App\Http\Controllers\MainController;
 use App\Http\Controllers\ViewController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\SuperController;
-use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ViewControllerDiscipline;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
 use App\Models\postviolation;
+use Illuminate\Contracts\View\View;
 use Yajra\DataTables\DataTables;
 
 
@@ -65,7 +64,7 @@ Route::post('/create_referals', [SuperController::class, 'referal'])->middleware
 Route::post('/create_rules', [SuperController::class, 'rules'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
 Route::post('/post_violation',[AdminController::class,'postviolation'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline']);
 Route::post('/update_student_info/{id}', [AdminController::class, 'updateStudentInfo'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline']);
-Route::post('/submit_incident_report',[AdminController::class,'submitIncidentReport'])->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
+Route::post('/submit_incident_report',[FacultyController::class,'submitIncidentReport'])->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
 
 
 //Update routes
@@ -73,8 +72,8 @@ Route::post('/update_penalty/{id}', [SuperController::class, 'updatePenalty'])->
 Route::post('/update_violation/{id}', [SuperController::class, 'updateViolation'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
 Route::post('/update_rule/{id}', [SuperController::class, 'updateRule'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
 Route::post('/update_referral/{id}', [SuperController::class, 'updateReferral'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/update_visibility', [AdminController::class, 'updateVisibility']);
 Route::post('/incident_rejected', [AdminController::class, 'UpdateRejected']);
+Route::post('/violation_records/{id}', [AdminController::class, 'archive'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline']);
 
 
 //get routes
@@ -86,6 +85,8 @@ Route::get('/get_referal', [DataController::class, 'getReferals']);
 Route::get('/get_status', [DataController::class, 'getStatus']);
 Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
 Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
+Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
+
 
 //students
 Route::get('/get_violations_records', [StudentController::class, 'getViolationsRecords']);
@@ -94,18 +95,25 @@ Route::post('/update_appeal_reason', [StudentController::class, 'updateAppealRea
 //notif
 Route::post('/update_notification_status', [NotificationController::class, 'updateNotificationStatus']);
 
+//handbookview
+Route::get('/violation_handbook',[ViewController::class,'violation_handbook'])->name('violation_handbook');
+
 //datatables
 Route::get('/violation_records/data', function () {
-    return DataTables::of(postviolation::with(['violation', 'status']))
+    return DataTables::of(
+        postviolation::with(['violation', 'status'])
+            ->where('is_active', true)
+    )
     ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
     ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
     ->addColumn('actions', function ($data) {
         return '
             <button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>
             <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
+            <button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>
         ';
     })
-    ->rawColumns(['actions']) // important: allow HTML in "actions"
+    ->rawColumns(['actions'])
     ->filterColumn('violation', function($query, $keyword) {
         $query->whereHas('violation', function($q) use ($keyword) {
             $q->where('violations', 'like', "%{$keyword}%");

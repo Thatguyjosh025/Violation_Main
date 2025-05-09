@@ -97,60 +97,38 @@ use App\Models\users;
 
                     <!-- Student List Section -->
                     <div class="col-md-4">
-                        <div class="card card-custom p-3 mt-3">
-                            <input type="text" class="form-control mb-3" placeholder="Search Student">
+                        <div class="card card-custom p-3">
+                            <input type="text" id="search-student" class="form-control mb-3" placeholder="Search Student">
                             <div class="student-list">
-                                @foreach ($accounts as $userdata )
-                                    @if ($userdata -> role === 'student')
-                                    <div class="student-item">
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ asset('./Photos/avatar.png') }}" alt="Student">
-                                            <div class="ms-2">
-                                                <p class="mb-0 fw-bold">{{$userdata -> firstname}} {{$userdata -> lastname}}</p>
-                                                <small>{{$userdata -> student_no}}</small>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-outline-primary btn-sm view-btn-incident"
-                                        data-id="{{ $userdata->id }}"
-                                        data-name="{{ $userdata->firstname }} {{ $userdata->lastname }}"
-                                        data-email="{{ $userdata->email }}"
-                                        data-student_no="{{ $userdata->student_no }}"
-                                        data-course="{{ $userdata->course_and_section }}">
-                                        Select
-                                        </button>
-                                    </div>
-                                    @endif
-                                @endforeach
+                                <p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>
                             </div>
                         </div>
                     </div>
+
+                     
                 </div>
             </div>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
 
-$(document).ready(function () {
-    $(".view-btn-incident").on("click", function (e) {
-        e.preventDefault();
+$(document).on("click", ".select-btn", function (e) {
+    e.preventDefault();
 
-        var studentId = $(this).data("id");
-        var studentName = $(this).data("name");
-        var email = $(this).data("email");
-        var studentNo = $(this).data("student_no");
-        var course = $(this).data("course");
+    var studentId = $(this).data("id");
+    var studentName = $(this).data("name");
+    var email = $(this).data("email");
+    var studentNo = $(this).data("student_no");
+    var course = $(this).data("course");
 
-        // Populate fields and remove error styling
+    $('#displaystudentname').text(studentName);
+    $('#displaystudentno').text(studentNo);
+    $('#displaycourse').text(course);
+    $('#displayemail').text(email);
 
-        $('#displaystudentname').text(studentName);
-        $('#displaystudentno').text(studentNo);
-        $('#displaycourse').text(course);
-        $('#displayemail').text(email);
-
-        $("#incident_report_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
-        $("#incident_report_email").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
-        $("#incident_report_studentno").val(studentNo).removeClass("is-invalid").next(".invalid-feedback").remove();
-        $("#incident_report_course").val(course).removeClass("is-invalid").next(".invalid-feedback").remove();
-    });
+    $("#incident_report_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
+    $("#incident_report_email").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
+    $("#incident_report_studentno").val(studentNo).removeClass("is-invalid").next(".invalid-feedback").remove();
+    $("#incident_report_course").val(course).removeClass("is-invalid").next(".invalid-feedback").remove();
 });
 
 $(document).on("change", "#incident_report_violationType", function (e) {
@@ -305,6 +283,11 @@ $(document).ready(function () {
                     $("#severityName").text("-");
                 }
 
+                $('#displaystudentname').text('-');
+                $('#displaystudentno').text('-');
+                $('#displaycourse').text('-');
+                $('#displayemail').text('-');
+
                 Swal.fire({
                     icon: "success",
                     text: "Incident report submitted successfully!",
@@ -321,6 +304,49 @@ $(document).ready(function () {
                 console.log(xhr.responseText);
             }
         });
+    });
+
+    $('#search-student').on('keypress', function(e) {
+        const query = $(this).val().trim();
+
+        if (e.which === 13 && query) {
+            e.preventDefault(); 
+
+            $.ajax({
+                url: "/student_search",
+                method: 'GET',
+                data: { query: query },
+                success: function(response) {
+                    if (response.length === 0) {
+                        $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
+                    } else {
+                        let html = '';
+                        response.forEach(function(data) {
+                            html += `
+                                <div class="student-item">
+                                    <div class="d-flex align-items-center">
+                                        <img src="/Photos/avatar.png" alt="Student">
+                                        <div class="ms-2">
+                                            <p class="mb-0 fw-bold">Student No.</p>
+                                            <small>${data.student_no}</small>
+                                            <p>${data.firstname} ${data.lastname}</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline-primary btn-sm select-btn"
+                                        data-id="${data.id}"
+                                        data-name="${data.firstname} ${data.lastname}"
+                                        data-email="${data.email}"
+                                        data-student_no="${data.student_no}"
+                                        data-course="${data.course_and_section}">
+                                        Select
+                                    </button>
+                                </div>`;
+                        });
+                        $('.student-list').html(html);
+                    }
+                }
+            });
+        }
     });
 });
 

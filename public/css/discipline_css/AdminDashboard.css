@@ -1,4 +1,4 @@
-:root {
+    :root {
     --main-color: #2c698d;
     --second-color: #018ABD;
     --third-color: #d9edf7;
@@ -178,7 +178,6 @@ body {
 /* End of Side Bar CSS */
 
 img {
-    width: 12rem;
     height: 12rem;
     object-fit: cover;
     margin-right: 2rem;
@@ -350,4 +349,54 @@ img {
 
 .card h6 {
     font-size: 1rem;
+}
+/* Logo */
+img.sidebar-logo.full-logo{
+    margin-right: 0;
+}
+
+button#closeSidebar {
+    margin-right: 5px;
+}
+
+.sidebar-logo {
+    height: 70px;
+    transition: all 0.3s ease;
+}
+
+.full-logo {
+    display: block;
+}
+
+.icon-logo {
+    display: none;
+}
+
+.sidebar.collapsed .full-logo {
+    display: none;
+}
+
+.sidebar.collapsed .icon-logo {
+    display: block !important;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 1rem;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+}
+
+img.sidebar-logo.full-logo {
+    width: 12rem;
+    object-fit: cover;
+}
+
+img.sidebar-logo.icon-logo.d-none {
+    margin-right: 2rem;
+    height: 3rem;
 }

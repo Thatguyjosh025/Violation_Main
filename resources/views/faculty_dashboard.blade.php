@@ -20,7 +20,7 @@
                 <a class="nav-link" href="{{ url('faculty_violation') }}"><i class="bi bi-person-exclamation"></i> <span>Incident Report</span></a>
                 <a class="nav-link" href="{{ url('faculty_incident') }}"><i class="bi bi-file-earmark-bar-graph-fill"></i><span>Incident Records</span></a>
                 <a class="nav-link" href="#"><i class="bi bi-clipboard-data-fill"></i> <span>Reports and Analytics</span></a>
-                <a class="nav-link" href="#"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>  
+                <a class="nav-link" href="{{ url('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>  
             </nav>
 
             <div class="logout-container">
@@ -36,7 +36,13 @@
         </div>
 
         <div class="dashboard-content w-90">
-            @include('components.faculty_components.' . $views)
+            @if(View::exists('components.faculty_components.' . $views))
+                @include('components.faculty_components.' . $views)
+            @elseif(View::exists('components.shared.' . $views))
+                @include('components.shared.' . $views)
+            @else
+                <p>View not found.</p>
+            @endif
         </div>
 
 </body>

@@ -29,7 +29,6 @@ return new class extends Migration
             $table->foreign('violation_type')->references('violation_id')->on('tb_violation');
             $table->foreign('penalty_type')->references('penalties_id')->on('tb_penalties');
             $table->foreign('status_name')->references('status_id')->on('tb_status');
-            //$table->foreign('severity')->references('severity_id')->on('tb_severity');
 
             $table->string('rule_Name');
             $table->string('description_Name');
@@ -42,7 +41,9 @@ return new class extends Migration
             $table->string('upload_evidence')->nullable();
             $table->date('Date_Created');
             $table->date('Update_at');
+            $table->boolean('is_active')->default(true);
         });
+        
 
         Schema::create('tb_incidentreport', function (Blueprint $table) {
             $table->id();

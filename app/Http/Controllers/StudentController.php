@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\users;
 use Illuminate\Http\Request;
 use App\Models\notifications;
 use App\Models\postviolation;
@@ -16,12 +17,10 @@ class StudentController extends Controller
         $user = Auth::user();
         $student_number = $user->student_no;
     
-        // Eager load related models
         $violations = postviolation::with(['violation', 'penalty', 'referal', 'status'])
             ->where('student_no', $student_number)
             ->get();
     
-        // Map the violations to include the desired fields
         $mappedViolations = $violations->map(function ($violation) {
             return [
                 'id' => $violation->id,
@@ -71,4 +70,6 @@ public function updateAppealReason(Request $request)
     return response()->json(['success' => false, 'message' => 'Violation not found']);
 
 }
+
+
 }

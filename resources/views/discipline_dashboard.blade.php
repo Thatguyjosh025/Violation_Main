@@ -13,7 +13,10 @@
 
     <div class="sidebar" id="sidebar">
         <div class="logo">
-            <h1 class="mb-0 sidebar-title" style="color: #004581;">Central</h1>
+            <a href="{{ route('discipline_dashboard') }}" class="logo-link">
+                <img src="/Photos/central.png" alt="Central Logo" class="sidebar-logo full-logo">
+                <img src="/Photos/Central-Icon.png" alt="Central Icon" class="sidebar-logo icon-logo d-none">
+            </a>
             <button class="close-btn" id="closeSidebar"><i class="bi bi-list"></i></button>
         </div>
         <nav class="nav flex-column mt-3 flex-grow-1">
@@ -67,7 +70,7 @@
 </script>
 </body>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
-<script src="https://cdn.datatables.net/2.3.0/js/dataTables.min.js"></script>
+<script src="{{ asset('./vendor/dataTables.min.js') }}"></script>
 
 
 </html>

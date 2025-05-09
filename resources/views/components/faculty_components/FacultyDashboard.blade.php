@@ -41,17 +41,24 @@ $notif = notifications::get();
                 </div>
 
                 <div class="row mt-4">
-                    <!-- Chart Card -->
-                    <div class="col-lg-7">
-                        <div class="card p-3 shadow-sm">
-                            <h6>Overall Violation</h6>
-                            <div class="chart-container">
-                                <canvas id="violationChart"></canvas>
+                     <!-- Progress Cards and Notifications Below -->
+                     <div class="col-lg-7 mb-3">
+                        <div class="d-flex gap-3 flex-wrap">
+                            <!-- Minor Card -->
+                            <div class="custom-card flex-fill">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="card-title">Processed Violation</div>
+                                    <i class="bi bi-exclamation-circle-fill text-info fs-3"></i>
+                                </div>
+                                <div class="card-number">13</div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 30%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Empty Card -->
+                    
                     <div class="col-lg-5">
                         <div class="card shadow-sm notif">
                             <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
@@ -75,6 +82,36 @@ $notif = notifications::get();
                             @endif
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Table Contents -->
+                    <div class="col-12 mb-3">
+                    <div class="table-container">
+                        <table id="violationTable" class="table table-hover table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Student No.</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Violation</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="Student No.">02000911833</td>
+                                    <td data-label="Name">Mark Jecil M. Bausa</td>
+                                    <td data-label="Email">markjecil@gmail.com</td>
+                                    <td data-label="Violation">Cheating</td>
+                                    <td data-label="Status">
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    </td>
+                                    <td data-label="Date">03/04/25</td>
+                                </tr>
+                            </tbody>          
+                        </table>
+                    </div>
                     </div>
                 </div>
             </div>

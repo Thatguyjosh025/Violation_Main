@@ -15,9 +15,8 @@ $violationdata = violation::get();
 <div class="container mt-4">
     <!-- Violation Type Section -->
     <div class="content-section active" id="violation-type-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Violation Type</h4>
-            <button class="btn btn-add px-4 py-2" id="addViolationBtn">+ Add</button>
+        <div class="mb-3" style="display: flex; justify-content: end;">
+            <button class="btn btn-add btn-md" id="addViolationBtn">+ Add</button>
         </div>
         <div class="card-table bg-white">
             <table class="table table-hover mb-0" id="violationTable">
@@ -34,7 +33,7 @@ $violationdata = violation::get();
                         <th scope="row">{{ $data->violation_id }}</th>
                         <td contenteditable="false">{{ $data->violations }}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm edit-btn">Edit</button>
+                            <button class="btn btn-primary btn-sm edit-btn">Edit</button>
                         </td>
                     </tr>
                 @endforeach
@@ -95,15 +94,7 @@ $(document).ready(function () {
                 console.log(response.message);
 
               
-                $("#violationTable tbody").append(
-                    "<tr>" +
-                        "<th scope='row'>" + response.violation.violation_id + "</th>" +
-                        "<td contenteditable='false'>" + response.violation.violations + "</td>" +
-                        "<td>" +
-                            "<button class='edit-btn btn btn-warning btn-sm'>Edit</button>" +
-                        "</td>" +
-                    "</tr>"
-                );
+                $("#violationTable").load(location.href + " #violationTable");
 
                 $("#violations").val("");
                 $('#violationModal').modal('hide');
