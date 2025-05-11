@@ -288,6 +288,9 @@ button.btn.btn-action.w-auto:hover {
     background-color: var(--second-color);
     color: white;
 }
+.container.mt-4 {
+    max-width: 1750px;
+}
 
   
   

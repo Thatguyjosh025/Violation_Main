@@ -39,25 +39,34 @@ class AuthController extends Controller
         return redirect()->intended('/');
     }
 
-    public function login(Request $request)
-    {
+    public function login(Request $request){
         $credentials = $request->only('email', 'password');
-    
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-    
+
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-    
+
+            // Check if the user's status is inactive
+            if ($user->status == 'inactive') {
+                Auth::logout(); // Log the user out if inactive
+                return response()->json([
+                    'success' => false,
+                    'errors' => [
+                        'email' => 'Your account is inactive. Please contact support.',
+                    ]
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
                 'role' => $user->role,
             ]);
         }
-    
-        // Correct error array
+
         return response()->json([
             'success' => false,
             'errors' => [
@@ -67,6 +76,73 @@ class AuthController extends Controller
         ]);
     }
 
+    public function addUser(Request $request) {
+        $request->validate([
+            'firstname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(ma\.|Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
+            'lastname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
+            'middlename' => ['nullable', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
+            'email' => ['required','string', 'email', 'max:255', 'unique:tb_users', 'regex:/^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'student_no' => ['required', 'string', 'max:11', 'unique:tb_users', 'regex:/^(0200|1900|1800)\d{7}$/'],
+            'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?!.*\s)(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/'],
+            'role' => ['required', 'in:student,counselor,discipline,faculty,registar,super'],
+            'status' => ['in:active,inactive'],
+        ]);
+
+        users::create([
+            'firstname' => ucfirst(strtolower($request->firstname)),
+            'lastname' => ucfirst(strtolower($request->lastname)),
+            'middlename' => $request->middlename ? ucfirst(strtolower($request->middlename)) : null,
+            'email' => $request->email,
+            'student_no' => $request->student_no,
+            'course_and_section' => null, 
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'status' => 'active'
+        ]);
+
+        return response()->json(['message' => 'User added successfully.'], 200);
+    }
+
+    public function getuser(Request $request){
+        // Fetch the user by ID from the request
+        $user = users::find($request->id);
+
+        if (!$user) {
+            return response()->json(['status' => 404, 'message' => 'User not found']);
+        }
+
+        // Return the user information as a JSON response
+        return response()->json([
+            'status' => 200,
+            'data' => [
+                'id' => $user->id,
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'middlename' => $user->middlename,
+                'email' => $user->email,
+                'student_no' => $user->student_no,
+                'role' => $user->role,
+                'status' => $user->status,
+            ]
+        ]);
+    }
+
+    public function updateUser (Request $request) {
+        $user = users::find($request->id);
+
+        $validatedData = $request->validate([
+            'id' => 'required|exists:tb_users,id',
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'email' => 'required|email|unique:tb_users,email,' . $user->id,
+            'role' => 'string|max:255',
+            'status' => 'required|string|max:255',
+        ]);
+
+        $user->update($validatedData);
+        return response()->json(['status' => 200, 'message' => 'User  updated successfully']);
+    }
+    
     public function logout(Request $request) {
         Auth::logout(); 
         Session::flush(); 
@@ -76,32 +152,6 @@ class AuthController extends Controller
         return redirect('/'); // Redirect to landing page after logout
     }
 
-    public function adduser(Request $request){
-        $request->validate([
-            'firstname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(ma\.|Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
-            'lastname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
-            'middlename' => ['nullable', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
-            'email' => ['required','string', 'email', 'max:255', 'unique:tb_users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
-            'student_no' => ['required', 'string', 'max:11', 'unique:tb_users'],
-            'course_and_section' => ['required', 'string', 'max:55'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['string'],
-            'status' => ['in:active,inactive'],
-        ]);
-    
-        $adduser = users::create([
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'middlename' => $request->middlename,
-            'email' => $request->email,
-            'student_no' => $request->student_no,
-            'course_and_section' => $request->course_and_section,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'status' => 'active'
-        ]);
-    
-    }
 
 }
 
