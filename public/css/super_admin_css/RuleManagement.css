@@ -415,3 +415,6 @@ textarea {
         gap: 10px;
     }
 }
+.container.py-4 {
+    max-width: 1750px;
+}

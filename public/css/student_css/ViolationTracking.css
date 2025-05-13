@@ -209,3 +209,6 @@ textarea{
     max-height: 5.5rem;
     min-height: 3rem;
 }
+.container.mt-4 {
+    max-width: 1670px;
+}

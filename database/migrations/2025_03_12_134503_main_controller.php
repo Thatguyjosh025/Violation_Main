@@ -19,11 +19,11 @@ return new class extends Migration
             $table->string('lastname');
             $table->string('middlename')->nullable();
             $table->string('email')->unique();
-            $table->string('student_no');
+            $table->string('student_no')->unique();
             $table->string('course_and_section')->nullable();
             $table->string('password');
             $table->enum('role',['student','counselor','discipline','faculty','registar','super']);
-            $table->enum('status',['active','archive']);
+            $table->enum('status',['active','inactive']);
         });
 
         Schema::create('tb_notifications', function (Blueprint $table) {

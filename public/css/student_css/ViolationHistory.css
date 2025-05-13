@@ -225,3 +225,6 @@ body {
 .view-btn:hover {
     background-color: #c9e4f0;
 }
+.container.mt-4 {
+    max-width: 1670px;
+}

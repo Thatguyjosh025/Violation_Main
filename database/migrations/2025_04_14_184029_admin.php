@@ -61,6 +61,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('severity');
             $table->string('remarks');
+            $table->string('status');
 
             $table->string('upload_evidence')->nullable();
             $table->string('is_visible');

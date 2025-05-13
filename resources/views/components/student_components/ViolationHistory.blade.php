@@ -10,22 +10,28 @@
             </div>
 
             <div class="container mt-4">
-                @foreach ( $violationhistory as $history )
+                 @forelse ($violationhistory as $history)
                     @if ($history->student_no === Auth::user()->student_no && $history->status->status === 'Resolved')
                         <!-- Violation Card Template -->
-                        <div class="violation-card d-flex justify-content-between align-items-center">
-                            <div class="text-start">
-                                <div class="fw-bold date-text">Date: {{ $history->Date_Created }}</div>
-                                <div class="violation-details">Description: {{ $history->description_Name }}</div>
-                                <div class="status-details">Status: {{ $history->status->status }}</div>
-                            </div>
-                            <div class="text-end">
-                                <div class="fw-semibold violation-title fs-5">{{ $history->violation->violations }}</div>
-                                <button class="btn view-btn" data-bs-toggle="modal" data-bs-target="#violationModal">View</button>
+                        <div class="col">
+                            <div class="card p-3">
+                                <h5>{{ $history->violation->violations }}</h5>
+                                <p><small>Status: {{ $history->status->status }}</small></p>
+                                <p><small>Date: {{ $history->Date_Created }}</small></p>
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#violationModal"
+                                            data-violation='@json($history)'>View</button>
+                                </div>
                             </div>
                         </div>
                     @endif
-                @endforeach
+                @empty
+                    <div class="alignment" style="justify-content: center; width: 100%;">
+                        <div class="col-12 text-center mt-5" style="justify-content: center;">
+                            <p>No violation history found.</p>
+                        </div>
+                    </div>
+                @endforelse
             </div>
             
             <!-- Modal Section -->
@@ -56,3 +62,47 @@
             </div>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: '/get_violations_records',
+        method: 'GET',
+        success: function(data) {
+            let cardsContainer = $('#violation-cards');
+            cardsContainer.empty();
+
+            const resolvedViolations = data.filter(v => v.status === 'Resolved');
+
+            if (resolvedViolations.length === 0) {
+                cardsContainer.append(`
+                    <div class="alignment" style="justify-content: center; width: 100%;">
+                        <div class="col-12 text-center mt-5" style="justify-content: center;">
+                            <p>No violation history found.</p>
+                        </div>
+                    </div>
+                `);
+            } else {
+                resolvedViolations.forEach(function(violation) {
+                    let cardHtml = `
+                        <div class="col">
+                            <div class="card p-3">
+                                <h5>${violation.type}</h5>
+                                <p><small>Status: ${violation.status}</small></p>
+                                <p><small>Date: ${violation.date}</small></p>
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#appealModal"
+                                            data-violation='${JSON.stringify(violation)}'>View</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    cardsContainer.append(cardHtml);
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching violations:', error);
+        }
+    });
+});
+</script>

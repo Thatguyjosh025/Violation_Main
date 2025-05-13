@@ -83,14 +83,14 @@ $(document).ready(function () {
         $(this).find('i').toggleClass('fa-eye fa-eye-slash');
     });
 
-    var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;    
+    var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;
     var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     function capitalizeName(name) {
         return name.replace(/\b\w/g, char => char.toUpperCase());
     }
 
-    // start course and section validation
+    // Start course and section validation
     $("#course_and_section").on("input", function () {
         let val = $(this).val().toUpperCase().replace(/[^A-Z0-9]/g, "");
 
@@ -101,8 +101,7 @@ $(document).ready(function () {
         val = val.slice(0, 8); // (max 9 characters)
         $(this).val(val);
     });
-    // end course and section validation
-
+    // End course and section validation
 
     $("#registerModal form").submit(function (e) {
         e.preventDefault(); // Prevent default form submission
@@ -150,7 +149,7 @@ $(document).ready(function () {
         var password = $("#userPassword").val();
         var confirmPassword = $("#password_confirmation").val();
 
-        if (password !== confirmPassword) {
+        if (password !== confirmPassword) { 
             $("#password_confirmation").addClass("is-invalid").after('<div class="invalid-feedback">Passwords do not match.</div>');
             $('#toggleConfirmPassword').hide();
             isValid = false;
@@ -169,7 +168,7 @@ $(document).ready(function () {
 
         var passwordRegex = /^(?!.*\s)(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
         if (!passwordRegex.test(password)) {
-            $("#userPassword").addClass("is-invalid").next(".invalid-feedback").remove(); 
+            $("#userPassword").addClass("is-invalid").next(".invalid-feedback").remove();
             $("#userPassword").after('<div class="invalid-feedback">Password must be at least 8 characters long, include at least one uppercase letter, one number, one special character, and should not contain spaces.</div>');
             $('#toggleUserPassword').hide();
             isValid = false;
@@ -183,7 +182,7 @@ $(document).ready(function () {
 
         // Send the form data via AJAX
         $.ajax({
-            url: "/register",
+            url: form.attr("action"),
             type: "POST",
             data: form.serialize(),
             success: function () {
@@ -193,8 +192,9 @@ $(document).ready(function () {
                     timer: 3000
                 });
 
-                $("#registerModal form")[0].reset();
-                $("#registerModal").modal("hide");
+                form[0].reset();
+                $(".form-control").removeClass("is-invalid").next(".invalid-feedback").remove();
+                $('#toggleUserPassword, #toggleConfirmPassword').show();
             },
             error: function (xhr) {
                 var response = xhr.responseJSON.errors;

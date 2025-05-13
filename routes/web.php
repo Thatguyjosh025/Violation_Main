@@ -24,7 +24,8 @@ Route::get('/', function () {
 
 
 //Auth Routes
-Route::post('/register',[AuthController::class,'register']);    
+Route::post('/register',[AuthController::class,'register']);
+Route::post('/add_user',[AuthController::class,'addUser']);
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/logout',[AuthController::class,'logout']);
 
@@ -74,6 +75,7 @@ Route::post('/update_rule/{id}', [SuperController::class, 'updateRule'])->middle
 Route::post('/update_referral/{id}', [SuperController::class, 'updateReferral'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
 Route::post('/incident_rejected', [AdminController::class, 'UpdateRejected']);
 Route::post('/violation_records/{id}', [AdminController::class, 'archive'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline']);
+Route::post('/update_user', [AuthController::class, 'updateUser']);
 
 
 //get routes
@@ -86,6 +88,8 @@ Route::get('/get_status', [DataController::class, 'getStatus']);
 Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
 Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
 Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
+Route::get('/get_user_info', [AuthController::class, 'getuser']);
+
 
 
 //students
