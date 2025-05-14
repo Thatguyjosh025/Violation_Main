@@ -46,32 +46,77 @@ class AdminController extends Controller
     return response()->json($violations);
 }
 
-    public function postviolation(Request $request){
-        $request->validate([
-            'student_no' => 'required|string',
-            'student_name' => 'required|string',
-            'course' => 'required|string',
-            'school_email' => 'required|string',
-            'violation_type' => 'required|integer',
-            'penalty_type' => 'required|integer',
-            'severity_Name' => 'required|string',
-            'rule_Name' => 'required|string',
-            'description_Name' => 'required|string',
-            'faculty_involvement' => 'required|string',
-            'counseling_required' => 'required|string',
-            'faculty_name' => 'required|string',
-            'referal_type' => 'required|string',
-            'Remarks' => 'required|string|max:500',
-            'appeal' => 'required|string|max:500',
-            'upload_evidence' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048'
+    public function postviolation(Request $request) {
+    $request->validate([
+        'student_no' => 'required|string',
+        'student_name' => 'required|string',
+        'course' => 'required|string',
+        'school_email' => 'required|string',
+        'violation_type' => 'required|integer',
+        'penalty_type' => 'required|integer',
+        'severity_Name' => 'required|string',
+        'rule_Name' => 'required|string',
+        'description_Name' => 'required|string',
+        'faculty_involvement' => 'required|string',
+        'counseling_required' => 'required|string',
+        'faculty_name' => 'required|string',
+        'referal_type' => 'required|string',
+        'Remarks' => 'required|string|max:500',
+        'appeal' => 'required|string|max:500',
+        'upload_evidence' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048'
+    ]);
+
+    if ($request->hasFile('upload_evidence')) {
+        $evidencePath = $request->file('upload_evidence')->store('evidence', 'public');
+    } else {
+        $evidencePath = null;
+    }
+
+    if ($request->filled('incident_id')) {
+        // Logic for the second AJAX request
+        $create = postviolation::create([
+            'student_no' => $request->student_no,
+            'student_name' => $request->student_name,
+            'course' => $request->course,
+            'school_email' => $request->school_email,
+            'violation_type' => $request->violation_type,
+            'penalty_type' => $request->penalty_type,
+            'severity_Name' => $request->severity_Name,
+            'status_name' => 2,
+            'rule_Name' => $request->rule_Name,
+            'description_Name' => $request->description_Name,
+            'faculty_involvement' => $request->faculty_involvement,
+            'counseling_required' => $request->counseling_required,
+            'faculty_name' => $request->faculty_name,
+            'referal_type' => $request->referal_type,
+            'Remarks' => $request->Remarks,
+            'Notes' => null,
+            'appeal' => $request->appeal,
+            'upload_evidence' => $evidencePath,
+            'Date_Created' => Carbon::now('Asia/Manila'),
+            'Update_at' => Carbon::now('Asia/Manila'),
+            'is_active' => true
         ]);
-    
-        if ($request->hasFile('upload_evidence')) {
-            $evidencePath = $request->file('upload_evidence')->store('evidence', 'public');
-        } else {
-            $evidencePath = null;
+
+        $incident = incident::find($request->incident_id);
+        if ($incident) {
+            
+            $incident->update(['is_visible' => 'approve']);
+
+            $notif = notifications::create([
+                'title' => 'Incident Approval',
+                'message' => 'Your Incident Report has been approve',
+                'role' => 'faculty',
+                'student_no' => null,
+                'type' => 'approve',
+                'date_created' => Carbon::now()->format('Y-m-d'),
+                'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+            ]);
+
+            return response()->json(['message' => 'Updated']);
         }
-    
+    } else {
+        // Logic for the first AJAX request
         $create = postviolation::create([
             'student_no' => $request->student_no,
             'student_name' => $request->student_name,
@@ -95,54 +140,35 @@ class AdminController extends Controller
             'Update_at' => Carbon::now('Asia/Manila'),
             'is_active' => true
         ]);
-
-        //notification handler
-        $notif = notifications::create([
-            'title' => 'New Active Violation',
-            'message' => 'A new violation has been assigned to you',
-            'role' => 'student',
-            'student_no' => $request->student_no,
-            'type' => 'posted',
-            'date_created' => Carbon::now()->format('Y-m-d'),
-            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
-        ]);
-
-    
-        $create->load('referal', 'violation', 'penalty', 'status');
-
-        // incident report update contoller Check if the incident_id is provided
-        if ($request->filled('incident_id')) { 
-            $incident = incident::find($request->incident_id); //then this line finds if the id input is matched in the other table
-            if ($incident) {
-                $incident->update(['is_visible' => 'approve']);
-
-                $notif = notifications::create([
-                    'title' => 'Incident Approval',
-                    'message' => 'Your Incident Report has been approve',
-                    'role' => 'faculty',
-                    'student_no' => null,
-                    'type' => 'approve',
-                    'date_created' => Carbon::now()->format('Y-m-d'),
-                    'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
-                ]);
-            
-                return response()->json(['message' => 'Updated']);
-            }
-        }
-    
-        return response()->json([
-            'postviolation' => [
-                'student_no' => $create->student_no,
-                'student_name' => $create->student_name,
-                'school_email' => $create->school_email,
-                'violation_name' => $create->violation->violations, 
-                'status_name' => $create->status->status,
-                'Date_Created' => $create->Date_Created->format('y-m-d')
-            ],
-            'message' => 'test',
-            'related_id' => $create->id
-        ]);
     }
+
+    //notification handler
+    $notif = notifications::create([
+        'title' => 'New Active Violation',
+        'message' => 'A new violation has been assigned to you',
+        'role' => 'student',
+        'student_no' => $request->student_no,
+        'type' => 'posted',
+        'date_created' => Carbon::now()->format('Y-m-d'),
+        'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+    ]);
+
+    $create->load('referal', 'violation', 'penalty', 'status');
+
+    return response()->json([
+        'postviolation' => [
+            'student_no' => $create->student_no,
+            'student_name' => $create->student_name,
+            'school_email' => $create->school_email,
+            'violation_name' => $create->violation->violations,
+            'status_name' => $create->status->status,
+            'Date_Created' => $create->Date_Created->format('y-m-d')
+        ],
+        'message' => 'test',
+        'related_id' => $create->id
+    ]);
+}
+
 
     //view student info
     public function getStudentInfo(Request $request){

@@ -42,6 +42,7 @@ class FacultyController extends Controller
             'description' => $request->description,
             'severity' => $request->severity,
             'remarks' => $request->remarks,
+            'status' => 'Pending',
             'upload_evidence' => $evidencePath,
             'is_visible' => 'show',
             'Date_Created' => Carbon::now()

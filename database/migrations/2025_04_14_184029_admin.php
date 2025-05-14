@@ -44,7 +44,6 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
         });
         
-
         Schema::create('tb_incidentreport', function (Blueprint $table) {
             $table->id();
 
@@ -69,6 +68,7 @@ return new class extends Migration
 
 
         });
+
     }
 
     /**

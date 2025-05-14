@@ -415,7 +415,7 @@ $(document).ready(function() {
     }
 
     $('.btn-update').on('click', function() {
-        var userId = $('#edituser #userid').val(); // Getting the user ID from the hidden input field cause this fucking coding sucks and this is the best logic i can make
+        var userId = $('#edituser #userid').val(); //Getting the user ID from the hidden input field cause this fucking coding sucks and this is the best logic i can make
         updateuserdata(userId);
     });
 

@@ -1,8 +1,12 @@
 <link rel="stylesheet" href="{{ asset('./css/faculty_css/FacultyDashboard.css') }}">
 @php
 use App\Models\notifications;
+use App\Models\incident;
 
+$reports = incident::get();
 $notif = notifications::get();
+$name = Auth::user()->firstname . " " . Auth::user()->lastname;
+
 @endphp
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -68,7 +72,7 @@ $notif = notifications::get();
                                     You have no notifications.
                                 </div>
                             @else
-                                @foreach ($notif->where('role', 'facu   lty')->where('is_read', 0) as $notifdata)
+                                @foreach ($notif->where('role', 'faculty')->where('is_read', 0) as $notifdata)
                                     <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1">{{ $notifdata->title }}</h6>
@@ -99,16 +103,26 @@ $notif = notifications::get();
                                 </tr>
                             </thead>
                             <tbody>
+                           @if ($reports->where('faculty_name', $name)->isEmpty())
                                 <tr>
-                                    <td data-label="Student No.">02000911833</td>
-                                    <td data-label="Name">Mark Jecil M. Bausa</td>
-                                    <td data-label="Email">markjecil@gmail.com</td>
-                                    <td data-label="Violation">Cheating</td>
-                                    <td data-label="Status">
-                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    <td colspan="6" class="text-center py-4 text-muted">
+                                        No Incident Reports
                                     </td>
-                                    <td data-label="Date">03/04/25</td>
                                 </tr>
+                            @else
+                                @foreach ($reports->where('faculty_name', $name) as $report)
+                                    <tr>
+                                        <td data-label="Student No.">{{ $report->student_no }}</td>
+                                        <td data-label="Name">{{ $report->student_name }}</td>
+                                        <td data-label="Email">{{ $report->school_email }}</td>
+                                        <td data-label="Violation">{{ $report->violation->violations }}</td>
+                                        <td data-label="Status">
+                                            <span class="badge bg-warning text-dark">{{ $report->status }}</span>
+                                        </td>
+                                        <td data-label="Date">{{ $report->Date_Created }}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
                             </tbody>          
                         </table>
                     </div>
