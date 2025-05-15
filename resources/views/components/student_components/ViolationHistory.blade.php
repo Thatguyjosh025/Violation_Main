@@ -3,6 +3,10 @@
  use App\Models\postviolation;
 
  $violationhistory = postviolation::get();
+
+  $filteredHistory = $violationhistory->filter(function ($history) {
+        return $history->student_no === Auth::user()->student_no && $history->status->status === 'Resolved';
+    });
 @endphp
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -10,28 +14,28 @@
             </div>
 
             <div class="container mt-4">
-                 @forelse ($violationhistory as $history)
-                    @if ($history->student_no === Auth::user()->student_no && $history->status->status === 'Resolved')
-                        <!-- Violation Card Template -->
-                        <div class="col">
-                            <div class="card p-3">
-                                <h5>{{ $history->violation->violations }}</h5>
-                                <p><small>Status: {{ $history->status->status }}</small></p>
-                                <p><small>Date: {{ $history->Date_Created }}</small></p>
-                                <div class="d-grid gap-2 d-md-flex">
-                                    <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#violationModal"
-                                            data-violation='@json($history)'>View</button>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                @empty
+                @if ($filteredHistory->isEmpty())
                     <div class="alignment" style="justify-content: center; width: 100%;">
                         <div class="col-12 text-center mt-5" style="justify-content: center;">
                             <p>No violation history found.</p>
                         </div>
                     </div>
-                @endforelse
+                @else
+                    @foreach ($filteredHistory as $history)
+                        <!-- Violation Card Template -->
+                        <div class="col">
+                            <div class="card p-3" style="background: #2c698d; color: white;">
+                                <h5>{{ $history->violation->violations }}</h5>
+                                <p>Status: {{ $history->status->status }}</p>
+                                <p>Date: {{ $history->Date_Created }}</p>
+                                <div class="d-grid gap-2 d-md-flex" >
+                                    <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#violationModal"
+                                            data-violation='@json($history)'>View</button>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
             </div>
             
             <!-- Modal Section -->
@@ -60,6 +64,7 @@
                     </div>
                 </div>
             </div>
+
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>

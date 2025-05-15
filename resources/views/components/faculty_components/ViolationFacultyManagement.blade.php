@@ -28,15 +28,15 @@ use App\Models\users;
 
                                     <label class="form-label fw-bold">Student name:</label>
                                     <p id="displaystudentname" class="mt-1 ms-1">-</p>
-                                    <input type="hidden" class="form-control" id="incident_report_name" name="student_name"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                                    <input type="text" class="form-control" id="incident_report_name" name="student_name"  pattern="[A-Za-z]+" title="Only letters are allowed" style="display: none;" readonly required>
                                   
                                     <label class="form-label fw-bold">Student No.</label>
                                     <p id="displaystudentno" class="mt-1 ms-1">-</p>
-                                    <input type="hidden" class="form-control" id="incident_report_studentno" name="student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                                    <input type="text" class="form-control" id="incident_report_studentno" name="student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" style="display: none;" readonly required>
                                 
                                     <label class="form-label  fw-bold ">Course and section</label>
                                     <p id="displaycourse" class="mt-1 ms-1">-</p>
-                                    <input type="hidden" class="form-control" id="incident_report_course" name="course_section"  pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
+                                    <input type="text" class="form-control" id="incident_report_course" name="course_section"  pattern="[A-Za-z]+" title="Only letters are allowed" style="display: none;" readonly required>
 
                                     <label class="form-label  fw-bold ">School email</label>
                                     <p id="displayemail" class="mt-1 ms-1">-</p>

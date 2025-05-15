@@ -5,7 +5,10 @@ use App\Models\incident;
 
 $reports = incident::get();
 $notif = notifications::get();
+
+
 $name = Auth::user()->firstname . " " . Auth::user()->lastname;
+$filteredReports = $reports->where('faculty_name', $name)->where('is_visible', '!=', 'reject');
 
 @endphp
 <div class="d-flex align-items-center">
@@ -103,14 +106,14 @@ $name = Auth::user()->firstname . " " . Auth::user()->lastname;
                                 </tr>
                             </thead>
                             <tbody>
-                           @if ($reports->where('faculty_name', $name)->isEmpty())
+                            @if ($filteredReports->isEmpty())
                                 <tr>
                                     <td colspan="6" class="text-center py-4 text-muted">
-                                        No Incident Reports
+                                        No active Incident Reports
                                     </td>
                                 </tr>
                             @else
-                                @foreach ($reports->where('faculty_name', $name) as $report)
+                                @foreach ($filteredReports as $report)
                                     <tr>
                                         <td data-label="Student No.">{{ $report->student_no }}</td>
                                         <td data-label="Name">{{ $report->student_name }}</td>

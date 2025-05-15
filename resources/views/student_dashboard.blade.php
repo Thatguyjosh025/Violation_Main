@@ -36,13 +36,12 @@
             @include('components.student_components.' . $views)
         </div>
 
-
 </body>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./js/student_js/StudentDashboard.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  function logout() {
+   function logout() {
     Swal.fire({
         title: "Are you sure you want to logout?",
         icon: "warning",
@@ -54,35 +53,38 @@
         if (result.isConfirmed) {
             $('#logout-link').addClass('disabled').css('pointer-events', 'none');
 
+            // Clear the active link from localStorage
+            localStorage.removeItem('activeSidebarLink');
+
             $('#logout-form').submit();
 
             setTimeout(function() {
-                window.location.href = "{{ url('login') }}"; 
-            }, 2000); 
+                window.location.href = "{{ url('login') }}";
+            }, 2000);
         }
     });
 }
 
 $(document).ready(function () {
         $('.nav-link').on('click', function (e) {
-            // Optional: Prevent default only if you're using AJAX navigation
-            // e.preventDefault();
 
-            // Remove 'active' class from all links
             $('.nav-link').removeClass('active');
 
-            // Add 'active' class to the clicked link
             $(this).addClass('active');
 
-            // Optional: Save to localStorage so it persists on reload (if not using AJAX routing)
+            // this motherfucking localstorage api in jquery allows to save data in the browser
+            // then it defaults to highlighting the Dashboard link since it always removes the last activity save by it. 
             localStorage.setItem('activeSidebarLink', $(this).attr('href'));
         });
 
-        // Optional: On page load, set the previously active link (if using localStorage)
         var activeLink = localStorage.getItem('activeSidebarLink');
         if (activeLink) {
             $('.nav-link').removeClass('active');
             $('.nav-link[href="' + activeLink + '"]').addClass('active');
+        } else {
+            // Set the Dashboard link as the default active link
+            $('.nav-link').removeClass('active');
+            $('.nav-link[href="' + "{{ url('student_dashboard') }}" + '"]').addClass('active');
         }
     });
 </script>

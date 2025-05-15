@@ -101,7 +101,7 @@ class AdminController extends Controller
         $incident = incident::find($request->incident_id);
         if ($incident) {
             
-            $incident->update(['is_visible' => 'approve']);
+            $incident->delete();
 
             $notif = notifications::create([
                 'title' => 'Incident Approval',
@@ -209,12 +209,15 @@ class AdminController extends Controller
         ]);
     }
 
-    public function updateStudentInfo(Request $request, $id){
-    $student = postviolation::find($id);
-    
+    public function updateStudentInfo(Request $request, $id)
+{
+    $student = postviolation::with('status')->find($id);
+
     if (!$student) {
         return response()->json(['status' => 500, 'message' => 'Student not found']);
     }
+
+    $oldStatus = $student->status_name; // Store the old status
 
     $student->update([
         'student_no' => $request->update_student_no,
@@ -236,8 +239,24 @@ class AdminController extends Controller
         'Update_at' => Carbon::now('Asia/Manila')
     ]);
 
-        return response()->json(['status' => 200, 'message' => 'Student information updated successfully']);
+    // Check if the status has changed
+     if ($oldStatus != $request->update_status) {
+        // Use the eager loaded status to get the status name
+        $statusName = $student->status->status; // Assuming the status name is stored in the 'name' column
+
+        $notif = notifications::create([
+            'title' => 'Violation Status Update',
+            'message' => 'Your violation has been escalated to ' . $statusName,
+            'role' => 'faculty',
+            'student_no' => $request->update_student_no,
+            'type' => 'approve',
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+        ]);
     }
+
+    return response()->json(['status' => 200, 'message' => 'Student information updated successfully']);
+}
 
 
 // View incident report info

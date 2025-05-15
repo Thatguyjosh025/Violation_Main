@@ -129,7 +129,7 @@ $reports = incident::get();
             <!-- Modal Violation Process (Write) -->
             <div class="modal fade" id="violationProcess" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content" style="background-color: #77abc9; color: white; padding: 15px; border-radius: 10px;">
+                    <div class="modal-content" style="background-color: white; color: black; padding: 15px; border-radius: 10px;">
                         <div class="modal-header border-0">
                             <h4 class="modal-title fw-bold" id="violationModalLabel">Violation Process</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-bs-theme="dark"></button>
