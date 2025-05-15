@@ -22,6 +22,7 @@ class incident extends Model
         'severity',
         'remarks',
         'upload_evidence',
+        'status',
         'is_visible',
         'Date_Created'
     ];

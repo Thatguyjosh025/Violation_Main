@@ -101,6 +101,8 @@ Route::post('/update_notification_status', [NotificationController::class, 'upda
 
 //handbookview
 Route::get('/violation_handbook',[ViewController::class,'violation_handbook'])->name('violation_handbook');
+Route::get('/violation_handbook',[ViewController::class,'disicipline_handbook'])->name('violation_handbook');
+
 
 //datatables
 Route::get('/violation_records/data', function () {

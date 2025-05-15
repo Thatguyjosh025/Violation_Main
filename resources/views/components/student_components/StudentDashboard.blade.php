@@ -3,6 +3,9 @@
  use App\Models\notifications;
 
  $notif = notifications::get();
+
+ $studentNotifs = $notif->where('student_no', Auth::user()->student_no)->where('is_read', 0);
+
  @endphp
  <div class="d-flex align-items-center">
         <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -82,10 +85,6 @@
             <div class="card shadow-sm notif" id="notif-container">
               <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
               <div class="notif-scrollable">
-                  @php
-                      $studentNotifs = $notif->where('student_no', Auth::user()->student_no)->where('is_read', 0);
-                  @endphp
-
                   @if ($studentNotifs->isEmpty())
                       <div class="text-center py-4 text-muted">
                           You have no notifications.
@@ -114,24 +113,31 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
 $(document).ready(function() {
-    $('.btn-close').on('click', function() {
-        // Get the notification ID (you can pass it using a data attribute or through other means)
-        var notifId = $(this).closest('.notification-card').data('notif-id');
+    $('#notif-container').on('click', '.btn-close', function() {
+        var self = this;
+        var notifId = $(self).closest('.notification-card').data('notif-id');
 
-        // Make an AJAX request to update the status
         $.ajax({
-            url: '/update_notification_status',  
+            url: '/update_notification_status',
             type: 'POST',
             data: {
-                notification_id: notifId,   
-                _token: '{{ csrf_token() }}',  
+                notification_id: notifId,
+                _token: '{{ csrf_token() }}',
             },
             success: function(response) {
                 if (response.success) {
-                    console.log('Notification removed');
-                    $(this).closest('.notification-card').fadeOut();
-                    
-                    $("#notif-container").load(window.location.href + " #notif-container > *");
+                    console.log('Notification marked as read');
+
+                    // Fade out and remove the notification card
+                    $(self).closest('.notification-card').fadeOut(300, function() {
+                        $(this).remove();
+
+                        // Check if there are any notifications left
+                        if ($('.notification-card').length === 0) {
+                            // If no notifications left, show the "no notifications" message
+                            $('.notif-scrollable').html('<div class="text-center py-4 text-muted">You have no notifications.</div>');
+                        }
+                    });
                 }
             },
             error: function(xhr, status, error) {

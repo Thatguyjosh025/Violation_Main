@@ -71,6 +71,9 @@ class ViewController extends Controller
     {
         return view('discipline_dashboard', ['views' => 'ViolationRecords']);
     }
+    public function disicipline_handbook(){
+        return view('discipline_dashboard',['views' =>'Handbook']);
+    }
 
     //faculty components
     public function faculty_dashboard()

@@ -127,7 +127,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function updateUser (Request $request) {
+    public function updateUser(Request $request) {
         $user = users::find($request->id);
 
         $validatedData = $request->validate([

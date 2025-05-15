@@ -25,7 +25,7 @@
             <a class="nav-link" href="{{ route('incident_report') }}"><i class='bx bxs-report'></i> <span>Incident Report</span></a>
             <a class="nav-link" href="{{ route('violation_records') }}"><i class="bi bi-people"></i> <span>Violation Record</span></a>
             <a class="nav-link" href="#"><i class="bi bi-clipboard-data-fill"></i> <span>Reports and Analytics</span></a>
-            <a class="nav-link" href="#"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
+            <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
         </nav>
         
     <div class="logout-container">
@@ -40,7 +40,13 @@
     </div>
 
     <div class="dashboard-content w-90">
-        @include('components.discipline_components.' . $views)
+        @if(View::exists('components.discipline_components.' . $views))
+            @include('components.discipline_components.' . $views)
+        @elseif(View::exists('components.shared.' . $views))
+            @include('components.shared.' . $views)
+        @else
+            <p>View not found.</p>
+        @endif
     </div>
 
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
@@ -67,6 +73,24 @@
         }
     });
 }
+
+    $(document).ready(function () {
+            $('.nav-link').on('click', function (e) {
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
+                localStorage.setItem('activeSidebarLink', $(this).attr('href'));
+            });
+
+            var activeLink = localStorage.getItem('activeSidebarLink');
+            if (activeLink) {
+                $('.nav-link').removeClass('active');
+                $('.nav-link[href="' + activeLink + '"]').addClass('active');
+            } else {
+                // Set the Dashboard link as the default active link
+                $('.nav-link').removeClass('active');
+                $('.nav-link[href="' + "{{ url('discipline_dashboard') }}" + '"]').addClass('active');
+            }
+        });
 </script>
 </body>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>

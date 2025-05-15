@@ -132,7 +132,7 @@ $userdata = users::get();
             <div class="modal-body">
                 <form id="editForm" action="{{ url('update_user') }}" method="POST">
                     @csrf
-                    <input type="text" id="userid">
+                    <input type="hidden" id="userid">
                     <div class="mb-3">
                         <label for="firstname" class="form-label">First Name:</label>
                         <input type="text" class="form-control" id="firstname" name="firstname">
@@ -415,7 +415,7 @@ $(document).ready(function() {
     }
 
     $('.btn-update').on('click', function() {
-        var userId = $('#edituser #userid').val(); // Getting the user ID from the hidden input field cause this fucking coding sucks and this is the best logic i can make
+        var userId = $('#edituser #userid').val(); //Getting the user ID from the hidden input field cause this fucking coding sucks and this is the best logic i can make
         updateuserdata(userId);
     });
 
