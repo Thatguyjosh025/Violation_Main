@@ -15,7 +15,7 @@ use App\Models\users;
             <div class="modal-content" style="background-color:rgb(255, 255, 255); color: white; padding: 20px; border-radius: 10px;">
                 <div class="modal-header border-0">
                   <h4 class="modal-title fw-bold text text-dark" id="violationModalLabel">Violation Process</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-bs-theme="dark"></button>
+                <button type="button" class="btn-close" id="close-btn" data-bs-dismiss="modal" aria-label="Close" data-bs-theme="dark"></button>
                 </div>
                 <div class="modal-body">
                     <form action="" method="POST" id="postviolationForm">

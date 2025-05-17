@@ -46,6 +46,7 @@ class AdminController extends Controller
     return response()->json($violations);
 }
 
+    //submit violation
     public function postviolation(Request $request) {
     $request->validate([
         'student_no' => 'required|string',
@@ -116,7 +117,7 @@ class AdminController extends Controller
             return response()->json(['message' => 'Updated']);
         }
     } else {
-        // Logic for the first AJAX request
+        // Logic for the first post ajax request
         $create = postviolation::create([
             'student_no' => $request->student_no,
             'student_name' => $request->student_name,
@@ -125,7 +126,7 @@ class AdminController extends Controller
             'violation_type' => $request->violation_type,
             'penalty_type' => $request->penalty_type,
             'severity_Name' => $request->severity_Name,
-            'status_name' => 1,
+            'status_name' => 2,
             'rule_Name' => $request->rule_Name,
             'description_Name' => $request->description_Name,
             'faculty_involvement' => $request->faculty_involvement,
