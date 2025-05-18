@@ -45,7 +45,7 @@
       <div class="home-text">
           <span>Welcome To</span>
           <h1>CENTRAL</h1>
-          <h2>STI College Alabang Incident Reporting Portal</h2>
+          <h2>STI College Alabang Violation Monitoring Portal</h2>
           <h2 class="tagline" style="font-size: 1.2em; color: #004581; margin-top: 10px; margin-bottom: 20px;">Your Voice Matters: Report Incidents for a Safer and More Responsible Campus Community</h2>
           <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal">Log In</button>
       </div>

@@ -91,9 +91,13 @@ $(document).ready(function(){
         ["#ruleName", "#descriptionName", "#severityName"].forEach(sel => $(sel).text("-"));
 
         // Remove is-invalid classes and error messages from all form fields
-        $("#violation_type, #referal_type, #penalty_type, #remarks, input[name='faculty_involvement'], input[name='counseling_required'], #uploadEvidence").removeClass("is-invalid");
+        $("#violation_type, #referal_type, #penalty_type, #remarks, input[name='faculty_involvement'], input[name='counseling_required'], #uploadEvidence, #facultyName").removeClass("is-invalid");
         $(".invalid-feedback").remove();
+
+        $("#facultyLabel").hide();
+        $('#facultyName').hide().val('');
     });
+
 
     $('#uploadEvidence').attr('accept', '.pdf,.jpg,.jpeg,.png,.docx');
 
@@ -237,6 +241,14 @@ $(document).ready(function(){
             $(this).closest('.form-check').find(".invalid-feedback").remove();
         }
     });
+
+    // Remove validation error for faculty name dropdown
+    $("#facultyName").on("change", function () {
+        if ($(this).val() !== "") {
+            $(this).removeClass("is-invalid");
+            $(this).next(".invalid-feedback").remove();
+        }
+    });
     
     // Submit violation form
     $("#submit_violation").click(function (e) {
@@ -245,7 +257,7 @@ $(document).ready(function(){
 
        // Remove existing error messages
         $(".invalid-feedback").remove();
-        $("#violation_type, #referal_type, #penalty_type, #remarks, input[name='faculty_involvement'], input[name='counseling_required']").removeClass("is-invalid");
+        $("#violation_type, #referal_type, #penalty_type, #facultyName, #remarks, input[name='faculty_involvement'], input[name='counseling_required']").removeClass("is-invalid");
 
         // Validate form fields
         const fieldsToValidate = [
@@ -274,6 +286,13 @@ $(document).ready(function(){
                 isValid = false;
             }
         });
+
+
+        // Validate the Faculty Name dropdown if it is visible
+        if ($("#facultyName").is(":visible") && !$("#facultyName").val()) {
+            $("#facultyName").addClass("is-invalid").after('<div class="invalid-feedback">Please select a faculty name.</div>');
+            isValid = false;
+        }
 
        // Validate file upload
         const fileUpload = $('#uploadEvidence')[0];
