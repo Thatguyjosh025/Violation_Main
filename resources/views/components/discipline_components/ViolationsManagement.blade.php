@@ -99,6 +99,7 @@ $(document).ready(function(){
     });
 
 
+    //file upload validations
     $('#uploadEvidence').attr('accept', '.pdf,.jpg,.jpeg,.png,.docx');
 
      $('#uploadEvidence').change(function() {

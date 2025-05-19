@@ -170,6 +170,27 @@ $(document).ready(function () {
         if ($(this).val()) {
             $(this).removeClass("is-invalid");
             $(this).next(".invalid-feedback").remove();
+        }   
+    });
+
+    $('#uploadEvidence').attr('accept', '.pdf,.jpg,.jpeg,.png,.docx');
+
+     $('#uploadEvidence').change(function() {
+        var file = this.files[0];
+        var maxSize = 2 * 1024 * 1024; // 2MB in bytes
+
+        // Remove any existing error message
+        $(this).next('.invalid-feedback').remove();
+        $(this).removeClass('is-invalid');
+
+        if (file) {
+            if (file.size > maxSize) {
+                $(this).addClass('is-invalid');
+                $(this).after('<div class="invalid-feedback">File size must be less than 2MB.</div>');
+            }
+        } else {
+            $(this).addClass('is-invalid');
+            $(this).after('<div class="invalid-feedback">Please select a file.</div>');
         }
     });
 
