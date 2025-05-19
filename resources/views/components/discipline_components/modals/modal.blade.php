@@ -1,13 +1,14 @@
 @php
-use App\Models\users;
- use App\Models\violation;
- use App\Models\referals;
- use App\Models\penalties;
+  use App\Models\users;
+  use App\Models\violation;
+  use App\Models\referals;
+  use App\Models\penalties;
 
- $accounts = users::get();
- $violate = violation::get();
- $ref = referals::get();
- $pen = penalties::get();
+  $accounts = users::get();
+  $violate = violation::get();
+  $ref = referals::get();
+  $pen = penalties::get();
+  $facultyUsers = users::where('role', 'faculty')->get();
 @endphp
 <!-- Violation Process Form Modal -->
 <div class="modal fade" id="violationModal" tabindex="-1" aria-labelledby="violationModalLabel" aria-hidden="true">
@@ -15,7 +16,7 @@ use App\Models\users;
             <div class="modal-content" style="background-color:rgb(255, 255, 255); color: white; padding: 20px; border-radius: 10px;">
                 <div class="modal-header border-0">
                   <h4 class="modal-title fw-bold text text-dark" id="violationModalLabel">Violation Process</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-bs-theme="dark"></button>
+                <button type="button" class="btn-close" id="close-btn" data-bs-dismiss="modal" aria-label="Close" data-bs-theme="dark"></button>
                 </div>
                 <div class="modal-body">
                     <form action="" method="POST" id="postviolationForm">
@@ -101,7 +102,15 @@ use App\Models\users;
                     </div>
 
                         <!-- faculty involvement name -->
-                        <input type="text" name="faculty_name" id="facultyName" class="form-control mt-2 text text-dark" style="display: none;">
+                        <!-- <input type="text" name="faculty_name" id="facultyName" class="form-control mt-2 text text-dark" style="display: none;"> -->
+                        <select class="form-select mt-2" name="faculty_name" id="facultyName" style="display: none;">
+                            <option value="">Select Faculty</option>
+                            @foreach ($facultyUsers as $faculty)
+                                <option value="{{ $faculty->firstname }} {{ $faculty->lastname }}">
+                                    {{ $faculty->firstname }} {{ $faculty->lastname }}
+                                </option>
+                            @endforeach
+                        </select>
     
                         <!-- Remarks-->
                         <div class="form-group mt-3">
@@ -293,10 +302,18 @@ use App\Models\users;
             </div> 
             <div class="form-check">
                 <input class="form-check-input" type="radio" id="edit_faculty_no" name="edit_faculty_involvement" value="No" checked>
-                <label class="form-check-label" for="faculty_no">No</label>
+                <label class="form-check-label" for="faculty_no">No</label>   
             </div>
             <label for="" id="editfacultyLabel" style="display: none;"></label>
-            <input type="text" name="edit_faculty_name" id="edit_faculty_Name" class="form-control mt-2" style="display: none;">
+            <!-- <input type="text" name="edit_faculty_name" id="edit_faculty_Name" class="form-control mt-2" style="display: none;"> -->
+            <select class="form-select mt-2" name="edit_faculty_name" id="edit_faculty_Name" style="display: none;">
+                <option value="">Select Faculty</option>
+                @foreach ($facultyUsers as $faculty)
+                    <option value="{{ $faculty->firstname }} {{ $faculty->lastname }}">
+                        {{ $faculty->firstname }} {{ $faculty->lastname }}
+                    </option>
+                @endforeach
+            </select>
           </div>
 
           <div class="mb-3">
@@ -313,7 +330,7 @@ use App\Models\users;
 
           <div class="mb-3">
             <label for="edit_referal_type" class="form-label">Referral Type</label>
-            <select id="edit_referal_type" class="form-control" name="update_referral_type"></select>
+            <select id="edit_referal_type" class="form-select" name="update_referral_type"></select>
           </div>
 
           <div class="mb-3">
@@ -611,55 +628,89 @@ $(document).on('click', '.btn-edit-post', function(){
         $('#editStudentModal').modal('show');
 });
 
+// Remove validation error for faculty name dropdown
+  $("#edit_faculty_Name").on("change", function () {
+      if ($(this).val() !== "") {
+          $(this).removeClass("is-invalid");
+          $(this).next(".invalid-feedback").remove();
+      }
+  });
+
 //submit student edit form
-$('#editStudentForm').submit(function(e) {
-    e.preventDefault();
+  $('#editStudentForm').submit(function(e) {
+      e.preventDefault();
+      let isValid = true; // Define isValid
 
-    var id = $('#edit_student_id').val();
+      // Remove existing error messages
+      $(".invalid-feedback").remove();
+      $("#edit_Remarks").removeClass("is-invalid");
 
-    $.ajax({
-        type: "POST",
-        url: "/update_student_info/" + id,
-        data: {
-            _token: $('input[name="_token"]').val(),
+      // Validate the Remarks field
+      if (!$("#edit_Remarks").val()) {
+          $("#edit_Remarks").addClass("is-invalid").after('<div class="invalid-feedback">Please provide remarks.</div>');
+          isValid = false;
+      }
 
-            update_student_no: $('#edit_student_no').val(),
-            update_name: $('#edit_student_name').val(),
-            update_course: $('#edit_course').val(),
-            update_school_email: $('#edit_school_email').val(),
-            update_violation_type: $('#edit_violation_type').val(),
-            update_rule_name: $('#edit_rule_Name').val(),
-            update_description: $('#edit_description_Name').val(),
-            update_severity: $('#edit_severity_Name').val(),
-            update_penalty_type: $('#edit_penalty_type').val(),
-            update_status: $('#edit_status_type').val(),
-            update_faculty_involvement: $('input[name="edit_faculty_involvement"]:checked').val(),
-            update_faculty_name: $('#edit_faculty_Name').val(),
-            update_counseling_required: $('input[name="edit_counseling_required"]:checked').val(),
-            update_referral_type: $('#edit_referal_type').val(),
-            update_remarks: $('#edit_Remarks').val(),
-            update_notes: $('#edit_notes').val()
+      // Validate the Faculty Name dropdown if it is visible
+      if ($("#edit_faculty_Name").is(":visible") && !$("#edit_faculty_Name").val()) {
+          $("#edit_faculty_Name").addClass("is-invalid").after('<div class="invalid-feedback">Please select a faculty name.</div>');
+          isValid = false;
+      }
 
-        },
-        success: function(response) {
-            if (response.status == 200) {
-                console.log(response.message);
-                $('#editStudentModal').modal('hide');
-                console.log('update success')
-               
+      if (!isValid) {
+          Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
+          return;
+      }
 
-            } else {
-                console.log("Error updating student info");
-            }
+      var id = $('#edit_student_id').val();
 
-            // Reload DataTable via AJAX without resetting pagination it just re-render the specific row
-            $('#violationrecordstable').DataTable().ajax.reload(null, false);
-        },
-        error: function(xhr) {
-            console.log(xhr.responseText);
-            console.log("An error occurred.");
-        }
-    });
+      let facultyName = $('#edit_faculty_yes').is(':checked') ? $("#edit_faculty_Name").val() : "N/A";
+
+      $.ajax({
+          type: "POST",
+          url: "/update_student_info/" + id,
+          data: {
+              _token: $('input[name="_token"]').val(),
+              update_student_no: $('#edit_student_no').val(),
+              update_name: $('#edit_student_name').val(),
+              update_course: $('#edit_course').val(),
+              update_school_email: $('#edit_school_email').val(),
+              update_violation_type: $('#edit_violation_type').val(),
+              update_rule_name: $('#edit_rule_Name').val(),
+              update_description: $('#edit_description_Name').val(),
+              update_severity: $('#edit_severity_Name').val(),
+              update_penalty_type: $('#edit_penalty_type').val(),
+              update_status: $('#edit_status_type').val(),
+              update_faculty_involvement: $('input[name="edit_faculty_involvement"]:checked').val(),
+              update_faculty_name: facultyName,
+              update_counseling_required: $('input[name="edit_counseling_required"]:checked').val(),
+              update_referral_type: $('#edit_referal_type').val(),
+              update_remarks: $('#edit_Remarks').val(),
+              update_notes: $('#edit_notes').val()
+          },
+          success: function(response) {
+              if (response.status == 200) {
+                  console.log(response.message);
+                  $('#editStudentModal').modal('hide');
+                  console.log('update success');
+              } else {
+                  console.log("Error updating student info");
+              }
+
+              // Reload DataTable via AJAX without resetting pagination it just re-render the specific row
+              $('#violationrecordstable').DataTable().ajax.reload(null, false);
+          },
+          error: function(xhr) {
+              console.log(xhr.responseText);
+              console.log("An error occurred.");
+          }
+      });
+  });
+
+// Add event listener to remove error messages when the user types in the Remarks textarea
+$("#edit_Remarks").on("input", function () {
+    $(this).removeClass("is-invalid");
+    $(this).next(".invalid-feedback").remove();
 });
 
 //archive edit button

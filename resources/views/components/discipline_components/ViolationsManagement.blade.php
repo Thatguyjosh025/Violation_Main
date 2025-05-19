@@ -82,6 +82,44 @@ $(document).ready(function(){
         $('#violationModal').modal('show');
     });
 
+    $('#close-btn').on('click', function(e){
+        e.preventDefault();
+        // Reset the form
+        $('#postviolationForm').trigger('reset');
+
+        // Reset display elements
+        ["#ruleName", "#descriptionName", "#severityName"].forEach(sel => $(sel).text("-"));
+
+        // Remove is-invalid classes and error messages from all form fields
+        $("#violation_type, #referal_type, #penalty_type, #remarks, input[name='faculty_involvement'], input[name='counseling_required'], #uploadEvidence, #facultyName").removeClass("is-invalid");
+        $(".invalid-feedback").remove();
+
+        $("#facultyLabel").hide();
+        $('#facultyName').hide().val('');
+    });
+
+
+    $('#uploadEvidence').attr('accept', '.pdf,.jpg,.jpeg,.png,.docx');
+
+     $('#uploadEvidence').change(function() {
+        var file = this.files[0];
+        var maxSize = 2 * 1024 * 1024; // 2MB in bytes
+
+        // Remove any existing error message
+        $(this).next('.invalid-feedback').remove();
+        $(this).removeClass('is-invalid');
+
+        if (file) {
+            if (file.size > maxSize) {
+                $(this).addClass('is-invalid');
+                $(this).after('<div class="invalid-feedback">File size must be less than 2MB.</div>');
+            }
+        } else {
+            $(this).addClass('is-invalid');
+            $(this).after('<div class="invalid-feedback">Please select a file.</div>');
+        }
+    });
+
     // View button functionality
     $(document).on("click", ".view-btn", function (e) {
         e.preventDefault();
@@ -203,6 +241,14 @@ $(document).ready(function(){
             $(this).closest('.form-check').find(".invalid-feedback").remove();
         }
     });
+
+    // Remove validation error for faculty name dropdown
+    $("#facultyName").on("change", function () {
+        if ($(this).val() !== "") {
+            $(this).removeClass("is-invalid");
+            $(this).next(".invalid-feedback").remove();
+        }
+    });
     
     // Submit violation form
     $("#submit_violation").click(function (e) {
@@ -211,7 +257,7 @@ $(document).ready(function(){
 
        // Remove existing error messages
         $(".invalid-feedback").remove();
-        $("#violation_type, #referal_type, #penalty_type, #remarks, input[name='faculty_involvement'], input[name='counseling_required']").removeClass("is-invalid");
+        $("#violation_type, #referal_type, #penalty_type, #facultyName, #remarks, input[name='faculty_involvement'], input[name='counseling_required']").removeClass("is-invalid");
 
         // Validate form fields
         const fieldsToValidate = [
@@ -240,6 +286,26 @@ $(document).ready(function(){
                 isValid = false;
             }
         });
+
+
+        // Validate the Faculty Name dropdown if it is visible
+        if ($("#facultyName").is(":visible") && !$("#facultyName").val()) {
+            $("#facultyName").addClass("is-invalid").after('<div class="invalid-feedback">Please select a faculty name.</div>');
+            isValid = false;
+        }
+
+       // Validate file upload
+        const fileUpload = $('#uploadEvidence')[0];
+        if (fileUpload.files[0]) {
+            var file = fileUpload.files[0];
+            var maxSize = 2 * 1024 * 1024; // 2MB in bytes
+
+            if (file.size > maxSize) {
+                $('#uploadEvidence').addClass('is-invalid').after('<div class="invalid-feedback">File size must be less than 2MB.</div>');
+                isValid = false;
+            }
+        }
+
 
         if (!isValid) {
             Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
@@ -284,18 +350,29 @@ $(document).ready(function(){
                 $("#facultyLabel").hide();
                 $('#facultyName').hide().val('');
 
-                $("input[name='faculty_involvement']").prop('checked', false);  // Reset Faculty Involvement
-                $("input[name='counseling_required']").prop('checked', false);   // Reset Counseling Required
+                //default to no after reset
+                $('#faculty_no').prop('checked', true);
+                $('#counseling_no').prop('checked', true);
 
                 Swal.fire({ icon: "success", text: "Violation recorded successfully!", timer: 5000 });
 
+                // Reset display elements
                 ["#ruleName", "#descriptionName", "#severityName"].forEach(sel => $(sel).text("-"));
                 $('#displaystudentno').text("-");
                 $('#displaystudentname').text("-");
                 $('#displaycourse').text("-");
                 $('#displayemail').text("-");
+
+                // Reset student info inputs
+                $('#student_no').val('').hide();
+                $('#student_name').val('').hide();
+                $('#course_and_section').val('').hide();
+                $('#schoolEmail').val('').hide();
+
+                // Reset recent violations section
+                $('.recent-violation').html('<div class="violation-card-no" style="text-align: center;"><p>No selected student.</p></div>');
             },
-            error: function (xhr) {
+           error: function (xhr, message) {
                 Swal.fire({ icon: "error", title: "Oops...", text: "Oops! It looks like some required fields are missing or incorrect. Please check your inputs." });
                 console.log(xhr.responseText);
             }

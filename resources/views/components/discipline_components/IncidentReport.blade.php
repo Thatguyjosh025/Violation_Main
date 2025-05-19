@@ -17,29 +17,29 @@ $reports = incident::get();
             <div class="container mt-5 ">
                 <ul class="nav nav-tabs ms-auto mb-3" id="incidentTabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="active-tab" data-bs-toggle="tab" href="#active-incidents" role="tab">Active Incidents</a>
+                        <a class="nav-link active" id="active-tab" data-bs-toggle="tab" href="#active-incidents" role="tab" aria-controls="active-incidents">Active Incidents</a>
                     </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" id="approved-tab" data-bs-toggle="tab" href="#approved" role="tab" aria-controls="approved" aria-selected="false">Approved</a>
+                    </li> -->
                     <li class="nav-item">
-                        <a class="nav-link" id="archives-tab" data-bs-toggle="tab" href="#archives" role="tab">Approved</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="archives-tab" data-bs-toggle="tab" href="#Reject" role="tab">Rejected</a>
+                        <a class="nav-link" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab" aria-controls="rejected" aria-selected="false">Rejected</a>
                     </li>
                 </ul>
 
                 <div class="tab-content" style="height: 45rem; background: white; border-radius: 7px; max-height: 50%;">
                     <!-- Active Incidents -->
-                    <div class="tab-pane fade show active" id="active-incidents" role="tabpanel">
+                     <div class="tab-pane fade show active" id="active-incidents" role="tabpanel">
                         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
                             @php $activeReports = $reports->where('is_visible', '===', 'show'); @endphp
-                            @if ($activeReports->isEmpty())          
-                                <div class="alignment" style="justify-content: cen  ter; width: 100%;">
+                            @if ($activeReports->isEmpty())
+                                <div class="alignment" style="justify-content: center; width: 100%;">
                                     <div class="col-12 text-center mt-5" style="justify-content: center;">
                                         <p>No active incident reports found.</p>
                                     </div>
                                 </div>
                             @else
-                                @foreach ($activeReports as $datareport)    
+                                @foreach ($activeReports as $datareport)
                                     <div class="col incident-card" style="width: 23rem;" data-id="{{ $datareport->id }}">
                                         <input type="hidden" value="{{ $datareport->id }}">
                                         <div class="card p-3 position-relative">
@@ -60,7 +60,7 @@ $reports = incident::get();
                     </div>
 
                     <!-- Approved -->
-                    <div class="tab-pane fade" id="archives" role="tabpanel">
+                    <!-- <div class="tab-pane fade" id="archives" role="tabpanel">
                         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
                             @php $archivedReports = $reports->where('is_visible', '===', 'approve'); @endphp
                             @if ($archivedReports->isEmpty())
@@ -88,7 +88,7 @@ $reports = incident::get();
                                 @endforeach
                             @endif
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Reject -->
                     <div class="tab-pane fade" id="Reject" role="tabpanel">
@@ -166,7 +166,7 @@ $reports = incident::get();
                                 <!-- Referral Dropdown Section -->
                                 <label class="fw-bold mb-1">Action Taken Prior to Referral</label>
                                 <select class="form-select" id="referal_type" name="referal_type">
-                                    <option selected hidden>Select referal...</option>
+                                    <option value="">Select referal...</option>
                                     @foreach ($ref as $refdata )
                                         <option value="{{ $refdata -> referal_id }}">{{ $refdata -> referals }}</option>
                                     @endforeach 
@@ -176,7 +176,7 @@ $reports = incident::get();
                                  <!-- Penalty Dropdown Section -->
                                 <label class="fw-bold mt-2">Penalty</label>
                                 <select class="form-select" id="penalty_type" name="penalty_type">
-                                    <option selected hidden>Select Penaltyy</option>
+                                    <option value="" hidden>Select Penaltyy</option>
                                     @foreach ($pen as $pendata )
                                         <option value="{{ $pendata -> penalties_id }}">{{ $pendata -> penalties }}</option>
                                     @endforeach
@@ -192,7 +192,7 @@ $reports = incident::get();
                                     <label for="counselingYes">Yes</label>
                                 </div>
                                 <div>
-                                    <input type="radio" name="counseling_required" value="No" id="counseling_no">
+                                    <input type="radio" name="counseling_required" value="No" id="counseling_no" checked>
                                     <label for="counselingNo">No</label>
                                 </div>
                             </div>
@@ -219,6 +219,18 @@ $reports = incident::get();
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function(){
+
+     $("#referal_type, #penalty_type").on("change", function () {
+        $(this).removeClass("is-invalid");
+        $(this).next(".invalid-feedback").remove();
+    });
+
+    $("#Remarks").on("input", function () {
+        $(this).removeClass("is-invalid");
+        $(this).next(".invalid-feedback").remove();
+    });
+
+
     $(document).on('click', '.btn-view-incident', function(e){
         e.preventDefault();
         resetModal();
@@ -317,6 +329,40 @@ function loadViolationDropdown(url, id, selectedValue) {
 $(document).ready(function () {
     $("#approve-btn").click(function (e) {
         e.preventDefault();
+
+
+        let isValid = true;
+
+        // Remove existing error messages
+        $(".invalid-feedback").remove();
+        $("#referal_type, #penalty_type, #Remarks, input[name='counseling_required']").removeClass("is-invalid");
+
+        // Validate dropdowns and textarea
+        const fieldsToValidate = [
+            { id: "#referal_type", message: "Please select a referral action." },
+            { id: "#penalty_type", message: "Please select a penalty." },
+            { id: "#Remarks", message: "Please provide remarks." }
+        ];
+
+        fieldsToValidate.forEach(field => {
+            if (!$(field.id).val()) {
+                $(field.id).addClass("is-invalid").after(`<div class="invalid-feedback">${field.message}</div>`);
+                isValid = false;
+            }
+        });
+
+        // Validate radio buttons
+        if (!$("input[name='counseling_required']:checked").val()) {
+            $("input[name='counseling_required']").addClass("is-invalid")
+                .first().parent().append('<div class="invalid-feedback">Please select counseling requirement.</div>');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
+            return;
+        }
+
 
         let formData = new FormData();
 
