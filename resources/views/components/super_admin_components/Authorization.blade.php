@@ -415,7 +415,154 @@ $(document).ready(function() {
     }
 
     $('.btn-update').on('click', function() {
-        var userId = $('#edituser #userid').val(); //Getting the user ID from the hidden input field cause this fucking coding sucks and this is the best logic i can make
+    var userId = $('#edituser #userid').val();
+    var isValid = true;
+
+    // Remove existing error messages
+    $("#edituser .form-control").removeClass("is-invalid");
+    $("#edituser .invalid-feedback").remove();
+
+    var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;
+    var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var studentNumberRegex = /^(0200|1900|1800)\d{7}$/;
+
+    // Validate fields
+    var fieldsToValidate = [
+        { id: "#edituser #firstname", regex: nameRegex, message: "Invalid first name format." },
+        { id: "#edituser #lastname", regex: nameRegex, message: "Invalid last name format." },
+        { id: "#edituser #middlename", regex: nameRegex, message: "Invalid middle name format." },
+        { id: "#edituser #email", regex: emailRegex, message: "Invalid email format." },
+        { id: "#edituser #student_no", regex: studentNumberRegex, message: "Student number must start with '0200', '1900', or '1800'." },
+        { id: "#edituser #edit-role", message: "Role is required." },
+        { id: "#edituser #status", message: "Status is required." }
+        
+    ];
+
+    fieldsToValidate.forEach(function(field) {
+        var input = $(field.id);
+        var value = input.val().trim();
+
+        if (field.id === "#edituser #middlename" && value === "") {
+            return; // Skip validation if middle name is empty
+        }
+
+        if (value.length < 2) {
+            input.addClass("is-invalid").after('<div class="invalid-feedback">Must be at least 2 characters long.</div>');
+            isValid = false;
+        } else if (field.regex && !field.regex.test(value)) {
+            input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
+            isValid = false;
+        } else if (!field.regex && !value) {
+            input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
+            isValid = false;
+        }
+    });
+
+    if (!isValid) {
+        Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
+        return;
+    }
+
+    updateuserdata(userId);
+});
+
+function updateuserdata(userId) {
+    var formData = {
+        id: userId,
+        firstname: $('#edituser #firstname').val(),
+        lastname: $('#edituser #lastname').val(),
+        middlename: $('#edituser #middlename').val(),
+        email: $('#edituser #email').val(),
+        student_no: $('#edituser #student_no').val(),
+        role: $('#edituser #edit-role').val(),
+        status: $('#edituser #status').val(),
+        _token: '{{ csrf_token() }}'
+    };
+
+    // Send the form data via AJAX
+    $.ajax({
+        url: '/update_user',
+        type: "POST",
+        data: formData,
+        success: function(response) {
+            if (response.status === 200) {
+                // Show success message
+                Swal.fire({
+                    title: "Update successful!",
+                    icon: "success",
+                    timer: 3000
+                });
+
+                // Hide the modal
+                $('#edituser').modal('hide');
+
+                // Refresh the table or update the specific row
+                $("#authTable").load(location.href + " #authTable");
+            } else {
+                alert(response.message);
+            }
+        },
+        error: function(xhr) {
+            var response = xhr.responseJSON.errors;
+            for (var field in response) {
+                var input = $('#edituser [name="' + field + '"]');
+
+                input.removeClass("is-invalid");
+                input.next('.invalid-feedback').remove();
+
+                input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
+            }
+        }
+    });
+}
+    $('.btn-update').on('click', function() {
+        var userId = $('#edituser #userid').val();
+        var isValid = true;
+
+        // Remove existing error messages
+        $("#edituser .form-control").removeClass("is-invalid");
+        $("#edituser .invalid-feedback").remove();
+
+        var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;
+        var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        var studentNumberRegex = /^(0200|1900|1800)\d{7}$/;
+
+        // Validate fields
+        var fieldsToValidate = [
+            { id: "#edituser #firstname", regex: nameRegex, message: "Invalid first name format." },
+            { id: "#edituser #lastname", regex: nameRegex, message: "Invalid last name format." },
+            { id: "#edituser #middlename", regex: nameRegex, message: "Invalid middle name format." },
+            { id: "#edituser #email", regex: emailRegex, message: "Invalid email format." },
+            { id: "#edituser #student_no", regex: studentNumberRegex, message: "Student number must start with '0200', '1900', or '1800'." },
+            { id: "#edituser #edit-role", message: "Role is required." },
+            { id: "#edituser #status", message: "Status is required." }
+        ];
+
+        fieldsToValidate.forEach(function(field) {
+            var input = $(field.id);
+            var value = input.val().trim();
+
+            if (field.id === "#edituser #middlename" && value === "") {
+                return; // Skip validation if middle name is empty
+            }
+
+            if (value.length < 2) {
+                input.addClass("is-invalid").after('<div class="invalid-feedback">Must be at least 2 characters long.</div>');
+                isValid = false;
+            } else if (field.regex && !field.regex.test(value)) {
+                input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
+                isValid = false;
+            } else if (!field.regex && !value) {
+                input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
+            return;
+        }
+
         updateuserdata(userId);
     });
 
@@ -462,7 +609,7 @@ $(document).ready(function() {
 
                     input.removeClass("is-invalid");
                     input.next('.invalid-feedback').remove();
-                    
+
                     input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
                 }
             }

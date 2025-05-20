@@ -135,14 +135,15 @@ class AuthController extends Controller
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'email' => 'required|email|unique:tb_users,email,' . $user->id,
+            'student_no' => ['required', 'string', 'max:11', 'unique:tb_users,student_no,' . $user->id],
             'role' => 'string|max:255',
             'status' => 'required|string|max:255',
         ]);
 
         $user->update($validatedData);
-        return response()->json(['status' => 200, 'message' => 'User  updated successfully']);
+        return response()->json(['status' => 200, 'message' => 'User updated successfully']);
     }
-    
+        
     public function logout(Request $request) {
         Auth::logout(); 
         Session::flush(); 

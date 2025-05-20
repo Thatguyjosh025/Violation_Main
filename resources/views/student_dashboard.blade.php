@@ -65,24 +65,26 @@
     });
 }
 
-$(document).ready(function () {
+ $(document).ready(function () {
+        // Get the current URL
+        var currentUrl = window.location.href;
+
+        // Handle click events on navigation links
         $('.nav-link').on('click', function (e) {
-
             $('.nav-link').removeClass('active');
-
             $(this).addClass('active');
-
-            // this motherfucking localstorage api in jquery allows to save data in the browser
-            // then it defaults to highlighting the Dashboard link since it always removes the last activity save by it. 
-            localStorage.setItem('activeSidebarLink', $(this).attr('href'));
         });
 
-        var activeLink = localStorage.getItem('activeSidebarLink');
-        if (activeLink) {
-            $('.nav-link').removeClass('active');
-            $('.nav-link[href="' + activeLink + '"]').addClass('active');
-        } else {
-            // Set the Dashboard link as the default active link
+        // Set the active link based on the current URL
+        $('.nav-link').each(function() {
+            if ($(this).attr('href') === currentUrl) {
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
+            }
+        });
+
+        // Set the Dashboard link as the default active link if no match is found
+        if (!$('.nav-link').hasClass('active')) {
             $('.nav-link').removeClass('active');
             $('.nav-link[href="' + "{{ url('student_dashboard') }}" + '"]').addClass('active');
         }
