@@ -54,6 +54,7 @@ $userdata = users::get();
     </div>
 </div>
 
+<!-- Modal for add user -->
 <div class="modal fade" id="adduser" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -122,6 +123,7 @@ $userdata = users::get();
     </div>
 </div>
 
+<!-- Modal for edit -->
 <div class="modal fade" id="edituser" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -150,9 +152,9 @@ $userdata = users::get();
                         <input type="email" class="form-control" id="email" name="email">
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="studentNoContainer">
                         <label for="student_no" class="form-label">ID Number:</label>
-                        <input type="text" class="form-control" id="student_no" name="student_no" min="11" maxlength="11" required>
+                        <input type="text" class="form-control" id="student_no" name="student_no" min="8" maxlength="8" required>
                     </div>
 
                     <div class="mb-3">
@@ -287,9 +289,9 @@ $(document).ready(function () {
         }
 
         var studentNumber = $("#student_no").val();
-        var studentNumberRegex = /^(0200|1900|1800)\d{7}$/;
+        var studentNumberRegex = /^(ALA0)[a-zA-Z0-9]{4}$/;
         if (!studentNumberRegex.test(studentNumber)) {
-            $("#student_no").addClass("is-invalid").after('<div class="invalid-feedback">Student number must start with "0200", "1900", or "1800".</div>');
+            $("#student_no").addClass("is-invalid").after('<div class="invalid-feedback">ID number must start with "ALA0" and be followed by exactly 4 alphanumeric characters.</div>');
             isValid = false;
         }
 
@@ -370,18 +372,23 @@ $(document).ready(function () {
     });
 });
 
-
-
 $(document).ready(function() {
     $('.btn-edit').on('click', function() {
         var userId = $(this).val(); // Get the user ID from the button's value attribute
         getuserdata(userId); // Call the function to fetch user data
     });
 
-    $(document).on('click', '.btn-edit', function() {
-        var userId = $(this).val(); 
-        getuserdata(userId); 
+    $('#edituser .btn-close').on('click', function() {
+        $('#edituser').find('form')[0].reset();
+        $('#edituser').find(".form-control").removeClass("is-invalid");
+        $('#edituser').find(".invalid-feedback").remove();
     });
+
+    // $(document).on('click', '.btn-edit', function() {
+    //     var userId = $(this).val();
+    //     getuserdata(userId);
+    // });
+
     // Function to fetch user data
     function getuserdata(userId) {
         $.ajax({
@@ -402,8 +409,20 @@ $(document).ready(function() {
                     $('#edituser #edit-role').val(response.data.role);
                     $('#edituser #status').val(response.data.status);
 
+                    // Inside the getuserdata function, after setting the role value
+                    $('#edituser #edit-role').val(response.data.role);
+
+                    // Check the role and hide the ID Number field if the role is "student"
+                    if (response.data.role === 'student') {
+                        $('#studentNoContainer').hide();
+                    } else {
+                        $('#studentNoContainer').show();
+                    }
+
                     // Show the edit modal
                     $('#edituser').modal('show');
+
+
                 } else {
                     alert(response.message);
                 }
@@ -414,107 +433,7 @@ $(document).ready(function() {
         });
     }
 
-    $('.btn-update').on('click', function() {
-    var userId = $('#edituser #userid').val();
-    var isValid = true;
-
-    // Remove existing error messages
-    $("#edituser .form-control").removeClass("is-invalid");
-    $("#edituser .invalid-feedback").remove();
-
-    var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;
-    var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    var studentNumberRegex = /^(0200|1900|1800)\d{7}$/;
-
-    // Validate fields
-    var fieldsToValidate = [
-        { id: "#edituser #firstname", regex: nameRegex, message: "Invalid first name format." },
-        { id: "#edituser #lastname", regex: nameRegex, message: "Invalid last name format." },
-        { id: "#edituser #middlename", regex: nameRegex, message: "Invalid middle name format." },
-        { id: "#edituser #email", regex: emailRegex, message: "Invalid email format." },
-        { id: "#edituser #student_no", regex: studentNumberRegex, message: "Student number must start with '0200', '1900', or '1800'." },
-        { id: "#edituser #edit-role", message: "Role is required." },
-        { id: "#edituser #status", message: "Status is required." }
-        
-    ];
-
-    fieldsToValidate.forEach(function(field) {
-        var input = $(field.id);
-        var value = input.val().trim();
-
-        if (field.id === "#edituser #middlename" && value === "") {
-            return; // Skip validation if middle name is empty
-        }
-
-        if (value.length < 2) {
-            input.addClass("is-invalid").after('<div class="invalid-feedback">Must be at least 2 characters long.</div>');
-            isValid = false;
-        } else if (field.regex && !field.regex.test(value)) {
-            input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
-            isValid = false;
-        } else if (!field.regex && !value) {
-            input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
-            isValid = false;
-        }
-    });
-
-    if (!isValid) {
-        Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
-        return;
-    }
-
-    updateuserdata(userId);
-});
-
-function updateuserdata(userId) {
-    var formData = {
-        id: userId,
-        firstname: $('#edituser #firstname').val(),
-        lastname: $('#edituser #lastname').val(),
-        middlename: $('#edituser #middlename').val(),
-        email: $('#edituser #email').val(),
-        student_no: $('#edituser #student_no').val(),
-        role: $('#edituser #edit-role').val(),
-        status: $('#edituser #status').val(),
-        _token: '{{ csrf_token() }}'
-    };
-
-    // Send the form data via AJAX
-    $.ajax({
-        url: '/update_user',
-        type: "POST",
-        data: formData,
-        success: function(response) {
-            if (response.status === 200) {
-                // Show success message
-                Swal.fire({
-                    title: "Update successful!",
-                    icon: "success",
-                    timer: 3000
-                });
-
-                // Hide the modal
-                $('#edituser').modal('hide');
-
-                // Refresh the table or update the specific row
-                $("#authTable").load(location.href + " #authTable");
-            } else {
-                alert(response.message);
-            }
-        },
-        error: function(xhr) {
-            var response = xhr.responseJSON.errors;
-            for (var field in response) {
-                var input = $('#edituser [name="' + field + '"]');
-
-                input.removeClass("is-invalid");
-                input.next('.invalid-feedback').remove();
-
-                input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
-            }
-        }
-    });
-}
+    // Update logic
     $('.btn-update').on('click', function() {
         var userId = $('#edituser #userid').val();
         var isValid = true;
@@ -525,7 +444,7 @@ function updateuserdata(userId) {
 
         var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;
         var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        var studentNumberRegex = /^(0200|1900|1800)\d{7}$/;
+        var studentNumberRegex = /^(ALA0)[a-zA-Z0-9]{4}$/;
 
         // Validate fields
         var fieldsToValidate = [
@@ -533,7 +452,7 @@ function updateuserdata(userId) {
             { id: "#edituser #lastname", regex: nameRegex, message: "Invalid last name format." },
             { id: "#edituser #middlename", regex: nameRegex, message: "Invalid middle name format." },
             { id: "#edituser #email", regex: emailRegex, message: "Invalid email format." },
-            { id: "#edituser #student_no", regex: studentNumberRegex, message: "Student number must start with '0200', '1900', or '1800'." },
+            { id: "#edituser #student_no", regex: studentNumberRegex, message: "ID number must start with ALA0 and be followed by exactly 4 alphanumeric characters." },
             { id: "#edituser #edit-role", message: "Role is required." },
             { id: "#edituser #status", message: "Status is required." }
         ];
@@ -610,11 +529,15 @@ function updateuserdata(userId) {
                     input.removeClass("is-invalid");
                     input.next('.invalid-feedback').remove();
 
-                    input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
+                     // Customize the error message 
+                    if (field === 'student_no' && response[field][0] === 'The student no has already been taken.') {
+                        input.addClass("is-invalid").after('<div class="invalid-feedback">This ID number is already in use. Please use a different one.</div>');
+                    } else {
+                        input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
+                    }
                 }
             }
         });
     }
 });
-
 </script>

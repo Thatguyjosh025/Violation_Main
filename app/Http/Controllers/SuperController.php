@@ -15,18 +15,18 @@ use function Laravel\Prompts\alert;
 class SuperController extends Controller
 {
     //create functions
-    public function violation(Request $request) {
+   public function violation(Request $request) {
         $request->validate([
-            'violations' => 'required|string|max:255|unique:tb_violation'
+           'violations' => ['required', 'string', 'max:255', 'unique:tb_violation', 'regex:/^[a-zA-Z ]+$/'],
         ]);
-    
+
         $create = violation::create([
             'violations' => $request->violations
         ]);
-    
+
         return response()->json([
             'message' => 'Violation added successfully!',
-            'violation' => $create 
+            'violation' => $create
         ]);
     }
     public function referal(Request $request){
@@ -112,16 +112,16 @@ class SuperController extends Controller
     }
 
 
-    public function updateViolation(Request $request, $id) {
+   public function updateViolation(Request $request, $id) {
         $violate = violation::find($id);
-    
+
         if (!$violate) {
             return response()->json(['message' => 'Violation not found'], 404);
         }
-    
+
         $violate->violations = $request->violations;
         $violate->save();
-    
+
         return response()->json(['message' => 'Violation updated successfully']);
     }
 
