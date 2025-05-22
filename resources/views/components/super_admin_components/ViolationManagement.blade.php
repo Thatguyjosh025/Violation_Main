@@ -5,6 +5,7 @@ use App\Models\violation;
 $violationdata = violation::get();
 @endphp
 
+    <!-- CONTINUE BUILDING THIS APPLY THIS TO THE REST OF SUPER ADMIN -->
     <!-- Violation -->
     <div class="d-flex align-items-center">
         <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -57,7 +58,7 @@ $violationdata = violation::get();
                         <input type="hidden" name="violation_id" id="violation_id">
                         <div class="mb-3">
                             <label for="violations" class="form-label">Violation:</label>
-                            <input type="text" name="violations" id="violations" class="form-control" pattern="[A-Za-z ]+" title="Only alphabetic characters and spaces are allowed" required>
+                            <input type="text" name="violations" id="violations" class="form-control" required>
                             <div class="invalid-feedback">
                                 Violation name should only contain alphabetic characters and spaces.
                             </div>
@@ -73,7 +74,6 @@ $violationdata = violation::get();
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 
 <script>
-
 $(document).ready(function () {
     // Show modal for adding a violation
     $('#addViolationBtn').on('click', function (e) {
@@ -84,12 +84,24 @@ $(document).ready(function () {
         $('#violationModal').modal('show');
     });
 
+    $("#violations").on("input", function () {
+        if ($(this).hasClass("is-invalid")) {
+            $(this).removeClass("is-invalid");
+            $('.invalid-feedback').hide();
+        }
+    });
+
     // Add/Edit Violation
     $("#violationForm").on("submit", function (e) {
         e.preventDefault();
 
-        let violationName = $("#violations").val();
-        if (!/^[A-Za-z ]+$/.test(violationName)) {
+        let violationName = $("#violations").val().trim();
+
+        if (violationName.length < 5) {
+            $("#violations").addClass("is-invalid");
+            $('.invalid-feedback').text("Violation name must be at least 5 characters long.").show();
+            return;
+        } else if (!/^[A-Za-z ]+$/.test(violationName)) {
             $("#violations").addClass("is-invalid");
             $('.invalid-feedback').text("Violation name should only contain alphabetic characters and spaces.").show();
             return;
@@ -131,7 +143,7 @@ $(document).ready(function () {
     // Edit Violation
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");
-        let violationCell = row.find("td:eq(0)");
+        let violationCell = row.find("td:eq(0)");  // Correctly selects the violation name cell
         let violationId = row.find("th").text();
 
         $("#violation_id").val(violationId);
