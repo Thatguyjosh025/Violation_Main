@@ -1,13 +1,25 @@
  <link rel="stylesheet" href="{{ asset('./css/student_css/StudentDB.css') }}">
  @php
- use App\Models\notifications;
+  use App\Models\notifications;
+  use App\Models\postviolation;
 
- $notif = notifications::get();
+  $notif = notifications::get();
 
- $studentNotifs = $notif->where('student_no', Auth::user()->student_no)->where('is_read', 0);
-
+  $studentNotifs = $notif->where('student_no', Auth::user()->student_no)->where('is_read', 0);
+  function countStudentMajor() {
+        return postviolation::where('is_active', 1)
+        ->where('severity_Name', 'like', '%Major%')
+        ->where('student_no','like',Auth::user()->student_no)
+        ->count();
+  }
+  function countStudentMinor() {
+        return postviolation::where('is_active', 1)
+        ->where('severity_Name', 'like', '%Minor%')
+        ->where('student_no','like',Auth::user()->student_no)
+        ->count();
+  }
  @endphp
- <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center">
         <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
         <h3 class="mb-0">Dashboard</h3>
       </div>
@@ -35,7 +47,7 @@
               <div class="col-md-4">
                 <div class="card p-3 text-center shadow h-100" style="background-color: #f5c423; color: white; border-radius: 7px;">
                   <h5 class="fw-bold">Minor Offense</h5>
-                  <h1 class="fw-bold">2</h1>
+                  <h1 class="fw-bold">{{ countstudentMinor() }}</h1>
                   <p class="mb-1">Recent Violation</p>
                   <div class="bg-white p-2 rounded shadow-sm">
                     <p class="mb-0">Improper Uniform</p>
@@ -46,7 +58,7 @@
               <div class="col-md-4">
                 <div class="card p-3 text-center shadow h-100" style="background-color: #F44336; border-radius: 7px; color: white;">
                   <h5 class="fw-bold">Major Offense</h5>
-                  <h1 class="fw-bold">1</h1>
+                  <h1 class="fw-bold">{{ countstudentMajor() }}</h1>
                   <p class="mb-1">Recent Violation</p>
                   <div class="bg-white p-2 rounded shadow-sm text-dark">
                     <p class="mb-0">Gambling</p>

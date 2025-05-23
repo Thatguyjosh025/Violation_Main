@@ -1,67 +1,70 @@
-<link rel="stylesheet" href="{{ asset('./css/student_css/ViolationTracking.css') }}">
-@php
-use App\Models\postviolation;
+<link rel="stylesheet" href="{{ asset('css/student_css/ViolationTracking.css') }}">
 
-$info = postviolation::get();
-@endphp
-            <div class="d-flex align-items-center">
-                <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
-                <h3 class="mb-0">Active Violation</h3>
+<div class="d-flex align-items-center">
+    <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
+    <h3 class="mb-0">Active Violation</h3>
+</div>
+
+<div class="container mt-4">
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3" id="violation-cards">
+        <!-- Cards will be inserted here dynamically -->
+    </div>
+</div>
+
+<!-- Modal Section -->
+<div class="modal fade" id="appealModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark">Violation Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body">
+                <p class="text text-dark"><strong>Offense/s:</strong> <span id="offense"></span></p>
+                <p class="text text-dark"><strong>Rule:</strong> <a href="#" id="ruleLink"></a></p>
+                <p class="text text-dark" id="detailsDescription"></p>
+                <hr>
+                <p class="text text-dark"><strong>Severity:</strong> <span id="severity"></span></p>
+                <p class="text text-dark"><strong>Penalty:</strong> <span id="penalty"></span></p>
+                <p class="text text-dark"><strong>Action Taken:</strong> <span id="actionTaken"></span></p>
+                <p class="text text-dark"><strong>Status:</strong> <span id="status"></span></p>
+                <hr>
+                <p class="text text-dark"><strong>Message:</strong></p>
+                <p class="text text-dark" id="message"></p>
+                <hr>
+                <!-- Appeal Section -->
+                <div id="appealSection">
+                    <p class="text text-dark"><strong>Appeal your case?</strong></p>
+                    <input type="radio" id="appealYes" name="appeal" value="Yes">
+                    <label for="appealYes" class="text text-dark">Yes</label><br>
+                    <input type="radio" id="appealNo" name="appeal" value="No">
+                    <label for="appealNo" class="text text-dark">No</label>
 
-            <div class="container mt-4">
-                <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3" id="violation-cards">
-                    <!-- Cards will be inserted here -->
-                </div>
-            </div>
-
-             <!-- Modal Section -->
-             <div class="modal fade" id="appealModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title text-dark">Violation Report</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <!-- Inside your modal-body -->
-                            <div class="modal-body">
-                                    <p class="text text-dark"><strong>Offense/s:</strong> <span id="offense"></span></p>
-                                    <p class="text text-dark"><strong>Rule:</strong> <a href="#" id="ruleLink"></a></p>
-                                    <p class="text text-dark" id="detailsDescription"></p>
-                                    <hr>
-                                    <p class="text text-dark"><strong>Severity:</strong> <span id="severity"></span></p>
-                                    <p class="text text-dark"><strong>Penalty:</strong> <span id="penalty"></span></p>
-                                    <p class="text text-dark"><strong>Action Taken:</strong> <span id="actionTaken"></span></p>
-                                    <p class="text text-dark"><strong>Status:</strong> <span id="status"></span></p>
-                                    <hr>
-                                    <p class="text text-dark"><strong>Message:</strong></p>
-                                    <p class="text text-dark" id="message"></p>
-                                <hr>
-                                <p class="text text-dark"><strong>Appeal your case?</strong></p>
-                                <div>
-                                    <input type="radio" id="appealYes" name="appeal" value="Yes">
-                                    <label for="appealYes" class="text text-dark">Yes</label>
-                                    <br>
-                                    <input type="radio" id="appealNo" name="appeal" value="No">
-                                    <label for="appealNo" class="text text-dark">No</label>
-                                </div>
-                                <div id="appealSection" style="display: none;">
-                                    <form action="" id="appealform">
-                                        <textarea id="appealReason" class="form-control mt-2" maxlength="200" style="height: 100px; resize: none;" placeholder="Enter your reason for appeal..."></textarea>
-                                        <button type="button" id="submitAppeal" class="btn btn-primary mt-2">Submit</button>
-                                    </form>
-                            </div>
-                        </div>
+                    <div id="appealFormContainer" style="display: none;">
+                        <form action="" id="appealform">
+                            <textarea id="appealReason" class="form-control mt-2" maxlength="200" style="height: 100px; resize: none;" placeholder="Enter your reason for appeal..."></textarea>
+                            <button type="button" id="submitAppeal" class="btn btn-primary mt-2">Submit</button>
+                        </form>
                     </div>
-<script src="{{ asset('./js/student_js/ViolationHistory.js  ') }}"></script>
-<script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+                </div>
+                <!-- End Appeal Section -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('vendor/jquery.min.js') }}"></script>
+<script src="{{ asset('vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('js/student_js/ViolationHistory.js') }}"></script>
+
 <script>
-   $(document).ready(function() {
+$(document).ready(function () {
+
+    // Load and Display Violation Cards
     $.ajax({
         url: '/get_violations_records',
         method: 'GET',
-        success: function(data) {
+        success: function (data) {
             let cardsContainer = $('#violation-cards');
             cardsContainer.empty();
 
@@ -76,7 +79,7 @@ $info = postviolation::get();
                     </div>
                 `);
             } else {
-                unresolvedViolations.forEach(function(violation) {
+                unresolvedViolations.forEach(function (violation) {
                     let cardHtml = `
                         <div class="col">
                             <div class="card p-3">
@@ -94,50 +97,57 @@ $info = postviolation::get();
                 });
             }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             console.error('Error fetching violations:', error);
         }
     });
-});
 
-$(document).on('click', '.view-btn', function() {
-    let violation = $(this).data('violation');
-    $('#offense').text(violation.type || 'N/A');
-    $('#ruleLink').text(violation.rule_Name).attr('href', violation.rule_Name);
-    $('#detailsDescription').text(violation.description_Name);
-    $('#severity').text(violation.severity_Name);
-    $('#penalty').text(violation.penalties || 'N/A');
-    $('#actionTaken').text(violation.referals || 'N/A');
-    $('#message').text(violation.Remarks);
-    $('#status').text(violation.status || 'N/A');
+    // View Button Click Event
+    $(document).on('click', '.view-btn', function () {
+        let violation = $(this).data('violation');
+        $('#offense').text(violation.type || 'N/A');
+        $('#ruleLink').text(violation.rule_Name).attr('href', violation.rule_Name);
+        $('#detailsDescription').text(violation.description_Name);
+        $('#severity').text(violation.severity_Name);
+        $('#penalty').text(violation.penalties || 'N/A');
+        $('#actionTaken').text(violation.referals || 'N/A');
+        $('#message').text(violation.Remarks);
+        $('#status').text(violation.status || 'N/A');
 
-    $('#appealModal').data('studentId', violation.id);
-    $('#appealModal').data('studentName', violation.student_name);
-});
+        // Store data for appeal submit
+        $('#appealModal').data('studentId', violation.id);
+        $('#appealModal').data('studentName', violation.student_name);
 
-$(document).ready(function() {
-    if ($('#appealYes').is(':checked')) {
-        $('#appealSection').show();
-        $('#appealReason').val('');
-    } else {
-        $('#appealSection').hide();
-        $('#appealReason').val('N/A');
-    }
-
-    // Event listener for radio button change
-    $('input[name="appeal"]').change(function() {
-        if ($('#appealYes').is(':checked')) {
+        if (violation.appeal === 'N/A') {
             $('#appealSection').show();
-            $('#appealReason').val('');
         } else {
             $('#appealSection').hide();
-            $('#appealReason').val('N/A');
+        }
+
+        // Reset appeal section state
+        $('#appealFormContainer').hide();
+        $('#appealReason').show();
+        $('#submitAppeal').show();
+        $('input[name="appeal"]').prop('checked', false);
+    });
+
+    
+    $('input[name="appeal"]').change(function () {
+        if ($('#appealYes').is(':checked')) {
+            $('#appealFormContainer').show();
+            $('#appealReason').show();
+            $('#submitAppeal').show();
+            $('#appealReason').val('');
+        } else if ($('#appealNo').is(':checked')) {
+            $('#appealFormContainer').show();
+            $('#appealReason').hide();
+            $('#submitAppeal').show();
+            $('#appealReason').val('No Objection');
         }
     });
-});
 
-$(document).ready(function() {
-    $('#submitAppeal').click(function() {
+    // Submit appeal event
+    $('#submitAppeal').click(function () {
         let appealReason = $('#appealReason').val();
         let studentId = $('#appealModal').data('studentId');
         let studentName = $('#appealModal').data('studentName');
@@ -151,21 +161,22 @@ $(document).ready(function() {
                 studentName: studentName,
                 _token: '{{ csrf_token() }}'
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
-                    console.log('Appeal reason updated successfully!');
                     $('#appealform').trigger('reset');
+                    $('#appealSection').hide(); 
                     $('#appealModal').modal('hide');
+
+                    Swal.fire({
+                        icon: "success",
+                        text: "Appeal submitted successfully!",
+                        timer: 5000
+                    });
                 } else {
                     console.log('Error: ' + response.message);
                 }
-                Swal.fire({
-                    icon: "success",
-                    text: "Appeal submitted successfully!",
-                    timer: 5000
-                });
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('Error updating appeal reason:', error);
             }
         });
@@ -173,3 +184,4 @@ $(document).ready(function() {
 });
 
 </script>
+

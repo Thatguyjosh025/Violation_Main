@@ -7,6 +7,9 @@
         $user = Auth::user();
         return $user->firstname . ' ' . $user->lastname;
     }
+    function filterbyname(){
+    
+    }
 
 @endphp
 <div class="d-flex align-items-center">

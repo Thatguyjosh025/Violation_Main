@@ -34,11 +34,13 @@ class StudentController extends Controller
                 'referals' => optional($violation->referal)->referals, 
                 'status' => optional($violation->status)->status, 
                 'Remarks' => $violation->Remarks,
+                'appeal' => $violation->appeal
             ];
         });
     
         return response()->json($mappedViolations);
     }
+
 public function updateAppealReason(Request $request)
 {
     $studentId = $request->input('studentId');
@@ -50,25 +52,36 @@ public function updateAppealReason(Request $request)
                               ->first();
 
     if ($violation) {
-        $violation->update([
-            'appeal' => $appealReason,
-            'status_name' => 5             
-        ]);
-        $notif = notifications::create([
-            'title' => 'Student Appeal Submitted',
-            'message' => 'A student has submitted an appeal regarding a violation.',
-            'role' => 'admin',
-            'student_no' => null,
-            'type' => 'incident',
-            'date_created' => Carbon::now()->format('Y-m-d'),
-            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
-        ]);
-       
+        if ($appealReason === 'No Objection') {
+            // Student chose NOT to appeal
+            $violation->update([
+                'appeal' => $appealReason,
+                'status_name' => 3,
+            ]);
+        } else if (!empty($appealReason) && $appealReason !== 'N/A') {
+            // Student chose to appeal
+            $violation->update([
+                'appeal' => $appealReason,
+                'status_name' => 5,
+            ]);
+
+            notifications::create([
+                'title' => 'Student Appeal Submitted',
+                'message' => 'A student has submitted an appeal regarding a violation.',
+                'role' => 'admin',
+                'student_no' => null,
+                'type' => 'incident',
+                'date_created' => Carbon::now()->format('Y-m-d'),
+                'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
+            ]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Invalid appeal input.']);
+        }
+
         return response()->json(['success' => true]);
     }
 
     return response()->json(['success' => false, 'message' => 'Violation not found']);
-
 }
 
 

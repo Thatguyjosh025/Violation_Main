@@ -1,20 +1,21 @@
 <?php
 
 use App\Models\MainModel;
+use App\Models\postviolation;
 use App\Http\Controllers\Auth;
+use Yajra\DataTables\DataTables;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
+use Yajra\DataTables\Utilities\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\ViewController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\SuperController;
+use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
-use App\Models\postviolation;
-use Illuminate\Contracts\View\View;
-use Yajra\DataTables\DataTables;
 
 
 //Landing routes
@@ -126,30 +127,38 @@ Route::get('/violation_handbook',[ViewController::class,'disicipline_handbook'])
 
 
 //datatables
-Route::get('/violation_records/data', function () {
-    return DataTables::of(
-        postviolation::with(['violation', 'status'])
-            ->where('is_active', true)
-    )
-    ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
-    ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
-    ->addColumn('actions', function ($data) {
-        return '
-            <button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>
-            <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
-            <button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>
-        ';
-    })
-    ->rawColumns(['actions'])
-    ->filterColumn('violation', function($query, $keyword) {
-        $query->whereHas('violation', function($q) use ($keyword) {
-            $q->where('violations', 'like', "%{$keyword}%");
+Route::get('/violation_records/data', function (Request $request) {
+    $query = postviolation::with(['violation', 'status'])
+        ->where('is_active', true);
+
+    // Apply status filter if requested and not empty
+    if ($request->has('status') && $request->status !== '') {
+        // Since status is a relationship, filter by related status table
+        $query->whereHas('status', function($q) use ($request) {
+            $q->where('status', $request->status);
         });
-    })
-    ->filterColumn('status', function($query, $keyword) {
-        $query->whereHas('status', function($q) use ($keyword) {
-            $q->where('status', 'like', "%{$keyword}%");
-        });
-    })
-    ->make(true);
-})->middleware(['auth', 'permission:discipline'])->name('violation_records.data');
+    }
+
+    return DataTables::of($query)
+        ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
+        ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
+        ->addColumn('actions', function ($data) {
+            return '
+                <button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>
+                <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
+                <button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>
+            ';
+        })
+        ->rawColumns(['actions'])
+        ->filterColumn('violation', function($query, $keyword) {
+            $query->whereHas('violation', function($q) use ($keyword) {
+                $q->where('violations', 'like', "%{$keyword}%");
+            });
+        })
+        ->filterColumn('status', function($query, $keyword) {
+            $query->whereHas('status', function($q) use ($keyword) {
+                $q->where('status', 'like', "%{$keyword}%");
+            });
+        })
+        ->make(true);
+})->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('violation_records.data');
