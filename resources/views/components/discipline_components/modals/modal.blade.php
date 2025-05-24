@@ -224,10 +224,18 @@
             <label for="remarks" class="form-label">Appeal Description</label>
             <textarea id="viewappeal" class="form-control" style="resize: none;" readonly></textarea>
           </div>
+
           <div class="col-md-6">
             <label for="dateCreated" class="form-label">Date Created</label>
             <p id="viewDate_Created" class="form-control"></p>
           </div>
+
+          <div class="col-md-6">
+              <label for="uploadEvidence" class="form-label">Uploaded Evidence</label>
+              <a id="viewUploadEvidence" class="form-control" target="_blank" style="display: none;">View File</a>
+              <span id="noFileLabel" class="form-control" style="display: none;">N/A</span>
+          </div>
+                    
         </div>
       </div>
       <div class="modal-footer">
@@ -423,6 +431,16 @@ $(document).on('click', '.btn-view-post', function () {
               $('#viewappeal').text(response.data.appeal);
               $('#viewupload_evidence').text(response.data.upload_evidence);
               $('#viewDate_Created').text(response.data.Date_Created);
+
+              if (response.data.upload_evidence) {
+                  // If there is a file, show the link
+                  $('#viewUploadEvidence').attr('href', '/storage/' + response.data.upload_evidence).text('View File').show();
+                  $('#noFileLabel').hide();
+              } else {
+                  // If there is no file shows "N/A" label
+                  $('#viewUploadEvidence').hide();
+                  $('#noFileLabel').show();
+              }
 
               // Show the modal
               $('#viewStudentModal').modal('show');

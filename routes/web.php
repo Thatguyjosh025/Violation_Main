@@ -1,20 +1,21 @@
 <?php
 
 use App\Models\MainModel;
+use App\Models\postviolation;
 use App\Http\Controllers\Auth;
+use Yajra\DataTables\DataTables;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
+use Yajra\DataTables\Utilities\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\ViewController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\SuperController;
+use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
-use App\Models\postviolation;
-use Illuminate\Contracts\View\View;
-use Yajra\DataTables\DataTables;
 
 
 //Landing routes
@@ -29,53 +30,73 @@ Route::post('/add_user',[AuthController::class,'addUser']);
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/logout',[AuthController::class,'logout']);
 
-//Auth Dashboard routes
-Route::get('/discipline_dashboard',[ViewController::class, 'admin_dashboard'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('discipline_dashboard');
-Route::get('/student_dashboard',[ViewController::class, 'student_dashboard'])->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
-Route::get('/super_dashboard', [ViewController::class, 'authorization'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super'])->name('super_dashboard');
-Route::get('/faculty_dashboard', [ViewController::class, 'faculty_dashboard'])->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty'])->name('faculty_dashboard');
+// ==========================
+// SUPER ADMIN ROUTES
+// ==========================
+Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->group(function () {
+    // Dashboard & Views
+    Route::get('/super_dashboard', [ViewController::class, 'authorization'])->name('super_dashboard');
+    Route::get('/authorization', [ViewController::class, 'authorization'])->name('authorization');
+    Route::get('/rule_management', [ViewController::class, 'rule_management'])->name('rule_management');
+    Route::get('/violation_management', [ViewController::class, 'violation_management'])->name('violation_management');
+    Route::get('/penalty_management', [ViewController::class, 'penalty_management'])->name('penalty_management');
+    Route::get('/referal_management', [ViewController::class, 'referal_management'])->name('referal_management');
 
+    // Create
+    Route::post('/create_penalties', [SuperController::class, 'penalties']);
+    Route::post('/create_violation', [SuperController::class, 'violation']);
+    Route::post('/create_referals', [SuperController::class, 'referal']);
+    Route::post('/create_rules', [SuperController::class, 'rules']);
 
+    // Update
+    Route::post('/update_penalty/{id}', [SuperController::class, 'updatePenalty']);
+    Route::post('/update_violation/{id}', [SuperController::class, 'updateViolation']);
+    Route::post('/update_rule/{id}', [SuperController::class, 'updateRule']);
+    Route::post('/update_referral/{id}', [SuperController::class, 'updateReferral']);
 
-//View routes superadmin
-Route::get('/authorization', [ViewController:: class, 'authorization'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super'])->name('authorization');
-Route::get('/rule_management', [ViewController::class, 'rule_management'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super'])->name('rule_management');
-Route::get('/violation_management', [ViewController::class, 'violation_management'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super'])->name('violation_management');
-Route::get('/penalty_management', [ViewController::class, 'penalty_management'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super'])->name('penalty_management');
-Route::get('/referal_management', [ViewController::class, 'referal_management'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super'])->name('referal_management');
+    // User Management
+    Route::post('/update_user', [AuthController::class, 'updateUser']);
+});
 
-//view routes discipline
-Route::get('/incident_report', [ViewController::class, 'incident_report'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('incident_report');
-Route::get('/violation_manage', [ViewController::class, 'violation_manage'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('violation_manage'); 
-Route::get('/violation_records', [ViewController::class, 'violation_records'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('violation_records');
+// ==========================
+// DISCIPLINE ROUTES
+// ==========================
+Route::middleware(['permission:discipline', RedirectIfNotAuthenticated::class])->group(function () {
+    // Dashboard & Views
+    Route::get('/discipline_dashboard', [ViewController::class, 'admin_dashboard'])->name('discipline_dashboard');
+    Route::get('/incident_report', [ViewController::class, 'incident_report'])->name('incident_report');
+    Route::get('/violation_manage', [ViewController::class, 'violation_manage'])->name('violation_manage');
+    Route::get('/violation_records', [ViewController::class, 'violation_records'])->name('violation_records');
 
-//view routes faculty
-Route::get('/faculty_violation', [ViewController::class, 'faculty_violation'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
-Route::get('/faculty_incident', [ViewController::class, 'faculty_incident'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
+    // Create/Update
+    Route::post('/post_violation', [AdminController::class, 'postviolation']);
+    Route::post('/update_student_info/{id}', [AdminController::class, 'updateStudentInfo']);
+    Route::post('/incident_rejected', [AdminController::class, 'UpdateRejected']);
+    Route::post('/violation_records/{id}', [AdminController::class, 'archive']);
+});
 
-//view student faculty
-Route::get('/violation_history', [ViewController::class, 'violation_history'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
-Route::get('/violation_tracking', [ViewController::class, 'violation_tracking'])->name('faculty_violation')->middleware([RedirectIfNotAuthenticated::class, 'permission:student']);
+// ==========================
+// FACULTY ROUTES
+// ==========================
+Route::middleware(['permission:faculty', RedirectIfNotAuthenticated::class])->group(function () {
+    // Dashboard & Views
+    Route::get('/faculty_dashboard', [ViewController::class, 'faculty_dashboard'])->name('faculty_dashboard');
+    Route::get('/faculty_violation', [ViewController::class, 'faculty_violation'])->name('faculty_violation');
+    Route::get('/faculty_incident', [ViewController::class, 'faculty_incident'])->name('faculty_incident');
 
+    // Create
+    Route::post('/submit_incident_report', [FacultyController::class, 'submitIncidentReport']);
+});
 
-//Create routes
-Route::post('/create_penalties', [SuperController::class, 'penalties'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/create_violation', [SuperController::class, 'violation'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/create_referals', [SuperController::class, 'referal'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/create_rules', [SuperController::class, 'rules'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/post_violation',[AdminController::class,'postviolation'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline']);
-Route::post('/update_student_info/{id}', [AdminController::class, 'updateStudentInfo'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline']);
-Route::post('/submit_incident_report',[FacultyController::class,'submitIncidentReport'])->middleware([RedirectIfNotAuthenticated::class, 'permission:faculty']);
-
-
-//Update routes
-Route::post('/update_penalty/{id}', [SuperController::class, 'updatePenalty'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/update_violation/{id}', [SuperController::class, 'updateViolation'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/update_rule/{id}', [SuperController::class, 'updateRule'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/update_referral/{id}', [SuperController::class, 'updateReferral'])->middleware([RedirectIfNotAuthenticated::class, 'permission:super']);
-Route::post('/incident_rejected', [AdminController::class, 'UpdateRejected']);
-Route::post('/violation_records/{id}', [AdminController::class, 'archive'])->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline']);
-Route::post('/update_user', [AuthController::class, 'updateUser']);
+// ==========================
+// STUDENT ROUTES
+// ==========================
+Route::middleware(['permission:student', RedirectIfNotAuthenticated::class])->group(function () {
+    // Dashboard & Views
+    Route::get('/student_dashboard', [ViewController::class, 'student_dashboard'])->name('student_dashboard');
+    Route::get('/violation_history', [ViewController::class, 'violation_history'])->name('violation_history');
+    Route::get('/violation_tracking', [ViewController::class, 'violation_tracking'])->name('violation_tracking');
+});;
 
 
 //get routes
@@ -85,6 +106,7 @@ Route::get('/get_violations', [DataController::class, 'getViolations']);
 Route::get('/get_penalty', [DataController::class, 'getPenalties']);
 Route::get('/get_referal', [DataController::class, 'getReferals']);
 Route::get('/get_status', [DataController::class, 'getStatus']);
+
 Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
 Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
 Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
@@ -105,30 +127,38 @@ Route::get('/violation_handbook',[ViewController::class,'disicipline_handbook'])
 
 
 //datatables
-Route::get('/violation_records/data', function () {
-    return DataTables::of(
-        postviolation::with(['violation', 'status'])
-            ->where('is_active', true)
-    )
-    ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
-    ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
-    ->addColumn('actions', function ($data) {
-        return '
-            <button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>
-            <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
-            <button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>
-        ';
-    })
-    ->rawColumns(['actions'])
-    ->filterColumn('violation', function($query, $keyword) {
-        $query->whereHas('violation', function($q) use ($keyword) {
-            $q->where('violations', 'like', "%{$keyword}%");
+Route::get('/violation_records/data', function (Request $request) {
+    $query = postviolation::with(['violation', 'status'])
+        ->where('is_active', true);
+
+    // Apply status filter if requested and not empty
+    if ($request->has('status') && $request->status !== '') {
+        // Since status is a relationship, filter by related status table
+        $query->whereHas('status', function($q) use ($request) {
+            $q->where('status', $request->status);
         });
-    })
-    ->filterColumn('status', function($query, $keyword) {
-        $query->whereHas('status', function($q) use ($keyword) {
-            $q->where('status', 'like', "%{$keyword}%");
-        });
-    })
-    ->make(true);
-})->middleware(['auth', 'permission:discipline'])->name('violation_records.data');
+    }
+
+    return DataTables::of($query)
+        ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
+        ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
+        ->addColumn('actions', function ($data) {
+            return '
+                <button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>
+                <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
+                <button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>
+            ';
+        })
+        ->rawColumns(['actions'])
+        ->filterColumn('violation', function($query, $keyword) {
+            $query->whereHas('violation', function($q) use ($keyword) {
+                $q->where('violations', 'like', "%{$keyword}%");
+            });
+        })
+        ->filterColumn('status', function($query, $keyword) {
+            $query->whereHas('status', function($q) use ($keyword) {
+                $q->where('status', 'like', "%{$keyword}%");
+            });
+        })
+        ->make(true);
+})->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('violation_records.data');

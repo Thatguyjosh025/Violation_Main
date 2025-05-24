@@ -82,7 +82,7 @@ class AuthController extends Controller
             'lastname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
             'middlename' => ['nullable', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
             'email' => ['required','string', 'email', 'max:255', 'unique:tb_users', 'regex:/^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
-            'student_no' => ['required', 'string', 'max:11', 'unique:tb_users', 'regex:/^(0200|1900|1800)\d{7}$/'],
+            'student_no' => ['required', 'string', 'max:11', 'unique:tb_users', 'regex:/^(ALA0)\d{7}$/'],
             'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?!.*\s)(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/'],
             'role' => ['required', 'in:student,counselor,discipline,faculty,registar,super'],
             'status' => ['in:active,inactive'],
@@ -135,14 +135,15 @@ class AuthController extends Controller
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'email' => 'required|email|unique:tb_users,email,' . $user->id,
+            'student_no' => ['required', 'string', 'max:11', 'unique:tb_users,student_no,' . $user->id],
             'role' => 'string|max:255',
             'status' => 'required|string|max:255',
         ]);
 
         $user->update($validatedData);
-        return response()->json(['status' => 200, 'message' => 'User  updated successfully']);
+        return response()->json(['status' => 200, 'message' => 'User updated successfully']);
     }
-    
+        
     public function logout(Request $request) {
         Auth::logout(); 
         Session::flush(); 

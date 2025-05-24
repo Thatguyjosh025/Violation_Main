@@ -6,15 +6,12 @@
     $notif = notifications::get();
     $dataviolators = postviolation::get();
 
-    function countMinor($collection) {
-        return $collection->filter(function($item) {
-            return str_contains($item->severity_Name, 'Minor');
-        })->count();
+    function countMinor() {
+    return postviolation::where('is_active', 1)->where('severity_Name', 'like', '%Minor%') ->count();
     }
-    function countMajor($collection) {
-        return $collection->filter(function($item) {
-            return str_contains($item->severity_Name, 'Major');
-        })->count();
+
+    function countMajor() {
+        return postviolation::where('is_active', 1)->where('severity_Name', 'like', '%Major%')->count();
     }
 @endphp
 <div class="d-flex align-items-center">

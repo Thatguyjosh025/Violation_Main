@@ -10,18 +10,28 @@
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Violation Records</h3>
             </div>
+    
+            <!-- Filter Dropdown -->
+                <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+ 
+                </div>
 
-            <!-- Violation Records Section -->
-            <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
-                <!-- <select id="statusFilter" class="sort-dropdown">
-                    <option value="All" selected>Show All</option>
-                    <option value="Ongoing">Ongoing</option>
+            <div class="mb-2 d-flex align-items-center justify-content-between">
+                <div>
+                    <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
+                    <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
+                </div>
+                <select id="statusFilter" class="sort-dropdown form-select" style="width: 10%;">
+                    <option value="">Show All</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Appealed">Appealed</option>
+                    <option value="Appeal Under Review">Appeal Under Review</option>
+                    <option value="Appeal Approved">Appeal Approved</option>
+                    <option value="Appeal Denied">Appeal Denied</option>
                     <option value="Resolved">Resolved</option>
-                </select> -->
-            </div>
-            <div class="mb-2">
-                <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
-                <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
+                </select>
             </div>
     
             <div class="table-container">
@@ -47,21 +57,34 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
    $(document).ready(function() {
-    $('#violationrecordstable').DataTable({
+    let table = $('#violationrecordstable').DataTable({
         responsive: true, 
         processing: true,
         serverSide: true,
-        ajax: "{{ route('violation_records.data') }}",
+        ajax: {
+            url: "{{ route('violation_records.data') }}",
+            data: function (d) {
+                const status = $('#statusFilter').val();
+                if (status) {
+                    d.status = status;
+                }
+            }
+        },
         columns: [
             { data: 'student_no', name: 'student_no' },
             { data: 'student_name', name: 'student_name' },
             { data: 'school_email', name: 'school_email' },
-            { data: 'violation', name: 'violation' },
-            { data: 'status', name: 'status' },
+            { data: 'violation', name: 'violation'},
+            { data: 'status', name: 'status'},
             { data: 'Date_Created', name: 'Date_Created' },
             { data: 'Update_at', name: 'Update_at' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]
+    });
+
+    // Filter table when dropdown changes
+    $('#statusFilter').on('change', function () {
+        table.ajax.reload();
     });
 });
 

@@ -83,6 +83,31 @@
         }
     });
 }
+
+$(document).ready(function () {
+        // Get the current URL
+        var currentUrl = window.location.href;
+
+        // Handle click events on navigation links
+        $('.nav-link').on('click', function (e) {
+            $('.nav-link').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        // Set the active link based on the current URL
+        $('.nav-link').each(function() {
+            if ($(this).attr('href') === currentUrl) {
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
+            }
+        });
+
+        // Set the Authorization link as the default active link if no match is found
+        if (!$('.nav-link').hasClass('active')) {
+            $('.nav-link').removeClass('active');
+            $('.nav-link[href="' + "{{ route('super_dashboard') }}" + '"]').addClass('active');
+        }
+    });
 </script>
 
 </body>

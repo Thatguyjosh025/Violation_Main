@@ -17,23 +17,22 @@ $reports = incident::get();
             <div class="container mt-5 ">
                 <ul class="nav nav-tabs ms-auto mb-3" id="incidentTabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="active-tab" data-bs-toggle="tab" href="#active-incidents" role="tab" aria-controls="active-incidents">Active Incidents</a>
+                        <a class="nav-link active" id="active-tab" data-bs-toggle="tab" href="#active-incidents" role="tab" aria-controls="active-incidents" aria-selected="true">Active Incidents</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" id="approved-tab" data-bs-toggle="tab" href="#approved" role="tab" aria-controls="approved" aria-selected="false">Approved</a>
-                    </li> -->
                     <li class="nav-item">
                         <a class="nav-link" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab" aria-controls="rejected" aria-selected="false">Rejected</a>
                     </li>
+                     <!-- <li class="nav-item">
+                        <a class="nav-link" id="approved-tab" data-bs-toggle="tab" href="#approved" role="tab" aria-controls="approved" aria-selected="false">Approved</a>
+                    </li> -->
                 </ul>
-
                 <div class="tab-content" style="height: 45rem; background: white; border-radius: 7px; max-height: 50%;">
                     <!-- Active Incidents -->
                      <div class="tab-pane fade show active" id="active-incidents" role="tabpanel">
                         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
                             @php $activeReports = $reports->where('is_visible', '===', 'show'); @endphp
                             @if ($activeReports->isEmpty())
-                                <div class="alignment" style="justify-content: center; width: 100%;">
+                                <div class="alignment-show" style="justify-content: center; width: 100%;">
                                     <div class="col-12 text-center mt-5" style="justify-content: center;">
                                         <p>No active incident reports found.</p>
                                     </div>
@@ -91,18 +90,18 @@ $reports = incident::get();
                     </div> -->
 
                     <!-- Reject -->
-                    <div class="tab-pane fade" id="Reject" role="tabpanel">
+                   <div class="tab-pane fade" id="rejected" role="tabpanel">
                         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
-                            @php $archivedReports = $reports->where('is_visible', '===', 'reject'); @endphp
-                            @if ($archivedReports->isEmpty())
-                                <div class="alignment" style="justify-content: center; width: 100%;">
+                            @php $rejectedReports = $reports->where('is_visible', '===', 'reject'); @endphp
+                            @if ($rejectedReports->isEmpty())
+                                <div class="alignment-reject" style="justify-content: center; width: 100%;">
                                     <div class="col-12 text-center mt-5" style="justify-content: center;">
                                         <p>No rejected incident reports found.</p>
                                     </div>
                                 </div>
                             @else
-                                @foreach ($archivedReports as $datareport)
-                                    <div class="col" style="width: 23rem;">
+                                @foreach ($rejectedReports as $datareport)
+                                    <div class="col incident-reject" style="width: 23rem;">
                                         <input type="hidden" value="{{ $datareport->id }}">
                                         <div class="card p-3 position-relative">
                                             <div class="d-flex justify-content-between align-items-start">
@@ -112,7 +111,7 @@ $reports = incident::get();
                                             <p>{{ $datareport->student_name }}<br>{{ $datareport->student_no }}</p>
                                             <p><small>Submitted by: {{ $datareport->faculty_name }}</small></p>
                                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                                <button class="btn btn-view-incident" data-source="archive" value="{{ $datareport->id }}" style="background: #376881; color: white;">Review</button>
+                                                <button class="btn btn-view-incident" data-source="reject" value="{{ $datareport->id }}" style="background: #376881; color: white;">Review</button>
                                             </div>
                                         </div>
                                     </div>
@@ -120,7 +119,6 @@ $reports = incident::get();
                             @endif
                         </div>
                     </div>
-
                 </div>
             </div>
                 </div>
@@ -218,6 +216,8 @@ $reports = incident::get();
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+
 $(document).ready(function(){
 
      $("#referal_type, #penalty_type").on("change", function () {
@@ -229,7 +229,8 @@ $(document).ready(function(){
         $(this).removeClass("is-invalid");
         $(this).next(".invalid-feedback").remove();
     });
-
+    
+   
 
     $(document).on('click', '.btn-view-incident', function(e){
         e.preventDefault();
@@ -238,7 +239,7 @@ $(document).ready(function(){
         const source = $(this).data('source');
         $('#violationProcess').modal('show');
 
-        if (source === 'archive') {
+        if (source === 'reject') {
             $('#approve-btn').hide();
             $('#approve-btn').next('.btn-danger').hide();
             $('#incident-dropdowns').hide();
@@ -265,6 +266,23 @@ $(document).ready(function(){
                 console.error("Error loading incident info:", error);
             }
         });
+    });
+
+    // Ensure the Active Incidents tab is selected by default
+    $('#active-tab').tab('show');
+
+    // Hide the specific div when the Rejected tab is clicked
+    $('#rejected-tab').on('click', function() {
+        $('.alignment-reject').show();
+        $('.alignment-show').hide();
+        $('.incident-card').hide();
+        $('.incident-reject').show();
+    });
+
+    // Show the specific div when the Active Incidents tab is clicked
+    $('#active-tab').on('click', function() {
+        $('.alignment-show').show();
+        $('.incident-card').show();
     });
 
     function resetModal() {
