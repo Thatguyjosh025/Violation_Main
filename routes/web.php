@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use App\Models\MainModel;
 use App\Models\postviolation;
 use App\Http\Controllers\Auth;
@@ -148,6 +149,9 @@ Route::get('/violation_records/data', function (Request $request) {
                 <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
                 <button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>
             ';
+        })
+        ->editColumn('Date_Created', function($data) {
+            return Carbon::parse($data->Date_Created)->format('Y-m-d');
         })
         ->rawColumns(['actions'])
         ->filterColumn('violation', function($query, $keyword) {

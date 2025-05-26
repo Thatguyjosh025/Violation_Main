@@ -39,7 +39,7 @@ return new class extends Migration
             $table->string('Notes',length:500)->nullable();
             $table->string('appeal');
             $table->string('upload_evidence')->nullable();
-            $table->date('Date_Created');
+            $table->dateTime('Date_Created');
             $table->date('Update_at');
             $table->boolean('is_active')->default(true);
         });

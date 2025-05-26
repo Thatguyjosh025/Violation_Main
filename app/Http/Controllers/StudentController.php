@@ -23,13 +23,13 @@ class StudentController extends Controller
             ->where('student_no', $student_number)
             ->get();
 
-        // 3-day demo expiration check
+        // 5 mins violation demo expiration check
         foreach ($violations as $violation) {
-            $createdDate = Carbon::parse($violation->Date_Created);
-            $now = Carbon::now();
-            $daysSinceCreated = $createdDate->diffInDays($now);
+            $createdDate = Carbon::parse($violation->Date_Created,'Asia/Manila'); // Note: always set the timezone this is fucking sucks
+            $now = Carbon::now('Asia/Manila');
+            $minutesSinceCreated = $createdDate->diffInMinutes($now);
 
-            if ($daysSinceCreated > 3 && $violation->appeal === 'N/A') {
+            if ($minutesSinceCreated > 5 && $violation->appeal === 'N/A') {
                 $violation->appeal = 'No Objection';
                 $violation->status_name = 3;
                 $violation->save();
@@ -38,35 +38,59 @@ class StudentController extends Controller
                     'title' => 'Violation Automatically Finalized',
                     'message' => 'Your violation has been automatically marked as Confirmed status due to no student appeal within the allowed time.',
                     'role' => 'student',
-                    'student_no' =>  $student_number,
+                    'student_no' => $student_number,
                     'type' => 'incident',
                     'date_created' => Carbon::now()->format('Y-m-d'),
                     'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
                 ]);
-            }
-            else if ($daysSinceCreated >= 1 && $violation->appeal === 'N/A') {
-                notifications::create([
-                    'title' => 'Warning',
-                    'message' => 'Warning final warning',
-                    'role' => 'student',
-                    'student_no' =>  $student_number,
-                    'type' => 'incident',
-                    'date_created' => Carbon::now()->format('Y-m-d'),
-                    'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
-                ]);
-
-                // Prevent duplicate warning
-                $violation->appeal = 'Warning'; 
-                $violation->save();
             }
         }
+        
+        // 3-day demo expiration check
+        // foreach ($violations as $violation) {
+        //     $createdDate = Carbon::parse($violation->Date_Created);
+        //     $now = Carbon::now();
+        //     $daysSinceCreated = $createdDate->diffInDays($now);
+
+        //     if ($daysSinceCreated > 3 && $violation->appeal === 'N/A') {
+        //         $violation->appeal = 'No Objection';
+        //         $violation->status_name = 3;
+        //         $violation->save();
+
+        //         notifications::create([
+        //             'title' => 'Violation Automatically Finalized',
+        //             'message' => 'Your violation has been automatically marked as Confirmed status due to no student appeal within the allowed time.',
+        //             'role' => 'student',
+        //             'student_no' =>  $student_number,
+        //             'type' => 'incident',
+        //             'date_created' => Carbon::now()->format('Y-m-d'),
+        //             'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
+        //         ]);
+        //     }
+        //     else if ($daysSinceCreated >= 1 && $violation->appeal === 'N/A') {
+        //         notifications::create([
+        //             'title' => 'Warning',
+        //             'message' => 'Warning final warning',
+        //             'role' => 'student',
+        //             'student_no' =>  $student_number,
+        //             'type' => 'incident',
+        //             'date_created' => Carbon::now()->format('Y-m-d'),
+        //             'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
+        //         ]);
+
+        //         // Prevent duplicate warning
+        //         $violation->appeal = 'Warning'; 
+        //         $violation->save();
+        //     }
+        // }
+
 
         $mappedViolations = $violations->map(function ($violation) {
             return [
                 'id' => $violation->id,
                 'student_name' => $violation->student_name,
                 'type' => optional($violation->violation)->violations,
-                'date' => $violation->Date_Created,
+                'date' => Carbon::parse($violation->Date_Created)->format('Y-m-d'),
                 'rule_Name' => $violation->rule_Name,
                 'description_Name' => $violation->description_Name,
                 'severity_Name' => $violation->severity_Name,
@@ -74,7 +98,8 @@ class StudentController extends Controller
                 'referals' => optional($violation->referal)->referals, 
                 'status' => optional($violation->status)->status, 
                 'Remarks' => $violation->Remarks,
-                'appeal' => $violation->appeal
+                'appeal' => $violation->appeal,
+                
             ];
         });
 

@@ -114,7 +114,7 @@ $(document).ready(function () {
         $('#actionTaken').text(violation.referals || 'N/A');
         $('#message').text(violation.Remarks);
         $('#status').text(violation.status || 'N/A');
-        console.log('helloworld');
+        console.log('Hello world');
         
         // Store data for appeal submit
         $('#appealModal').data('studentId', violation.id);

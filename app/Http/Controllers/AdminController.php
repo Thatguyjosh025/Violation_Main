@@ -11,6 +11,7 @@ use App\Models\violation;
 use Illuminate\Http\Request;
 use App\Models\notifications;
 use App\Models\postviolation;
+use App\Models\statuses;
 
 class AdminController extends Controller
 {
@@ -163,7 +164,7 @@ class AdminController extends Controller
             'school_email' => $create->school_email,
             'violation_name' => $create->violation->violations,
             'status_name' => $create->status->status,
-            'Date_Created' => $create->Date_Created->format('y-m-d')
+            'Date_Created' => $create->Date_Created->format('Y-m-d')
         ],
         'message' => 'test',
         'related_id' => $create->id
@@ -205,20 +206,19 @@ class AdminController extends Controller
                 'Remarks' => $student->Remarks,
                 'appeal' => $student->appeal,
                 'upload_evidence' => $student->upload_evidence,
-                'Date_Created' => $student->Date_Created,
+                'Date_Created' => Carbon::parse($student->Date_Created)->format('Y-m-d'),
             ]
         ]);
     }
 
-    public function updateStudentInfo(Request $request, $id)
-{
+    public function updateStudentInfo(Request $request, $id){
     $student = postviolation::with('status')->find($id);
 
     if (!$student) {
         return response()->json(['status' => 500, 'message' => 'Student not found']);
     }
 
-    $oldStatus = $student->status_name; // Store the old status
+    $oldStatus = $student->status ? $student->status->status_text : null; 
 
     $student->update([
         'student_no' => $request->update_student_no,
@@ -228,7 +228,7 @@ class AdminController extends Controller
         'violation_type' => $request->update_violation_type,
         'penalty_type' => $request->update_penalty_type,
         'severity_Name' => $request->update_severity,
-        'status_name' => $request->update_status,
+        'status_name' => $request->update_status, // this is the new status ID
         'rule_Name' => $request->update_rule_name,
         'description_Name' => $request->update_description,
         'faculty_involvement' => $request->update_faculty_involvement,
@@ -240,14 +240,12 @@ class AdminController extends Controller
         'Update_at' => Carbon::now('Asia/Manila')
     ]);
 
-    // Check if the status has changed
-     if ($oldStatus != $request->update_status) {
-        // Use the eager loaded status to get the status name
-        $statusName = $student->status->status; // Assuming the status name is stored in the 'name' column
+    $newStatusText = statuses::find($request->update_status)->status ?? 'Unknown';
 
+    if ($oldStatus != $newStatusText) {
         $notif = notifications::create([
             'title' => 'Violation Status Update',
-            'message' => 'Your violation has been escalated to ' . $statusName,
+            'message' => 'Your violation has been escalated to ' . $newStatusText,
             'role' => 'faculty',
             'student_no' => $request->update_student_no,
             'type' => 'approve',

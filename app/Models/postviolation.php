@@ -28,6 +28,7 @@ class postviolation extends Model
         'upload_evidence',
         'appeal',
         'Date_Created',
+        'Time_Created',
         'Update_at'
     ];
 
