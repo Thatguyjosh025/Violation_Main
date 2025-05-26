@@ -48,7 +48,7 @@
                         </div>
                         
                         <h5 class="mt-4 pb-2">Recent Violations</h5>
-                        <div class="recent-violation" style="height: 50%; max-height: 50%; overflow-y: auto;">
+                        <div class="recent-violation" style="height: 22rem; max-height: 50%; overflow-y: auto;">
                             <!-- Violation of selected user will be generated here -->
                             <div class="violation-card-no" style="text-align: center;"><p>No selected student.</p></div>
                         </div>

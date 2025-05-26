@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Carbon\Carbon;
 use App\Models\users;
 use Illuminate\Http\Request;
 use App\Models\notifications;
 use App\Models\postviolation;
+use Symfony\Component\Clock\now;
 use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
@@ -20,7 +22,45 @@ class StudentController extends Controller
         $violations = postviolation::with(['violation', 'penalty', 'referal', 'status'])
             ->where('student_no', $student_number)
             ->get();
-    
+
+        // 3-day demo expiration check
+        foreach ($violations as $violation) {
+            $createdDate = Carbon::parse($violation->Date_Created);
+            $now = Carbon::now();
+            $daysSinceCreated = $createdDate->diffInDays($now);
+
+            if ($daysSinceCreated > 3 && $violation->appeal === 'N/A') {
+                $violation->appeal = 'No Objection';
+                $violation->status_name = 3;
+                $violation->save();
+
+                notifications::create([
+                    'title' => 'Violation Automatically Finalized',
+                    'message' => 'Your violation has been automatically marked as Confirmed status due to no student appeal within the allowed time.',
+                    'role' => 'student',
+                    'student_no' =>  $student_number,
+                    'type' => 'incident',
+                    'date_created' => Carbon::now()->format('Y-m-d'),
+                    'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
+                ]);
+            }
+            else if ($daysSinceCreated >= 1 && $violation->appeal === 'N/A') {
+                notifications::create([
+                    'title' => 'Warning',
+                    'message' => 'Warning final warning',
+                    'role' => 'student',
+                    'student_no' =>  $student_number,
+                    'type' => 'incident',
+                    'date_created' => Carbon::now()->format('Y-m-d'),
+                    'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
+                ]);
+
+                // Prevent duplicate warning
+                $violation->appeal = 'Warning'; 
+                $violation->save();
+            }
+        }
+
         $mappedViolations = $violations->map(function ($violation) {
             return [
                 'id' => $violation->id,
@@ -37,6 +77,7 @@ class StudentController extends Controller
                 'appeal' => $violation->appeal
             ];
         });
+
     
         return response()->json($mappedViolations);
     }
@@ -52,6 +93,7 @@ public function updateAppealReason(Request $request)
                               ->first();
 
     if ($violation) {
+
         if ($appealReason === 'No Objection') {
             // Student chose NOT to appeal
             $violation->update([
@@ -83,6 +125,5 @@ public function updateAppealReason(Request $request)
 
     return response()->json(['success' => false, 'message' => 'Violation not found']);
 }
-
 
 }

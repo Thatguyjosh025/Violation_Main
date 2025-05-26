@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
+use App\Http\Controllers\StudentController;
+
 class ViewController extends Controller
 {
     //
@@ -93,8 +95,10 @@ class ViewController extends Controller
     }
 
     //student components
-    public function student_dashboard()
+    public function student_dashboard() 
     {
+        $studentController = new StudentController();
+        $studentController->getViolationsRecords(request());
         return view('student_dashboard', ['views' => 'StudentDashboard']);
     }
     public function violation_history()

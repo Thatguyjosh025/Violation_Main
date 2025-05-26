@@ -59,7 +59,7 @@
                                     <div class="card-title">Total Recorded Minor Violation</div>
                                     <i class="bi bi-exclamation-circle-fill text-warning fs-3"></i>
                                 </div>
-                                <div class="card-number">{{ countMinor($dataviolators) }}</div>
+                                <div class="card-number">{{ countMinor() }}</div>
                                 <div class="progress">
                                     <div class="progress-bar bg-warning" role="progressbar" style="width: 60%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
@@ -72,7 +72,7 @@
                                     <div class="card-title">Total Recorded Major Violation</div>
                                     <i class="bi bi-exclamation-circle-fill text-danger fs-3"></i>
                                 </div>
-                                <div class="card-number">{{ countMajor($dataviolators) }}</div>
+                                <div class="card-number">{{ countMajor() }}</div>
                                 <div class="progress">
                                     <div class="progress-bar bg-danger" role="progressbar" style="width: 45%;" aria-valuenow="29" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
