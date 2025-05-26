@@ -52,6 +52,7 @@ return new class extends Migration
             $table->string('course_section');
             $table->string('school_email');
             $table->string('faculty_name');
+            $table->string('faculty_id');
 
             $table->unsignedBigInteger('violation_type');
             $table->foreign('violation_type')->references('violation_id')->on('tb_violation');

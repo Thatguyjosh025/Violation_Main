@@ -21,6 +21,7 @@ class FacultyController extends Controller
             'description' => 'required|string',
             'severity' => 'required|string',
             'faculty_name' => 'required|string',
+            'faculty_id' => 'required|string',
             'remarks' => 'required|string|max:500',
             'upload_evidence' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048',
         ]);
@@ -37,6 +38,7 @@ class FacultyController extends Controller
             'course_section' => $request->course_section,
             'school_email' => $request->school_email,
             'faculty_name' => $request->faculty_name,
+            'faculty_id' => $request->faculty_id,
             'violation_type' => $request->violation_type,
             'rule_name' => $request->rule_name,
             'description' => $request->description,
@@ -54,8 +56,9 @@ class FacultyController extends Controller
             'title' => 'Incident Report',
             'message' => 'You have new incident report',
             'role' => 'admin',
-            'student_no' => null,
+            'student_no' => $request->faculty_id,
             'type' => 'incident',
+            'url' => '/incident_report',
             'date_created' => Carbon::now()->format('Y-m-d'),
             'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
         ]);

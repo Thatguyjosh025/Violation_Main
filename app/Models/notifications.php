@@ -17,6 +17,7 @@ class notifications extends Model
     'role',
     'type',
     'is_read',
+    'url',
     'date_created',
     'created_time'];
     

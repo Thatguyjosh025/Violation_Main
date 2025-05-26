@@ -99,17 +99,17 @@ class AdminController extends Controller
             'Update_at' => Carbon::now('Asia/Manila'),
             'is_active' => true
         ]);
-
         $incident = incident::find($request->incident_id);
         if ($incident) {
-            
+            $facultyId = $incident->faculty_id;
+
             $incident->delete();
 
             $notif = notifications::create([
                 'title' => 'Incident Approval',
-                'message' => 'Your Incident Report has been approve',
+                'message' => 'Your Incident Report has been approved',
                 'role' => 'faculty',
-                'student_no' => null,
+                'student_no' => $facultyId,
                 'type' => 'approve',
                 'date_created' => Carbon::now()->format('Y-m-d'),
                 'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
@@ -246,7 +246,7 @@ class AdminController extends Controller
         $notif = notifications::create([
             'title' => 'Violation Status Update',
             'message' => 'Your violation has been escalated to ' . $newStatusText,
-            'role' => 'faculty',
+            'role' => 'student',
             'student_no' => $request->update_student_no,
             'type' => 'approve',
             'date_created' => Carbon::now()->format('Y-m-d'),
@@ -290,17 +290,17 @@ public function getIncidentInfo(Request $request)
 
 }
 
-public function UpdateRejected(Request $request)
-{
+public function UpdateRejected(Request $request){
     $incident = incident::findOrFail($request->id);
     $incident->is_visible = 'reject'; 
     $incident->save();
 
     $notif = notifications::create([
+        $facultyId = $incident->faculty_id,
         'title' => 'Incident Rejected',
         'message' => 'Your Incident Report has been rejected',
         'role' => 'faculty',
-        'student_no' => null,
+        'student_no' => $request->$facultyId,
         'type' => 'approve',
         'date_created' => Carbon::now()->format('Y-m-d'),
         'created_time' => Carbon::now('Asia/Manila')->format('h:i A')

@@ -16,6 +16,7 @@ class incident extends Model
         'course_section',
         'school_email',
         'faculty_name',
+        'faculty_id',
         'violation_type',
         'rule_name',
         'description',
