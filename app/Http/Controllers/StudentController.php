@@ -40,12 +40,13 @@ class StudentController extends Controller
                     'role' => 'student',
                     'student_no' => $student_number,
                     'type' => 'incident',
+                    'url' => '/violation_tracking',
                     'date_created' => Carbon::now()->format('Y-m-d'),
                     'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
                 ]);
             }
         }
-        
+
         // 3-day demo expiration check
         // foreach ($violations as $violation) {
         //     $createdDate = Carbon::parse($violation->Date_Created);
@@ -138,6 +139,7 @@ public function updateAppealReason(Request $request)
                 'role' => 'admin',
                 'student_no' => null,
                 'type' => 'incident',
+                'url' => '/violation_records',
                 'date_created' => Carbon::now()->format('Y-m-d'),
                 'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
             ]);

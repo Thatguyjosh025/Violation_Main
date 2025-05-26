@@ -83,15 +83,17 @@ $filterednotif = notifications::where('role', 'faculty')
                     </div>
                 @else
                     @foreach ($filterednotif as $notifdata)
-                        <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ $notifdata->title }}</h6>
-                                <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
-                                <small class="text-muted">{{ $notifdata->created_time }}</small><br>
-                                <small class="text-muted">{{ $notifdata->date_created }}</small>
+                        <a href="{{ $notifdata->url }}" class="text-decoration-none text-dark">
+                            <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ $notifdata->title }}</h6>
+                                    <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
+                                    <small class="text-muted">{{ $notifdata->created_time }}</small><br>
+                                    <small class="text-muted">{{ $notifdata->date_created }}</small>
+                                </div>
+                                <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
                             </div>
-                            <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
-                        </div>
+                        </a>
                     @endforeach
                 @endif
                 </div>

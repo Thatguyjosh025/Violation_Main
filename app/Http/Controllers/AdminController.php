@@ -111,6 +111,7 @@ class AdminController extends Controller
                 'role' => 'faculty',
                 'student_no' => $facultyId,
                 'type' => 'approve',
+                'url' => '/faculty_incident',
                 'date_created' => Carbon::now()->format('Y-m-d'),
                 'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
             ]);
@@ -151,6 +152,7 @@ class AdminController extends Controller
         'role' => 'student',
         'student_no' => $request->student_no,
         'type' => 'posted',
+        'url' => '/violation_tracking',
         'date_created' => Carbon::now()->format('Y-m-d'),
         'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
     ]);
@@ -249,6 +251,7 @@ class AdminController extends Controller
             'role' => 'student',
             'student_no' => $request->update_student_no,
             'type' => 'approve',
+            'url' => '/violation_tracking',
             'date_created' => Carbon::now()->format('Y-m-d'),
             'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
         ]);
