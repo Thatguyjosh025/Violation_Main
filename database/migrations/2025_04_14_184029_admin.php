@@ -39,7 +39,7 @@ return new class extends Migration
             $table->string('Notes',length:500)->nullable();
             $table->string('appeal');
             $table->string('upload_evidence')->nullable();
-            $table->date('Date_Created');
+            $table->dateTime('Date_Created');
             $table->date('Update_at');
             $table->boolean('is_active')->default(true);
         });
@@ -52,6 +52,7 @@ return new class extends Migration
             $table->string('course_section');
             $table->string('school_email');
             $table->string('faculty_name');
+            $table->string('faculty_id');
 
             $table->unsignedBigInteger('violation_type');
             $table->foreign('violation_type')->references('violation_id')->on('tb_violation');

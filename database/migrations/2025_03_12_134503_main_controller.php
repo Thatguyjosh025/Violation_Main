@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('type');
             $table->string('student_no')->nullable();
             $table->boolean('is_read')->default(false);
+            $table->string('url')->nullable();
             $table->date('date_created');
             $table->string('created_time');
         });

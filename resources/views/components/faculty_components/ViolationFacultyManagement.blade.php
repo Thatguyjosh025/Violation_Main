@@ -45,6 +45,7 @@ use App\Models\users;
 
                                     <label class="form-label">Faculty Name</label>
                                     <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}"  pattern="[A-Za-z ]+" title="Only letters are allowed" disabled>
+                                    <input type="hidden" name="faculty_id" id="incident_faculty_id" value="{{ Auth::user()->student_no }}">
                                 </div>
 
     
@@ -279,6 +280,7 @@ $(document).ready(function () {
         formData.append('description', $('#incident_report_desc').val());
         formData.append('severity', $('#incident_report_severity').val());
         formData.append('remarks', $('#incident_report_remarks').val());
+        formData.append('faculty_id', $('#incident_faculty_id').val());
 
         const fileInput = $('#uploadEvidence')[0];
         const file = fileInput.files[0];

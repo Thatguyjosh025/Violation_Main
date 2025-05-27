@@ -5,7 +5,7 @@
     <h3 class="mb-0">Active Violation</h3>
 </div>
 
-<div class="container mt-4">
+<div class="container mt-4" id="activeViolationCards">
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3" id="violation-cards">
         <!-- Cards will be inserted here dynamically -->
     </div>
@@ -94,6 +94,7 @@ $(document).ready(function () {
                         </div>
                     `;
                     cardsContainer.append(cardHtml);
+                // $("#activeViolationCards").load(location.href + " #activeViolationCards > *");
                 });
             }
         },
@@ -113,12 +114,14 @@ $(document).ready(function () {
         $('#actionTaken').text(violation.referals || 'N/A');
         $('#message').text(violation.Remarks);
         $('#status').text(violation.status || 'N/A');
-
+        console.log('Hello world');
+        
         // Store data for appeal submit
         $('#appealModal').data('studentId', violation.id);
         $('#appealModal').data('studentName', violation.student_name);
 
-        if (violation.appeal === 'N/A') {
+
+        if (violation.appeal === 'N/A' || violation.appeal === 'Warning') {
             $('#appealSection').show();
         } else {
             $('#appealSection').hide();

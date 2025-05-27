@@ -59,7 +59,7 @@
                                     <div class="card-title">Total Recorded Minor Violation</div>
                                     <i class="bi bi-exclamation-circle-fill text-warning fs-3"></i>
                                 </div>
-                                <div class="card-number">{{ countMinor($dataviolators) }}</div>
+                                <div class="card-number">{{ countMinor() }}</div>
                                 <div class="progress">
                                     <div class="progress-bar bg-warning" role="progressbar" style="width: 60%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
@@ -72,7 +72,7 @@
                                     <div class="card-title">Total Recorded Major Violation</div>
                                     <i class="bi bi-exclamation-circle-fill text-danger fs-3"></i>
                                 </div>
-                                <div class="card-number">{{ countMajor($dataviolators) }}</div>
+                                <div class="card-number">{{ countMajor() }}</div>
                                 <div class="progress">
                                     <div class="progress-bar bg-danger" role="progressbar" style="width: 45%;" aria-valuenow="29" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
@@ -93,15 +93,17 @@
                                 </div>
                             @else
                                 @foreach ($notif->where('role', 'admin')->where('is_read', 0) as $notifdata)
-                                    <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-1">{{ $notifdata->title }}</h6>
-                                            <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
-                                            <small class="text-muted">{{ $notifdata->created_time }}</small>
-                                            <small class="text-muted">{{ $notifdata->date_created }}</small>
+                                    <a href="{{ $notifdata->url }}" class="text-decoration-none text-dark">
+                                        <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">{{ $notifdata->title }}</h6>
+                                                <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
+                                                <small class="text-muted">{{ $notifdata->created_time }}</small>
+                                                <small class="text-muted">{{ $notifdata->date_created }}</small>
+                                            </div>
+                                            <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
                                         </div>
-                                        <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
-                                    </div>
+                                    </a>
                                 @endforeach
                             @endif
                         </div>
