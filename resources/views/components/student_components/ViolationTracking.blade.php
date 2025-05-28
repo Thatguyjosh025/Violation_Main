@@ -1,5 +1,9 @@
 <link rel="stylesheet" href="{{ asset('css/student_css/ViolationTracking.css') }}">
+@php
+use App\Models\rules;
 
+$ruleinfos = rules::get();
+@endphp
 <div class="d-flex align-items-center">
     <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
     <h3 class="mb-0">Active Violation</h3>
@@ -107,7 +111,7 @@ $(document).ready(function () {
     $(document).on('click', '.view-btn', function () {
         let violation = $(this).data('violation');
         $('#offense').text(violation.type || 'N/A');
-        $('#ruleLink').text(violation.rule_Name).attr('href', violation.rule_Name);
+        $('#ruleLink').text(violation.rule_Name).attr('href', '/violation_handbook#' + violation.section_Id); // Use the section_Id from the response
         $('#detailsDescription').text(violation.description_Name);
         $('#severity').text(violation.severity_Name);
         $('#penalty').text(violation.penalties || 'N/A');

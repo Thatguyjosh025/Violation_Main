@@ -19,7 +19,7 @@
                 <a class="nav-link" href="{{ url('student_dashboard') }}"><i class="bi bi-columns-gap"></i> <span>Dashboard</span></a>
                 <a class="nav-link" href="{{ url('violation_tracking') }}"><i class="bi bi-person-exclamation"></i> <span>Violation Tracking</span></a>
                 <a class="nav-link" href="{{ url('violation_history') }}"><i class="bi bi-clipboard-data-fill"></i> <span>Violation History</span></a>
-                <a class="nav-link" href="#"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
+                <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
             </nav>
                 <div class="logout-container">
                     <a id="logout-link" class="logout-link" href="#" onclick="logout();">
@@ -31,9 +31,15 @@
                     </form>
                 </div>
         </div>
-
-        <div class="dashboard-content w-90">
-            @include('components.student_components.' . $views)
+        
+         <div class="dashboard-content w-90">
+            @if(View::exists('components.student_components.' . $views))
+                @include('components.student_components.' . $views)
+            @elseif(View::exists('components.shared.' . $views))
+                @include('components.shared.' . $views)
+            @else
+                <p>View not found.</p>
+            @endif
         </div>
 
 </body>
@@ -65,29 +71,30 @@
     });
 }
 
- $(document).ready(function () {
-        // Get the current URL
-        var currentUrl = window.location.href;
+$(document).ready(function () {
+    // Get the current path (without query or hash)
+    var currentUrl = window.location.pathname;
 
-        // Handle click events on navigation links
-        $('.nav-link').on('click', function (e) {
+    // Handle click events on navigation links
+    $('.nav-link').on('click', function (e) {
+        $('.nav-link').removeClass('active');
+        $(this).addClass('active');
+    });
+
+    // Set the active link based on the current path
+    $('.nav-link').each(function () {
+        var linkPath = new URL($(this).attr('href'), window.location.origin).pathname;
+        if (linkPath === currentUrl) {
             $('.nav-link').removeClass('active');
             $(this).addClass('active');
-        });
-
-        // Set the active link based on the current URL
-        $('.nav-link').each(function() {
-            if ($(this).attr('href') === currentUrl) {
-                $('.nav-link').removeClass('active');
-                $(this).addClass('active');
-            }
-        });
-
-        // Set the Dashboard link as the default active link if no match is found
-        if (!$('.nav-link').hasClass('active')) {
-            $('.nav-link').removeClass('active');
-            $('.nav-link[href="' + "{{ url('student_dashboard') }}" + '"]').addClass('active');
         }
     });
+
+    // Set Dashboard as fallback if no match found
+    if (!$('.nav-link').hasClass('active')) {
+        $('.nav-link').removeClass('active');
+        $('.nav-link[href="' + "{{ url('student_dashboard') }}" + '"]').addClass('active');
+    }
+});
 </script>
 </html>

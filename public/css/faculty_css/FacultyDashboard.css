@@ -145,6 +145,57 @@ body {
     display: none;
 }
 
+/* Logo */
+img.sidebar-logo.full-logo{
+    margin-right: 0;
+}
+
+button#closeSidebar {
+    margin-right: 5px;
+}
+
+.sidebar-logo {
+    height: 70px;
+    transition: all 0.3s ease;
+}
+
+.full-logo {
+    display: block;
+}
+
+.icon-logo {
+    display: none;
+}
+
+.sidebar.collapsed .full-logo {
+    display: none;
+}
+
+.sidebar.collapsed .icon-logo {
+    display: block !important;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 1rem;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+}
+
+img.sidebar-logo.full-logo {
+    width: 12rem;
+    object-fit: cover;
+}
+
+img.sidebar-logo.icon-logo.d-none {
+    margin-right: 2rem;
+    height: 3rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -182,7 +233,6 @@ body {
 /* End of Side Bar CSS */
 
 img {
-    width: 12rem;
     height: 12rem;
     object-fit: cover;
     margin-right: 2rem;
@@ -220,44 +270,63 @@ img {
     }
 }
 
-/* Minor/Major Progress Card */
+/* Processed Violation Progress Card */
 .custom-card {
-    background: white;
-    border-radius: 7px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
-    padding: 2rem;
-    min-width: 250px;
-    flex: 1 1 0;
-    height: 19.3rem;
-  }
-  
-  .card-title {
+  background: white;
+  border-radius: 7px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  height: 19.3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
     font-size: 1.3rem;
     font-weight: 600;
     color: #333;
     margin-bottom: 0.5rem;
-    margin-top: 1rem;
-  }
+    margin-top: 0.5rem;
+}
   
-  .card-number {
-    font-size: 3.5rem;
+.card-number {
+    font-size: 3.7rem;
     font-weight: 500;
     color: var(--main-color);
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     margin-top: 1rem;
-  }
-  
-  .progress {
+    display: flex;
+    justify-content: center;
+}
+
+.progress {
     height: 15px;
     border-radius: 6px;
     background-color: #e9ecef;
     overflow: hidden;
-  }
-  
-  .progress-bar {
-    height: 100%;
+}
+
+.progress-bar {
     border-radius: 6px;
-  }
+}
+
+.pending-incident-scrollable {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-grow: 1;
+    padding-right: 5px;
+}
+
+.incident-item {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.badge {
+    white-space: nowrap;
+}
 
 /* Calendar CSS */
 .calendar-container {
@@ -366,7 +435,7 @@ img {
 }
 
 /* Table Styles */
-.table-container {
+/* .table-container {
     background: white;
     border-radius: 7px;
     padding: 9px;
@@ -442,7 +511,7 @@ div#violationTable_filter, div#violationTable_length,
 }
 
 /* Mobile View */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
 .table-container {
     padding: 10px;
     overflow-x: hidden;
@@ -499,4 +568,4 @@ div#violationTable_filter, div#violationTable_length,
     width: 100%;
     margin-bottom: 10px;
 }
-}
+} */

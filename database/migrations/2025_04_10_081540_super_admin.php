@@ -53,26 +53,39 @@ return new class extends Migration
 
 
         DB::table('tb_violation')->insert([
-            ['violations' => 'Cheating'],
-            ['violations' => 'Gambling'],
-            ['violations' => 'Imporper Uniform'],
+            ['violations' => 'Bullying'],
+            ['violations' => 'Discourtesy or Disrespect'],
+            ['violations' => 'Improper Use of School Facilities/Equipment']
+            // ['violations' => 'Cheating'],
+            // ['violations' => 'Stealing/Tampering or Forgery of school records'],
+            // ['violations' => 'Improper Use of School Facilities/Equipment'],
+            // ['violations' => 'Discourtesy or Disrespect'],
+            // ['violations' => 'Usage of Electronic Mobile Phone during class'],
+            // ['violations' => 'Gambling'],
+            // ['violations' => 'Bullying'],
+            // ['violations' => 'Bringing/Usage of prohibited items inside the campus'],
+            // ['violations' => 'Public Display of Affection/Lascivious acts'],
         ]);
 
         DB::table('tb_penalties')->insert([
             ['penalties' => 'Verbal / Oral Warning'],
             ['penalties' => 'Written Apology'],
             ['penalties' => 'Written Reprimand'],
-            ['penalties' => 'Suspension'],
+            ['penalties' => 'Corrective Reinforcement'],
+            ['penalties' => 'Conference with the Dicipline Committee'],
+            ['penalties' => 'Suspension(a.Suspension from class | b. Preventive Suspension)'],
+            ['penalties' => 'Non-readmission'],
+            ['penalties' => 'Exlcusion'],
             ['penalties' => 'Expulsion'],
         ]);
         
         DB::table('tb_severity')->insert([
-            ['severity' => 'Minor A'],
-            ['severity' => 'Minor B'],
-            ['severity' => 'Minor C'],
+            ['severity' => 'Minor'],
             ['severity' => 'Major A'],
             ['severity' => 'Major B'],
             ['severity' => 'Major C'],
+            ['severity' => 'Major D'],
+
         ]);
         
         DB::table('tb_referals')->insert([
@@ -97,21 +110,21 @@ return new class extends Migration
         DB::table('tb_rules')->insert([
             [
                 'violation_id' => 1,
-                'severity_id' => 4, // assuming this exists
-                'rule_name' => 'No Cheating Allowed',
-                'description' => 'Any form of cheating during exams or assignments is prohibited.'
+                'severity_id' => 4, 
+                'rule_name' => 'Anti-Bullying',
+                'description' => 'STI is committed to providing a healthy learning environment where students support and respect each other. Thus, within the school, it is made clear that bullying will not be tolerated'
             ],
             [
                 'violation_id' => 2,
                 'severity_id' => 4,
-                'rule_name' => 'No Gambling',
-                'description' => 'Gambling in any form is strictly prohibited within school grounds.'
+                'rule_name' => 'Anti-Sexual Harassment Policy',
+                'description' => 'STI is committed to creating and maintaining an environment where all members of the STI community are free to study without fear of harassment of a sexual nature.'
             ],
             [
                 'violation_id' => 3,
                 'severity_id' => 1,
-                'rule_name' => 'No Uniform',
-                'description' => 'Failure to wear the prescribed school uniform without a valid excuse, in violation of the institution’s dress code policy'
+                'rule_name' => 'Use of School Facilities',
+                'description' => 'In any incident of destruction, damaging, tampering, or losing of school property, the school reserves the right to charge to the concerned student/s the cost of damage, including labor or repair.'
             ],
             
         ]);

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('firstname');
             $table->string('lastname');
             $table->string('middlename')->nullable();
+            $table->string('suffix')->nullable();
             $table->string('email')->unique();
             $table->string('student_no')->unique();
             $table->string('course_and_section')->nullable();

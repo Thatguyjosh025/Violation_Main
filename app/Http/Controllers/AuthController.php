@@ -13,10 +13,11 @@ class AuthController extends Controller
     //roles = faculty,counselor,dicipline,registar,student
     public function register(Request $request){
         $request->validate([
-            'firstname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(ma\.|Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
-            'lastname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
-            'middlename' => ['nullable', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-z]+)(?:[ .\'-][A-Za-z]+)*$/'],
-            'email' => ['required','string', 'email', 'max:255', 'unique:tb_users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'firstname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(ma\.|Ma\.|[A-Za-zÑñ]+)(?:[ .\'-][A-Za-zÑñ]+)*$/'],
+            'lastname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-zÑñ]+)(?:[ .\'-][A-Za-zÑñ]+)*$/'],
+            'middlename' => ['nullable', 'string', 'min:2', 'max:55', 'regex:/^(Ma\.|[A-Za-zÑñ]+)(?:[ .\'-][A-Za-zÑñ]+)*$/'],
+            'suffix' => ['nullable', 'string', 'min:2', 'max:55'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:tb_users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
             'student_no' => ['required', 'string', 'max:11', 'unique:tb_users'],
             'course_and_section' => ['required', 'string', 'max:55'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -28,6 +29,7 @@ class AuthController extends Controller
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'middlename' => $request->middlename,
+            'suffix' => $request->suffix,
             'email' => $request->email,
             'student_no' => $request->student_no,
             'course_and_section' => $request->course_and_section,

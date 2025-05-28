@@ -1,4 +1,4 @@
-    :root {
+:root {
     --main-color: #2c698d;
     --second-color: #018ABD;
     --third-color: #d9edf7;
@@ -145,6 +145,57 @@ body {
     display: none;
 }
 
+/* Logo */
+img.sidebar-logo.full-logo{
+    margin-right: 0;
+}
+
+button#closeSidebar {
+    margin-right: 5px;
+}
+
+.sidebar-logo {
+    height: 70px;
+    transition: all 0.3s ease;
+}
+
+.full-logo {
+    display: block;
+}
+
+.icon-logo {
+    display: none;
+}
+
+.sidebar.collapsed .full-logo {
+    display: none;
+}
+
+.sidebar.collapsed .icon-logo {
+    display: block !important;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 1rem;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+}
+
+img.sidebar-logo.full-logo {
+    width: 12rem;
+    object-fit: cover;
+}
+
+img.sidebar-logo.icon-logo.d-none {
+    margin-right: 2rem;
+    height: 3rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -207,14 +258,6 @@ img {
     flex-shrink: 0;
 }
 
-@media (max-width: 576px) {
-    .profile-img {
-        width: 8rem;
-        height: 8rem;
-        margin: 0 auto;
-    }
-}
-
 /* Calendar CSS */
 .calendar-container {
     height: 100%;
@@ -271,6 +314,17 @@ img {
     .calendar-dates div {
         padding: 6px;
     }
+
+    .profile-img {
+        width: 8rem;
+        height: 8rem;
+        margin: 0 auto;
+    }
+
+    .flex-grow-1 {
+    margin-left: 1rem;
+}
+
 }
 /* End of Calendar CSS */
 
@@ -279,9 +333,12 @@ img {
     background: white;
     border-radius: 7px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
-    padding: 2rem;
-    min-width: 250px;
+    /* padding: 2rem; */
+    padding: 0.5rem 1rem 0 1rem;
+    /* min-width: 250px; */
+    height: 9.1rem;
     flex: 1 1 0;
+    width: 100%;
   }
   
   .card-title {
@@ -295,7 +352,8 @@ img {
     font-size: 2.5rem;
     font-weight: 500;
     color: var(--main-color);
-    margin-bottom: 1.2rem;
+    /* margin-bottom: 1.2rem; */
+    margin-bottom: 0.5rem;
   }
   
   .progress {
@@ -306,7 +364,7 @@ img {
   }
   
   .progress-bar {
-    height: 100%;
+    /* height: 100%; */
     border-radius: 6px;
   }
 
@@ -349,54 +407,4 @@ img {
 
 .card h6 {
     font-size: 1rem;
-}
-/* Logo */
-img.sidebar-logo.full-logo{
-    margin-right: 0;
-}
-
-button#closeSidebar {
-    margin-right: 5px;
-}
-
-.sidebar-logo {
-    height: 70px;
-    transition: all 0.3s ease;
-}
-
-.full-logo {
-    display: block;
-}
-
-.icon-logo {
-    display: none;
-}
-
-.sidebar.collapsed .full-logo {
-    display: none;
-}
-
-.sidebar.collapsed .icon-logo {
-    display: block !important;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-left: 1rem;
-}
-
-.sidebar.collapsed .logo {
-    justify-content: center;
-}
-
-img.sidebar-logo.full-logo {
-    width: 12rem;
-    object-fit: cover;
-}
-
-img.sidebar-logo.icon-logo.d-none {
-    margin-right: 2rem;
-    height: 3rem;
 }

@@ -298,12 +298,13 @@ public function UpdateRejected(Request $request){
     $incident->is_visible = 'reject'; 
     $incident->save();
 
+    $facultyId = $incident->faculty_id;
+
     $notif = notifications::create([
-        $facultyId = $incident->faculty_id,
         'title' => 'Incident Rejected',
         'message' => 'Your Incident Report has been rejected',
         'role' => 'faculty',
-        'student_no' => $request->$facultyId,
+        'student_no' => $facultyId,
         'type' => 'approve',
         'date_created' => Carbon::now()->format('Y-m-d'),
         'created_time' => Carbon::now('Asia/Manila')->format('h:i A')

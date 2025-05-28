@@ -87,12 +87,25 @@ class StudentController extends Controller
 
 
         $mappedViolations = $violations->map(function ($violation) {
+            $sectionId = '';
+            if ($violation->rule_Name === 'Anti-Bullying') {
+                $sectionId = 'antibullyingsection';
+            } elseif ($violation->rule_Name === 'Anti-Sexual Harassment Policy') {
+                $sectionId = 'antisexualsection';
+            } elseif ($violation->rule_Name === 'Use of School Facilities'){
+                $sectionId = 'improperuseoffacilities';
+            }
+            else{
+                $sectionId = 'frontpage';
+            }
+            
             return [
                 'id' => $violation->id,
                 'student_name' => $violation->student_name,
                 'type' => optional($violation->violation)->violations,
                 'date' => Carbon::parse($violation->Date_Created)->format('Y-m-d'),
                 'rule_Name' => $violation->rule_Name,
+                'section_Id' => $sectionId,
                 'description_Name' => $violation->description_Name,
                 'severity_Name' => $violation->severity_Name,
                 'penalties' => optional($violation->penalty)->penalties, 
