@@ -33,7 +33,11 @@ return new class extends Migration
             $table->string('message');
             $table->string('role');
             $table->string('type');
+            // $table->string('student_no')->nullable();
+
             $table->string('student_no')->nullable();
+            $table->foreign('student_no')->references('student_no')->on('tb_users');
+
             $table->boolean('is_read')->default(false);
             $table->string('url')->nullable();
             $table->date('date_created');

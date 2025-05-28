@@ -12,11 +12,19 @@ $userdata = users::get();
 </div>
 
 <div class="container mt-4">
-    <div class="add-btn" style="display: flex; justify-content: end;">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <!-- Left side: Export and Print buttons -->
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
+            <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
+        </div>
+
+        <!-- Right side: Add button -->
         <button class="btn btn-action w-auto" type="button" data-bs-toggle="modal" data-bs-target="#adduser">
             + Add
         </button>
     </div>
+
     <div class="table-container mt-3">
         <!-- Table -->
         <div class="table-responsive-sm overflow-hidden">
@@ -74,8 +82,24 @@ $userdata = users::get();
                         <input type="text" class="form-control" id="lastname" name="lastname">
                     </div>
                     <div class="mb-3">
-                        <label for="middlename" class="form-label">Middle Name (Optional)</label>
-                        <input type="text" class="form-control" id="middlename">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-9">
+                                <label for="middlename" class="form-label">Middle Name (Optional)</label>
+                                <input type="text" class="form-control" id="middlename" name="middlename"
+                                    pattern="^[A-Za-zÑñ]+(?:[ .'-][A-Za-zÑñ]+)*$"
+                                    title="Only letters, spaces, periods, hyphens, and apostrophes are allowed">
+                            </div>
+                            <div class="col-md-3">
+                                <p for="suffix" class="form-label" style="font-size: small;">Suffix (Optional)</p>
+                                <select class="form-select" id="suffix" name="suffix">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email:</label>
@@ -144,8 +168,24 @@ $userdata = users::get();
                         <input type="text" class="form-control" id="lastname" name="lastname">
                     </div>
                     <div class="mb-3">
-                        <label for="middlename" class="form-label">Middle Name (Optional)</label>
-                        <input type="text" class="form-control" id="middlename">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-9">
+                                <label for="middlename" class="form-label">Middle Name (Optional)</label>
+                                <input type="text" class="form-control" id="middlename" name="middlename"
+                                    pattern="^[A-Za-zÑñ]+(?:[ .'-][A-Za-zÑñ]+)*$"
+                                    title="Only letters, spaces, periods, hyphens, and apostrophes are allowed">
+                            </div>
+                            <div class="col-md-3">
+                                <p for="suffix" class="form-label" style="font-size: small;">Suffix (Optional)</p>
+                                <select class="form-select" id="suffix" name="suffix">
+                                    <option value="">None</option>
+                                    <option value="Jr.">Jr.</option>
+                                    <option value="II">II</option>
+                                    <option value="III">III</option>
+                                    <option value="IV">IV</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email:</label>
@@ -223,7 +263,7 @@ $(document).ready(function () {
         $(this).find('i').toggleClass('fa-eye fa-eye-slash');
     });
 
-    var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;
+    var nameRegex = /^(ma\.|Ma\.|[A-Za-zÑñ]+)(?:[ .'-][A-Za-zÑñ]+)*$/;
     var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     function capitalizeName(name) {
@@ -373,21 +413,11 @@ $(document).ready(function () {
 });
 
 $(document).ready(function() {
-    $('.btn-edit').on('click', function() {
-        var userId = $(this).val(); // Get the user ID from the button's value attribute
-        getuserdata(userId); // Call the function to fetch user data
+    // Use event delegation for the edit button
+    $(document).on('click', '.btn-edit', function() {
+        var userId = $(this).val();
+        getuserdata(userId);
     });
-
-    $('#edituser .btn-close').on('click', function() {
-        $('#edituser').find('form')[0].reset();
-        $('#edituser').find(".form-control").removeClass("is-invalid");
-        $('#edituser').find(".invalid-feedback").remove();
-    });
-
-    // $(document).on('click', '.btn-edit', function() {
-    //     var userId = $(this).val();
-    //     getuserdata(userId);
-    // });
 
     // Function to fetch user data
     function getuserdata(userId) {
@@ -397,32 +427,26 @@ $(document).ready(function() {
             data: { id: userId },
             success: function(response) {
                 if (response.status === 200) {
-                    console.log(response.data); // Log the fetched data to the console
+                    console.log(response.data);
 
                     // Populate the edit modal with the user data
-                    $('#edituser #userid').val(response.data.id); // Ensure the user ID is set here
+                    $('#edituser #userid').val(response.data.id);
                     $('#edituser #firstname').val(response.data.firstname);
                     $('#edituser #lastname').val(response.data.lastname);
                     $('#edituser #middlename').val(response.data.middlename);
+                    $('#edituser #suffix').val(response.data.suffix);
                     $('#edituser #email').val(response.data.email);
                     $('#edituser #student_no').val(response.data.student_no);
                     $('#edituser #edit-role').val(response.data.role);
                     $('#edituser #status').val(response.data.status);
 
-                    // Inside the getuserdata function, after setting the role value
-                    $('#edituser #edit-role').val(response.data.role);
-
-                    // Check the role and hide the ID Number field if the role is "student"
                     if (response.data.role === 'student') {
                         $('#studentNoContainer').hide();
                     } else {
                         $('#studentNoContainer').show();
                     }
 
-                    // Show the edit modal
                     $('#edituser').modal('show');
-
-
                 } else {
                     alert(response.message);
                 }
@@ -434,7 +458,7 @@ $(document).ready(function() {
     }
 
     // Update logic
-    $('.btn-update').on('click', function() {
+    $(document).on('click', '.btn-update', function() {
         var userId = $('#edituser #userid').val();
         var isValid = true;
 
@@ -442,7 +466,7 @@ $(document).ready(function() {
         $("#edituser .form-control").removeClass("is-invalid");
         $("#edituser .invalid-feedback").remove();
 
-        var nameRegex = /^(ma\.|Ma\.|[A-Za-z]+)(?:[ .'-][A-Za-z]+)*$/;
+        var nameRegex = /^(ma\.|Ma\.|[A-Za-zÑñ]+)(?:[ .'-][A-Za-zÑñ]+)*$/;
         var emailRegex = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         var studentNumberRegex = /^(ALA0)[a-zA-Z0-9]{4}$/;
 
@@ -452,17 +476,21 @@ $(document).ready(function() {
             { id: "#edituser #lastname", regex: nameRegex, message: "Invalid last name format." },
             { id: "#edituser #middlename", regex: nameRegex, message: "Invalid middle name format." },
             { id: "#edituser #email", regex: emailRegex, message: "Invalid email format." },
-            { id: "#edituser #student_no", regex: studentNumberRegex, message: "ID number must start with ALA0 and be followed by exactly 4 alphanumeric characters." },
             { id: "#edituser #edit-role", message: "Role is required." },
             { id: "#edituser #status", message: "Status is required." }
         ];
+
+        var role = $('#edituser #edit-role').val();
+        if (role !== 'student') {
+            fieldsToValidate.push({ id: "#edituser #student_no", regex: studentNumberRegex, message: "ID number must start with ALA0 and be followed by exactly 4 alphanumeric characters." });
+        }
 
         fieldsToValidate.forEach(function(field) {
             var input = $(field.id);
             var value = input.val().trim();
 
             if (field.id === "#edituser #middlename" && value === "") {
-                return; // Skip validation if middle name is empty
+                return;
             }
 
             if (value.length < 2) {
@@ -491,6 +519,7 @@ $(document).ready(function() {
             firstname: $('#edituser #firstname').val(),
             lastname: $('#edituser #lastname').val(),
             middlename: $('#edituser #middlename').val(),
+            suffix: $('#edituser #suffix').val(),
             email: $('#edituser #email').val(),
             student_no: $('#edituser #student_no').val(),
             role: $('#edituser #edit-role').val(),
@@ -498,24 +527,19 @@ $(document).ready(function() {
             _token: '{{ csrf_token() }}'
         };
 
-        // Send the form data via AJAX
         $.ajax({
             url: '/update_user',
             type: "POST",
             data: formData,
             success: function(response) {
                 if (response.status === 200) {
-                    // Show success message
                     Swal.fire({
                         title: "Update successful!",
                         icon: "success",
                         timer: 3000
                     });
 
-                    // Hide the modal
                     $('#edituser').modal('hide');
-
-                    // Refresh the table or update the specific row
                     $("#authTable").load(location.href + " #authTable");
                 } else {
                     alert(response.message);
@@ -525,11 +549,9 @@ $(document).ready(function() {
                 var response = xhr.responseJSON.errors;
                 for (var field in response) {
                     var input = $('#edituser [name="' + field + '"]');
-
                     input.removeClass("is-invalid");
                     input.next('.invalid-feedback').remove();
 
-                     // Customize the error message 
                     if (field === 'student_no' && response[field][0] === 'The student no has already been taken.') {
                         input.addClass("is-invalid").after('<div class="invalid-feedback">This ID number is already in use. Please use a different one.</div>');
                     } else {
@@ -540,4 +562,71 @@ $(document).ready(function() {
         });
     }
 });
+
+$(document).ready(function () {
+        function cloneTableWithoutActions() {
+            let cloned = $('#authTable').clone();
+            cloned.find('tr').each(function () {
+                $(this).find('th:last-child, td:last-child').remove(); // remove last column
+            });
+            return cloned;
+        }
+
+        $('#exportCSV').click(function () {
+            let csv = [];
+            let table = cloneTableWithoutActions();
+
+            table.find('tr').each(function () {
+                let row = [];
+                $(this).find('th, td').each(function () {
+                    let text = $(this).text().replace(/"/g, '""');
+                    row.push('"' + text + '"');
+                });
+                csv.push(row.join(','));
+            });
+
+            let csvString = csv.join('\n');
+            let blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'user_records.csv';
+            link.click();
+        });
+
+
+        $('#printTable').click(function () {
+            // Clone the DataTable and remove the Actions column
+            let clonedTable = $('#authTable').clone();
+
+            // Remove the last column (Actions)
+            clonedTable.find('tr').each(function () {
+                $(this).find('th:last-child, td:last-child').remove();
+            });
+
+            // Remove all DataTable classes and IDs for clean print
+            clonedTable.removeClass().removeAttr('id');
+            clonedTable.find('*').removeClass();
+
+            // Define CSS for print
+            let styles = `
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h2 { text-align: center; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #000; padding: 8px; font-size: 12px; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                </style>
+            `;
+
+            // Open new window for print
+            let printWindow = window.open('', '', 'width=1000,height=700');
+            printWindow.document.write('<html><head><title>Print Violation Records</title>' + styles + '</head><body>');
+            printWindow.document.write('<h2>Violation Records</h2>');
+            printWindow.document.write(clonedTable.prop('outerHTML'));
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        });
+    });
 </script>

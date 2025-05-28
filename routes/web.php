@@ -148,11 +148,16 @@ Route::get('/violation_records/data', function (Request $request) {
         ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
         ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
         ->addColumn('actions', function ($data) {
-            return '
-                <button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>
-                <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
-                <button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>
-            ';
+            $viewBtn = '<button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>';
+
+            if ($data->is_active == 1) {
+                // Only show Edit and Archive if not archived
+                $editBtn = '<button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>';
+                $archiveBtn = '<button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>';
+                return $viewBtn . ' ' . $editBtn . ' ' . $archiveBtn;
+            }
+
+            return $viewBtn;
         })
         ->editColumn('Date_Created', function($data) {
             return Carbon::parse($data->Date_Created)->format('Y-m-d');

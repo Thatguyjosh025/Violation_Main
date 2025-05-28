@@ -202,7 +202,6 @@ $(document).ready(function () {
                 form[0].reset();
                 $(".form-control").removeClass("is-invalid").next(".invalid-feedback").remove();
                 $('#toggleUserPassword, #toggleConfirmPassword').show();
-                $("#registerModal").hide();
             },
             error: function (xhr) {
                 const response = xhr.responseJSON.errors;
