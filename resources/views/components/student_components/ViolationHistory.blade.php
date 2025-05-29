@@ -23,7 +23,7 @@
                 @else
                     @foreach ($filteredHistory as $history) 
                         <!-- Violation Card Template -->
-                        <div class="col">
+                        <div class="col mt">
                             <div class="card p-3" style="background: #2c698d; color: white;">
                                 <h5>{{ $history->violation->violations }}</h5>
                                 <p>Status: {{ $history->status->status }}</p>
@@ -89,7 +89,7 @@ $(document).ready(function() {
             } else {
                 resolvedViolations.forEach(function(violation) {
                     let cardHtml = `
-                        <div class="col">
+                        <div class="col mt-2">
                             <div class="card p-3">
                                 <h5>${violation.type}</h5>
                                 <p><small>Status: ${violation.status}</small></p>
