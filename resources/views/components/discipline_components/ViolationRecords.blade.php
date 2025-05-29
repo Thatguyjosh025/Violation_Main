@@ -21,17 +21,24 @@
                     <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
                     <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
                 </div>
-                <select id="statusFilter" class="sort-dropdown form-select" style="width: 10%;">
-                    <option value="">Show All</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Under Review">Under Review</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Appealed">Appealed</option>
-                    <option value="Appeal Under Review">Appeal Under Review</option>
-                    <option value="Appeal Approved">Appeal Approved</option>
-                    <option value="Appeal Denied">Appeal Denied</option>
-                    <option value="Resolved">Resolved</option>
-                </select>
+
+                <div class="d-flex align-items-center">
+                    <div class="form-check me-2 form-check-archived">
+                        <input type="checkbox" class="form-check-input" id="showArchived">
+                        <label class="form-check-label" for="showArchived">Show Archived</label>
+                    </div>
+                    <select id="statusFilter" class="sort-dropdown form-select" style="width: auto; min-width: 150px;">
+                        <option value="">Show All</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Under Review">Under Review</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Appealed">Appealed</option>
+                        <option value="Appeal Under Review">Appeal Under Review</option>
+                        <option value="Appeal Approved">Appeal Approved</option>
+                        <option value="Appeal Denied">Appeal Denied</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                </div>
             </div>
     
             <div class="table-container">
@@ -68,6 +75,7 @@
                 if (status) {
                     d.status = status;
                 }
+                d.show_archived = $('#showArchived').is(':checked') ? 1 : 0;
             }
         },
         columns: [
@@ -85,6 +93,9 @@
     // Filter table when dropdown changes
     $('#statusFilter').on('change', function () {
         table.ajax.reload();
+    });
+    $('#showArchived').on('change', function () {
+        table.ajax.reload(); // Reload table with updated filters
     });
 });
 

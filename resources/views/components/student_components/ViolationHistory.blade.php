@@ -21,7 +21,7 @@
                         </div>
                     </div>
                 @else
-                    @foreach ($filteredHistory as $history)
+                    @foreach ($filteredHistory as $history) 
                         <!-- Violation Card Template -->
                         <div class="col">
                             <div class="card p-3" style="background: #2c698d; color: white;">

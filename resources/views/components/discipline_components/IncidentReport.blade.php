@@ -204,7 +204,7 @@ $reports = incident::get();
                             <!-- Approve and Reject buttons -->
                             <div class="write-btn mt-2">
                                 <button class="btn btn-success" id="approve-btn">Approve</button>
-                                <button class="btn btn-danger" id="reject-btn">Reject</button>
+                                <button type="button" class="btn btn-danger" id="reject-btn">Reject</button>
                             </div>
             
                             </form>
@@ -434,30 +434,48 @@ $(document).ready(function () {
 
 //reject button
 $(document).ready(function () {
-    $('#reject-btn').on('click', function () {
-        let incidentId = $('#incident_id').val();
+    $('#reject-btn').on('click', function (e) {
+        e.preventDefault(); // Prevent default form submission behavior
 
-        $.ajax({
-            url: '/incident_rejected',
-            type: 'POST',
-            data: {
-                id: incidentId,
-                _token: $('input[name="_token"]').val()
-            },
-            success: function (response) {
-                console.log('Violation marked as rejected.');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This action will mark the violation as rejected.",
+            icon: "warning",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Yes, reject it",
+            denyButtonText: `Don't reject`
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let incidentId = $('#incident_id').val();
 
-                $('#violationModalview').modal('hide');
+                $.ajax({
+                    url: '/incident_rejected',
+                    type: 'POST',
+                    data: {
+                        id: incidentId,
+                        _token: $('input[name="_token"]').val()
+                    },
+                    success: function (response) {
+                        Swal.fire("Rejected!", "The violation has been marked as rejected.", "success");
 
-                $('.incident-card[data-id="' + incidentId + '"]').fadeOut(500, function () {
-                    $("#active-incidents").load(location.href + " #active-incidents > *");
-                    $("#archives").load(location.href + " #archives > *");
-                    $("#Reject").load(location.href + " #Reject > *");
+                        $('.incident-card[data-id="' + incidentId + '"]').fadeOut(500, function () {
+                            $("#active-incidents").load(location.href + " #active-incidents > *");
+                            $("#archives").load(location.href + " #archives > *");
+                            $("#Reject").load(location.href + " #Reject > *");
+                        });
+
+                        $('#violationProcess').modal('hide');
+
+                    },
+                    error: function (xhr) {
+                        console.log('Something went wrong.');
+                        console.log(xhr.responseText);
+                        Swal.fire("Error", "Something went wrong. Please try again.", "error");
+                    }
                 });
-            },
-            error: function (xhr) {
-                console.log('Something went wrong.');
-                console.log(xhr.responseText);
+            } else if (result.isDenied) {
+                Swal.fire("Cancelled", "No changes were made.", "info");
             }
         });
     });

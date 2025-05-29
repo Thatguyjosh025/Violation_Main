@@ -54,9 +54,10 @@
                     <div class="col-lg-7 mb-3">
                         <div class="d-flex gap-3 flex-wrap">
                             <!-- Minor Card -->
+                             <!-- Minor Card -->
                             <div class="custom-card flex-fill">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <div class="card-title">Total Recorded Minor Violation</div>
+                                    <div class="card-title">Minor</div>
                                     <i class="bi bi-exclamation-circle-fill text-warning fs-3"></i>
                                 </div>
                                 <div class="card-number">{{ countMinor() }}</div>
@@ -69,7 +70,7 @@
                             <!-- Major Card -->
                             <div class="custom-card flex-fill">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <div class="card-title">Total Recorded Major Violation</div>
+                                    <div class="card-title">Major</div>
                                     <i class="bi bi-exclamation-circle-fill text-danger fs-3"></i>
                                 </div>
                                 <div class="card-number">{{ countMajor() }}</div>
@@ -114,30 +115,45 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
 $(document).ready(function() {
-    $('#notif-container').on('click', '.btn-close', function() {
-        var self = this;
-        var notifId = $(self).closest('.notification-card').data('notif-id');
+$(document).ready(function() {
+    $('#notif-container').on('click', '.btn-close', function(event) {
+            event.stopPropagation();
+            event.preventDefault();
 
-        $.ajax({
-            url: '/update_notification_status',
-            type: 'POST',
-            data: {
-                notification_id: notifId,
-                _token: '{{ csrf_token() }}',
-            },
-            success: function(response) {
-                if (response.success) {
-                    console.log('Notification marked as read');
+            var self = this;
+            var $card = $(self).closest('.notification-card');
+            var notifId = $card.data('notif-id');
 
-                    // Fade out and remove the notification card
-                    $(self).closest('.notification-card').fadeOut(300, function() {
-                        $(this).remove();
-                    });
+            $.ajax({
+                url: '/update_notification_status',
+                type: 'POST',
+                data: {
+                    notification_id: notifId,
+                    _token: '{{ csrf_token() }}',
+                },
+                success: function(response) {
+                    if (response.success) {
+                        console.log('Notification marked as read');
+
+                        // Fade out and remove the notification card
+                        $card.fadeOut(300, function() {
+                            $(this).remove();
+
+                            // Check if there are any remaining notification cards
+                            if ($('#notif-container .notification-card').length === 0) {
+                                $('#notif-container .notif-scrollable').html(`
+                                    <div class="text-center py-4 text-muted">
+                                        You have no notifications.
+                                    </div>
+                                `);
+                            }
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error updating notification status:', error);
                 }
-            },
-            error: function(xhr, status, error) {
-                console.log('Error updating notification status:', error);
-            }
+            });
         });
     });
 });

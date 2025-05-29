@@ -12,23 +12,19 @@ class CheckRole
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
-     * @param string $role
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  string  $roles
      */
-    public function handle(Request $request, Closure $next, $role): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-
-
-        if(Auth::check())
-        {
-
-            if(Auth::user()->role === $role)
-            {
-                return $next($request);
+        if (Auth::check()) {
+            foreach ($roles as $role) {
+                if (Auth::user()->role === $role) {
+                    return $next($request);
+                }
             }
-
         }
-        return redirect('/'); 
-        
+
+        return redirect('/');
     }
 }

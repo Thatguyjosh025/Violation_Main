@@ -71,12 +71,11 @@ class ViewController extends Controller
     }
     public function violation_records()
     {
+        $studentControllers = new StudentController();
+        $studentControllers->getViolationsRecords(request());
         return view('discipline_dashboard', ['views' => 'ViolationRecords']);
     }
-    public function disicipline_handbook(){
-        return view('discipline_dashboard',['views' =>'Handbook']);
-    }
-
+    
     //faculty components
     public function faculty_dashboard()
     {
@@ -90,9 +89,7 @@ class ViewController extends Controller
     {
         return view('faculty_dashboard', ['views' => 'IncidentRecords']);
     }
-    public function violation_handbook(){
-        return view('faculty_dashboard',['views' =>'Handbook']);
-    }
+
 
     //student components
     public function student_dashboard() 
@@ -108,6 +105,20 @@ class ViewController extends Controller
     public function violation_tracking()
     {
         return view('student_dashboard', ['views' => 'ViolationTracking']);
+    }
+     public function violation_handbook(){
+        $userRole = Auth::user()->role; 
+
+        switch ($userRole) {
+            case 'student':
+                return view('student_dashboard', ['views' => 'Handbook']);
+            case 'faculty':
+                return view('faculty_dashboard', ['views' => 'Handbook']);
+            case 'discipline':
+                return view('discipline_dashboard', ['views' => 'Handbook']);
+            default:
+                return redirect('/');
+        }
     }
 
 

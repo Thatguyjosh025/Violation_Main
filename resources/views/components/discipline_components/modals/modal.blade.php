@@ -140,105 +140,141 @@
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Student Information</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Violation Information</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="view_student_id" name="view_id">
         <div class="row">
-          <div class="col-md-6">
-            <label for="studentNo" class="form-label">Student Number</label>
-            <p id="viewstudent_no" class="form-control"></p>
-          </div>
-          <div class="col-md-6">
-            <label for="studentName" class="form-label">Student Name</label>
-            <p id="viewstudent_name" class="form-control"></p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <label for="course" class="form-label">Course</label>
-            <p id="viewcourse" class="form-control"></p>
-          </div>
-          <div class="col-md-6">
-            <label for="schoolEmail" class="form-label">School Email</label>
-            <p id="viewschool_email" class="form-control"></p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <label for="violationType" class="form-label">Violation Type</label>
-            <select id="viewviolation_type" class="form-control"></select>
-          </div>
-          <div class="col-md-6">
-            <label for="penaltyType" class="form-label">Penalty Type</label>
-            <select id="viewpenalty_type" class="form-control"></select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <label for="severityName" class="form-label">Severity</label>
-            <p id="viewseverity_Name" class="form-control"></p>
-          </div>
-          <div class="col-md-6">
-            <label for="statusName" class="form-label">Status</label>
-            <select id="viewstatus_name" class="form-control"></select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <label for="ruleName" class="form-label">Rule Name</label>
-            <p id="viewrule_Name" class="form-control"></p>
-          </div>
-          <div class="col-md-6">
-            <label for="descriptionName" class="form-label">Description</label>
-            <p id="viewdescription_Name" class="form-control"></p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <label for="facultyInvolvement" class="form-label">Faculty Involvement</label>
-            <p id="viewfaculty_involvement" class="form-control"></p>
-          </div>
-          <div class="col-md-6">
-            <label for="facultyName" class="form-label">Faculty Name</label>
-            <p id="viewfaculty_name" class="form-control"></p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <label for="counselingRequired" class="form-label">Counseling Required</label>
-            <p id="viewcounseling_required" class="form-control"></p>
-          </div>
-          <div class="col-md-6">
-            <label for="referalType" class="form-label">Referral Type</label>
-            <select id="viewreferal_type" class="form-control"></select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <label for="remarks" class="form-label">Remarks</label>
-            <textarea id="viewRemarks" class="form-control" style="resize: none;" readonly></textarea>
-          </div>
-          <div class="col-md-6">
-            <label for="remarks" class="form-label">Appeal Description</label>
-            <textarea id="viewappeal" class="form-control" style="resize: none;" readonly></textarea>
+          <div class="UploadEvidence col-md-6" style="width: 100%;">
+            <label for="uploadEvidence" class="form-label" style="font-size: 1rem; font-weight: 500; margin-bottom: .5rem;">Uploaded Evidence</label>
+            <a id="viewUploadEvidence" class="form-control" target="_blank" style="display: none;">View File</a>
+            <span id="noFileLabel" class="form-control" style="display: none;">N/A</span>
           </div>
 
-          <div class="col-md-6">
-            <label for="dateCreated" class="form-label">Date Created</label>
-            <p id="viewDate_Created" class="form-control"></p>
-          </div>
+          <section class="StudentInformation">
+            <hr>
+            <div class="container" style="background-color: #fcfcfc; padding: 1rem; border-radius: 0.3rem;">
+              <p class="SectionLabel" style="font-size: 1.3rem; font-weight: 500; margin-bottom: 0.5rem;">Student Information</p>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="studentNo" class="form-label" style="font-size: 1rem; font-weight: 500;">Student Number:</label>
+                    <p id="viewstudent_no" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="studentName" class="form-label" style="font-size: 1rem; font-weight: 500;">Student Name:</label>
+                    <p id="viewstudent_name" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="course" class="form-label" style="font-size: 1rem; font-weight: 500;">Course:</label>
+                    <p id="viewcourse" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="schoolEmail" class="form-label" style="font-size: 1rem; font-weight: 500;">School Email:</label>
+                    <p id="viewschool_email" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr>
+          </section>
 
-          <div class="col-md-6">
-              <label for="uploadEvidence" class="form-label">Uploaded Evidence</label>
-              <a id="viewUploadEvidence" class="form-control" target="_blank" style="display: none;">View File</a>
-              <span id="noFileLabel" class="form-control" style="display: none;">N/A</span>
-          </div>
-                    
+          <section class="ViolationDetails">
+            <div class="container" style="background-color: #fcfcfc; padding: 1rem; border-radius: 0.3rem;">
+              <p class="SectionLabel" style="font-size: 1.3rem; font-weight: 500; margin-bottom: 0.5rem;">Violation Details</p>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="violationType" class="form-label" style="font-size: 1rem; font-weight: 500;">Violation Type:</label>
+                    <p id="viewviolation_type" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="penaltyType" class="form-label" style="font-size: 1rem; font-weight: 500;">Penalty Type:</label>
+                    <p id="viewpenalty_type" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="severityName" class="form-label" style="font-size: 1rem; font-weight: 500;">Severity:</label>
+                    <p id="viewseverity_Name" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="statusName" class="form-label" style="font-size: 1rem; font-weight: 500;">Status:</label>
+                    <p id="viewstatus_name" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="ruleName" class="form-label" style="font-size: 1rem; font-weight: 500;">Rule Name:</label>
+                    <p id="viewrule_Name" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="descriptionName" class="form-label" style="font-size: 1rem; font-weight: 500;">Description:</label>
+                    <textarea id="viewdescription_Name" class="form-control" style="resize: none;" readonly disabled></textarea>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="facultyInvolvement" class="form-label" style="font-size: 1rem; font-weight: 500;">Faculty Involvement:</label>
+                    <p id="viewfaculty_involvement" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="facultyName" class="form-label" style="font-size: 1rem; font-weight: 500;">Faculty Name</label>
+                    <p id="viewfaculty_name" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="counselingRequired" class="form-label" style="font-size: 1rem; font-weight: 500;">Counseling Required:</label>
+                    <p id="viewcounseling_required" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="referalType" class="form-label" style="font-size: 1rem; font-weight: 500;">Referral Type:</label>
+                    <p id="viewreferal_type" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div> <br>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="remarks" class="form-label" style="font-size: 1rem; font-weight: 500;">Remarks</label>
+                  <textarea id="viewRemarks" class="form-control" style="resize: none;" readonly disabled></textarea>
+                </div>
+                <div class="col-md-6">
+                  <label for="remarks" class="form-label" style="font-size: 1rem; font-weight: 500;">Appeal Description</label>
+                  <textarea id="viewappeal" class="form-control" style="resize: none;" readonly disabled></textarea>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                    <label for="dateCreated" class="form-label" style="font-size: 1rem; font-weight: 500;">Date Created:</label>
+                    <p id="viewDate_Created" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr>
+          </section>
         </div>
-      </div>
-      <div class="modal-footer">
       </div>
     </div>
   </div>
@@ -387,33 +423,33 @@ $(document).on('click', '.btn-view-post', function () {
             } else if (response.status == 200) {
                 console.log(response);
 
-              $('#viewviolation_type').val(response.data.violation_type);
-              if (!$('#viewviolation_type').val()) {
-                  $('#viewviolation_type').append(
-                      `<option value="${response.data.violation_type}" selected>${response.data.violation_name}</option>`
-                  );
-              }
+              $('#viewviolation_type').text(response.data.violation_name);
+              // if (!$('#viewviolation_type').val()) {
+              //     $('#viewviolation_type').append(
+              //         `<option value="${response.data.violation_type}" selected>${response.data.violation_name}</option>`
+              //     );
+              // }
 
-              $('#viewpenalty_type').val(response.data.penalty_type);
-              if(!$('#viewpenalty_type').val()){
-                $('#viewpenalty_type').append(
-                      `<option value="${response.data.penalty_type}" selected>${response.data.penalty_name}</option>`
-                  );
-              }
+              $('#viewpenalty_type').text(response.data.penalty_name);
+              // if(!$('#viewpenalty_type').val()){
+              //   $('#viewpenalty_type').append(
+              //         `<option value="${response.data.penalty_type}" selected>${response.data.penalty_name}</option>`
+              //     );
+              // }
 
-              $('#viewstatus_name').val(response.data.status_name);
-              if(!$('#viewstatus_name').val()){
-                $('#viewstatus_name').append(
-                      `<option value="${response.data.status_name}" selected>${response.data.status_label}</option>`
-                  );
-              }
+              $('#viewstatus_name').text(response.data.status_label);
+              // if(!$('#viewstatus_name').val()){
+              //   $('#viewstatus_name').append(
+              //         `<option value="${response.data.status_name}" selected>${response.data.status_label}</option>`
+              //     );
+              // }
 
-              $('#viewreferal_type').val(response.data.referal_type);
-              if(!$('#viewreferal_type').val()){
-                $('#viewreferal_type').append(
-                      `<option value="${response.data.referal_type}" selected>${response.data.referal_name}</option>`
-                  );
-              }
+              $('#viewreferal_type').text(response.data.referal_name);
+              // if(!$('#viewreferal_type').val()){
+              //   $('#viewreferal_type').append(
+              //         `<option value="${response.data.referal_type}" selected>${response.data.referal_name}</option>`
+              //     );
+              // }
 
               // Populate other fields
               $('#view_student_id').val(response.data.view_id);
@@ -707,6 +743,14 @@ $(document).on('click', '.btn-edit-post', function(){
               update_notes: $('#edit_notes').val()
           },
           success: function(response) {
+
+              Swal.fire({
+                  title: "Updated Successfully!",
+                  text: "The information has been saved.",
+                  icon: "success",
+                  confirmButtonText: "OK"
+              });
+              
               if (response.status == 200) {
                   console.log(response.message);
                   $('#editStudentModal').modal('hide');

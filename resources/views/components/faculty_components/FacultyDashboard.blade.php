@@ -1,8 +1,9 @@
 <link rel="stylesheet" href="{{ asset('./css/faculty_css/FacultyDashboard.css') }}">
 
 @php
-use App\Models\notifications;
 use App\Models\incident;
+use App\Models\notifications;
+use App\Models\postviolation;
 
 $reports = incident::get();
 $notif = notifications::get();
@@ -16,6 +17,14 @@ $filterednotif = notifications::where('role', 'faculty')
     ->where('is_read', 0)
     ->where('student_no', Auth::user()->student_no)
     ->get();
+
+function countIncident() {
+    $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+
+    return postviolation::where('is_active', 1)
+        ->where('faculty_name', 'like', $name)
+        ->count();
+}
 @endphp         
 
 <div class="d-flex align-items-center">
@@ -55,22 +64,54 @@ $filterednotif = notifications::where('role', 'faculty')
     </div>
 
     <div class="row mt-4">
-        <!-- Progress Cards -->
+            <!-- Progress Cards -->
         <div class="col-lg-7 mb-3">
-            <div class="d-flex gap-3 flex-wrap">
-                <!-- Processed Violation Card -->
-                <div class="custom-card flex-fill">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="card-title">Processed Violation</div>
-                        <i class="bi bi-exclamation-circle-fill text-info fs-3"></i>
-                    </div>
-                    <div class="card-number">13</div>
-                    <div class="progress">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: 30%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+                <div class="row g-3">
+                    <!-- Processed Violatiion Card -->
+                        <div class="col-12 col-md-6">
+                            <div class="custom-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="card-title">Processed Violation</div>
+                                <i class="bi bi-exclamation-circle-fill text-info fs-3"></i>
+                            </div>
+                            <div class="card-number">{{ countIncident() }}</div>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 30%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                        <div class="custom-card">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div class="card-title">Pending Incident</div>
+                                <i class="bi bi-exclamation-octagon-fill text-info fs-3"></i>
+                            </div>
+                            <div class="pending-incident-scrollable">
+                                <!-- Repeat this block for each incident -->
+                                    @if ($filteredReports->isEmpty())
+                                            <div class="text-center py-4 text-muted">
+                                                No Pending Incident Reports.
+                                            </div>
+                                    @endif
+                                    @foreach ( $filteredReports as $report)
+                                        <div class="incident-item mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="mb-1 fw-semibold text-truncate me-2" style="max-width: 70%;">{{ $report->violation->violations}}</h6>
+                                                <span class="badge bg-warning text-dark flex-shrink-0">{{ $report->status }}</span>
+                                            </div>
+                                            <small class="text-muted">{{ $report->student_no }}</small><br>
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">{{ $report->student_name }}</small>
+                                                <small class="text-muted">{{ $report->Date_Created }}</small>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                            </div>
+                        </div>
+                        </div>
                 </div>
             </div>
-        </div>
 
         <!-- Notifications -->
         <div class="col-lg-5">
@@ -99,46 +140,6 @@ $filterednotif = notifications::where('role', 'faculty')
                 </div>
             </div>
         </div>
-
-        <!-- Violation Table -->
-        <div class="col-12 mb-3">
-            <div class="table-container">
-                <table id="violationTable" class="table table-hover table-bordered table-striped">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Student No.</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Violation</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @if ($filteredReports->isEmpty())
-                        <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">
-                                No active Incident Reports
-                            </td>
-                        </tr>
-                    @else
-                        @foreach ($filteredReports as $report)
-                            <tr>
-                                <td data-label="Student No.">{{ $report->student_no }}</td>
-                                <td data-label="Name">{{ $report->student_name }}</td>
-                                <td data-label="Email">{{ $report->school_email }}</td>
-                                <td data-label="Violation">{{ $report->violation->violations }}</td>
-                                <td data-label="Status">
-                                    <span class="badge bg-warning text-dark">{{ $report->status }}</span>
-                                </td>
-                                <td data-label="Date">{{ $report->Date_Created }}</td>
-                            </tr>
-                        @endforeach
-                    @endif
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -146,9 +147,13 @@ $filterednotif = notifications::where('role', 'faculty')
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
 $(document).ready(function() {
-    $('#notif-container').on('click', '.btn-close', function() {
+        $('#notif-container').on('click', '.btn-close', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
         var self = this;
-        var notifId = $(self).closest('.notification-card').data('notif-id');
+        var $card = $(self).closest('.notification-card');
+        var notifId = $card.data('notif-id');
 
         $.ajax({
             url: '/update_notification_status',
@@ -159,8 +164,17 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    $(self).closest('.notification-card').fadeOut(300, function() {
+                    $card.fadeOut(300, function() {
                         $(this).remove();
+
+                        // ✅ Show "no notifications" if list is empty
+                        if ($('#notif-container .notification-card').length === 0) {
+                            $('#notif-container').html(`
+                                <div class="text-center py-4 text-muted">
+                                    You have no notifications.
+                                </div>
+                            `);
+                        }
                     });
                 } else {
                     console.log('Failed to update notification status');

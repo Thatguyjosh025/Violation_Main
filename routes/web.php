@@ -123,18 +123,22 @@ Route::post('/update_appeal_reason', [StudentController::class, 'updateAppealRea
 Route::post('/update_notification_status', [NotificationController::class, 'updateNotificationStatus']);
 
 //handbookview
-Route::get('/violation_handbook',[ViewController::class,'violation_handbook'])->name('violation_handbook');
-Route::get('/violation_handbook',[ViewController::class,'disicipline_handbook'])->name('violation_handbook');
+Route::get('/violation_handbook', [ViewController::class, 'violation_handbook'])->name('violation_handbook')
+->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty']);
 
 
 //datatables
 Route::get('/violation_records/data', function (Request $request) {
-    $query = postviolation::with(['violation', 'status'])
-        ->where('is_active', true);
+    $query = postviolation::with(['violation', 'status']);
+
+    if ($request->filled('show_archived') && $request->show_archived == 1) {
+        $query->where('is_active', 0);
+    } else {
+        $query->where('is_active', 1);
+    }
 
     // Apply status filter if requested and not empty
     if ($request->has('status') && $request->status !== '') {
-        // Since status is a relationship, filter by related status table
         $query->whereHas('status', function($q) use ($request) {
             $q->where('status', $request->status);
         });
@@ -144,11 +148,16 @@ Route::get('/violation_records/data', function (Request $request) {
         ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
         ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
         ->addColumn('actions', function ($data) {
-            return '
-                <button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>
-                <button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>
-                <button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>
-            ';
+            $viewBtn = '<button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>';
+
+            if ($data->is_active == 1) {
+                // Only show Edit and Archive if not archived
+                $editBtn = '<button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>';
+                $archiveBtn = '<button class="btn btn-primary btn-archive-post" value="' . $data->id . '">Archive</button>';
+                return $viewBtn . ' ' . $editBtn . ' ' . $archiveBtn;
+            }
+
+            return $viewBtn;
         })
         ->editColumn('Date_Created', function($data) {
             return Carbon::parse($data->Date_Created)->format('Y-m-d');

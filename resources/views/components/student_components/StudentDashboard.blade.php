@@ -127,7 +127,10 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
 $(document).ready(function() {
-    $('#notif-container').on('click', '.btn-close', function() {
+     $('#notif-container').on('click', '.btn-close', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
         var self = this;
         var notifId = $(self).closest('.notification-card').data('notif-id');
 
@@ -148,7 +151,6 @@ $(document).ready(function() {
 
                         // Check if there are any notifications left
                         if ($('.notification-card').length === 0) {
-                            // If no notifications left, show the "no notifications" message
                             $('.notif-scrollable').html('<div class="text-center py-4 text-muted">You have no notifications.</div>');
                         }
                     });
