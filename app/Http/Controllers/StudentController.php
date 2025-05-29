@@ -88,11 +88,11 @@ class StudentController extends Controller
 
         $mappedViolations = $violations->map(function ($violation) {
             $sectionId = '';
-            if ($violation->rule_Name === 'Anti-Bullying') {
+            if ($violation->violation->violations === 'Bullying') {
                 $sectionId = 'antibullyingsection';
-            } elseif ($violation->rule_Name === 'Anti-Sexual Harassment Policy') {
+            } elseif ($violation->violation->violations === 'Discourtesy or Disrespect') {
                 $sectionId = 'antisexualsection';
-            } elseif ($violation->rule_Name === 'Use of School Facilities'){
+            } elseif ($violation->violation->violations === 'Improper Use of School Facilities/Equipment'){
                 $sectionId = 'improperuseoffacilities';
             }
             else{
