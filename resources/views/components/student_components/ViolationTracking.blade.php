@@ -24,8 +24,8 @@ $ruleinfos = rules::get();
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="text text-dark"><strong>Offense/s:</strong> <span id="offense"></span></p>
-                <p class="text text-dark"><strong>Rule:</strong> <a href="#" id="ruleLink"></a></p>
+                <p class="text text-dark"><strong>Offense/s:</strong> <a href="#" id="offense"></a></p>
+                <p class="text text-dark"><strong>Rule:</strong> <span href="#" id="ruleLink"></span></p>
                 <p class="text text-dark" id="detailsDescription"></p>
                 <hr>
                 <p class="text text-dark"><strong>Severity:</strong> <span id="severity"></span></p>
@@ -110,8 +110,8 @@ $(document).ready(function () {
     // View Button Click Event
     $(document).on('click', '.view-btn', function () {
         let violation = $(this).data('violation');
-        $('#offense').text(violation.type || 'N/A');
-        $('#ruleLink').text(violation.rule_Name).attr('href', '/violation_handbook#' + violation.section_Id); // Use the section_Id from the response
+        $('#offense').text(violation.type || 'N/A').attr('href', '/violation_handbook#' + violation.section_Id); // Use the section_Id from the response;
+        $('#ruleLink').text(violation.rule_Name);
         $('#detailsDescription').text(violation.description_Name);
         $('#severity').text(violation.severity_Name);
         $('#penalty').text(violation.penalties || 'N/A');
