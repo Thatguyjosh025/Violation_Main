@@ -1,4 +1,7 @@
 <link rel="stylesheet" href="{{ asset('css/super_admin_css/Authorization.css') }}">
+<link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
+
+
 @php
 use App\Models\users;
 
@@ -18,7 +21,6 @@ $userdata = users::get();
             <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
             <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
         </div>
-
         <!-- Right side: Add button -->
         <button class="btn btn-action w-auto" type="button" data-bs-toggle="modal" data-bs-target="#adduser">
             + Add
@@ -26,40 +28,50 @@ $userdata = users::get();
     </div>
 
     <div class="table-container mt-3">
-        <!-- Table -->
-        <div class="table-responsive-sm overflow-hidden">
-            <table class="table table-hover align-middle text-center table-mobile-wrap" id="authTable">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">First Name</th>
-                        <th scope="col">Last Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Student No.</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($userdata as $data)
-                        <tr>
-                            <th scope="row">{{ $data->id }}</th>
-                            <td>{{ $data->firstname }}</td>
-                            <td>{{ $data->lastname }}</td>
-                            <td>{{ $data->email }}</td>
-                            <td>{{ $data->student_no }}</td>
-                            <td>{{ $data->role }}</td>
-                            <td>{{ $data->status }}</td>
-                            <td> 
-                                <button class="btn btn-primary btn-edit" value="{{ $data->id }}">Edit</button>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+    <!-- Controls (Dropdown & Search Input) -->
+    <div class="d-flex gap-2 mb-2">
+       <!-- <select class="form-select" id="entriesPerPage" style="width: 5rem;">
+            <option value="1">1</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+        </select>
+        <input type="text" class="form-control" id="searchInput" placeholder="Search" style="max-width: 300px;"> -->
     </div>
+
+    <!-- Table -->
+    <div class="table-responsive-sm overflow-hidden">
+        <table class="table table-hover align-middle text-center table-mobile-wrap" id="authTable">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Student No.</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="authbody">
+                @foreach ($userdata as $data)
+                    <tr>
+                        <th scope="row">{{ $data->id }}</th>
+                        <td>{{ $data->firstname }}</td>
+                        <td>{{ $data->lastname }}</td>
+                        <td>{{ $data->email }}</td>
+                        <td>{{ $data->student_no }}</td>
+                        <td>{{ $data->role }}</td>
+                        <td>{{ $data->status }}</td>
+                        <td> 
+                            <button class="btn btn-primary btn-edit" value="{{ $data->id }}">Edit</button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
 </div>
 
 <!-- Modal for add user -->
@@ -108,7 +120,7 @@ $userdata = users::get();
 
                     <div class="mb-3">
                         <label for="student_no" class="form-label">ID Number:</label>
-                        <input type="text" class="form-control" id="student_no" name="student_no" min="11" maxlength="11" required>
+                        <input type="text" class="form-control" id="student_no" name="student_no" min="11" maxlength="11" >
                     </div>
 
                     <div class="mb-3">
@@ -123,7 +135,7 @@ $userdata = users::get();
                     <div class="mb-3">
                         <label for="userPassword" class="form-label">Password:</label>
                         <div class="input-group" style="position: relative;">
-                            <input type="password" class="form-control" id="userPassword" name="password" required style="border-radius: 6px; padding-right: 40px;">
+                            <input type="password" class="form-control" id="userPassword" name="password"  style="border-radius: 6px; padding-right: 40px;">
                             <span id="toggleUserPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; z-index: 10;">
                                 <i class="fas fa-eye"></i>
                             </span>
@@ -246,7 +258,18 @@ $userdata = users::get();
 
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
+$(document).ready(function() {
+    $('#authTable').DataTable({
+        "paging": true,       
+        "searching": true,   
+        "ordering": true,    
+        "info": true,       
+        "responsive": true   
+    });
+});
 $(document).ready(function () {
     // Toggle visibility of password when the eye icon is clicked
     $('#toggleUserPassword').on('click', function () {
@@ -361,7 +384,7 @@ $(document).ready(function () {
                 });
 
                 form[0].reset();
-                $("#authTable").load(location.href + " #authTable");
+                $('#authbody').load(location.href + " #authbody > *");
                 $('#adduser').modal('hide');
                 $(".form-control").removeClass("is-invalid");
                 $(".invalid-feedback").remove();
@@ -540,7 +563,10 @@ $(document).ready(function() {
                     });
 
                     $('#edituser').modal('hide');
-                    $("#authTable").load(location.href + " #authTable");
+                    $('#authbody').load(location.href + " #authbody > *");
+                    
+
+
                 } else {
                     alert(response.message);
                 }
@@ -552,11 +578,11 @@ $(document).ready(function() {
                     input.removeClass("is-invalid");
                     input.next('.invalid-feedback').remove();
 
-                    if (field === 'student_no' && response[field][0] === 'The student no has already been taken.') {
-                        input.addClass("is-invalid").after('<div class="invalid-feedback">This ID number is already in use. Please use a different one.</div>');
-                    } else {
-                        input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
-                    }
+                    // if (field === 'student_no' && response[field][0] === 'The student no has already been taken') {
+                    //     input.addClass("is-invalid").after('<div class="invalid-feedback">This ID number is already in use. Please use a different one.</div>');
+                    // } else {
+                    //     input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
+                    // }
                 }
             }
         });

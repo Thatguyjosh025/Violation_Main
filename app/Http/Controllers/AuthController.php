@@ -89,6 +89,8 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?!.*\s)(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/'],
             'role' => ['required', 'in:student,counselor,discipline,faculty,registar,super'],
             'status' => ['in:active,inactive'],
+        ], [
+        'student_no.unique' => 'The ID has already been taken.',
         ]);
 
         users::create([

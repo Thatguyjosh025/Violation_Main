@@ -759,7 +759,6 @@ $(document).on('click', '.btn-edit-post', function(){
                   console.log("Error updating student info");
               }
 
-              // Reload DataTable via AJAX without resetting pagination it just re-render the specific row
               $('#violationrecordstable').DataTable().ajax.reload(null, false);
           },
           error: function(xhr) {

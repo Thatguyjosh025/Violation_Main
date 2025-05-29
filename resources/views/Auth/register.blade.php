@@ -193,13 +193,14 @@ $(document).ready(function () {
             type: "POST",
             data: form.serialize(),
             success: function () {
+                $('#registerModal').modal('hide');
                 Swal.fire({
                     title: "Registration successful!",
                     icon: "success",
                     timer: 3000
                 });
 
-                form[0].reset();
+                form[0].reset();    
                 $(".form-control").removeClass("is-invalid").next(".invalid-feedback").remove();
                 $('#toggleUserPassword, #toggleConfirmPassword').show();
             },

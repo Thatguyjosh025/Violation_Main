@@ -47,7 +47,9 @@
                                 <button class="btn btn-primary btn-sm edit-btn-rule"
                                     data-id="{{ $rule->rule_id }}"
                                     data-name="{{ $rule->rule_name }}"
-                                    data-description="{{ $rule->description }}">Edit</button>
+                                    data-description="{{ $rule->description }}"
+                                    data-violation="{{ $rule->violation_id }}"
+                                    data-severity="{{ $rule->severity_id }}">Edit</button>
                             </td>
                         </tr>
                     @endforeach
@@ -127,6 +129,22 @@
                         <textarea class="form-control" name="edit_description" id="edit_description" rows="3"></textarea>
                         <div class="invalid-feedback"></div>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Violation:</label>
+                        <select name="edit_violation_id" id="edit_violation_id" class="form-select">
+                            @foreach ($violationinfo as $violation)
+                                <option value="{{ $violation->violation_id }}">{{ $violation->violations }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Severity:</label>
+                        <select name="edit_severity_id" id="edit_severity_id" class="form-select">
+                            @foreach ($severityinfo as $severity)
+                                <option value="{{ $severity->severity_id }}">{{ $severity->severity }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-success">Save Changes</button>
                 </form>
             </div>
@@ -138,7 +156,8 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
     function isValidRuleName(name) {
-        const pattern = /^[A-Za-z]+([ -][A-Za-z]+)*$/;
+        // Allow letters, spaces, slashes, and hyphens between words
+        const pattern = /^[A-Za-z]+([ \/-][A-Za-z]+)*$/;
         return pattern.test(name);
     }
 
@@ -156,14 +175,10 @@
         // Show create modal
         $('#addrule').click(() => $('#createRuleModal').modal('show'));
 
-        // Reset and clear validation when modals close
-        $('#createRuleModal').on('hidden.bs.modal', function () {
-            $('#ruleForm')[0].reset();
-            clearValidation('#ruleForm');
-        });
-        $('#editRuleModal').on('hidden.bs.modal', function () {
-            $('#editRuleForm')[0].reset();
-            clearValidation('#editRuleForm');
+        // Reset forms and clear validation on modal close
+        $('#createRuleModal, #editRuleModal').on('hidden.bs.modal', function () {
+            $('form', this)[0].reset();
+            clearValidation(this);
         });
 
         // Clear validation on input/change
@@ -171,46 +186,41 @@
             $(this).removeClass('is-invalid');
             $(this).next('.invalid-feedback').text('');
         });
-        $('#editRuleForm input, #editRuleForm textarea').on('input change', function () {
+        $('#editRuleForm input, #editRuleForm textarea, #editRuleForm select').on('input change', function () {
             $(this).removeClass('is-invalid');
             $(this).next('.invalid-feedback').text('');
         });
 
-        // CREATE FORM SUBMIT
+        // CREATE RULE FORM SUBMIT
         $('#ruleForm').submit(function (e) {
             e.preventDefault();
             clearValidation(this);
 
-            const ruleNameInput = $('#rule_name');
-            const descriptionInput = $('#description');
-            const violationInput = $('#violation_id');
-            const severityInput = $('#severity_id');
+            const ruleName = $('#rule_name').val().trim();
+            const description = $('#description').val().trim();
+            const violation = $('#violation_id').val();
+            const severity = $('#severity_id').val();
 
-            const ruleName = ruleNameInput.val().trim();
-            const description = descriptionInput.val().trim();
-            const violation = violationInput.val();
-            const severity = severityInput.val();
+            let valid = true;
 
-            if (!ruleName) {
-                setInvalid(ruleNameInput, 'Rule name is required.');
-                return;
-            }
-            if (!isValidRuleName(ruleName)) {
-                setInvalid(ruleNameInput, 'Invalid Rule Name. Use letters, spaces, or single hyphen (e.g., test-test or test test)');
-                return;
+            if (!ruleName || !isValidRuleName(ruleName)) {
+                setInvalid($('#rule_name'), 'Invalid Rule Name. Example: fish-fish, fish/fish, or fish fish');
+                valid = false;
             }
             if (!description) {
-                setInvalid(descriptionInput, 'Description is required.');
-                return;
+                setInvalid($('#description'), 'Description is required.');
+                valid = false;
             }
             if (!violation) {
-                setInvalid(violationInput, 'Violation is required.');
-                return;
+                setInvalid($('#violation_id'), 'Please select a violation.');
+                valid = false;
             }
             if (!severity) {
-                setInvalid(severityInput, 'Severity is required.');
-                return;
+                setInvalid($('#severity_id'), 'Please select a severity.');
+                valid = false;
             }
+
+            if (!valid) return;
 
             $.ajax({
                 url: "/create_rules",
@@ -219,64 +229,85 @@
                 success: function () {
                     $('#createRuleModal').modal('hide');
                     $('#ruleTable').load(location.href + " #ruleTable");
-                    $('#ruleForm')[0].reset();
                 },
                 error: function (xhr) {
-                    console.log('Create Rule Error:', xhr.responseText);
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors;
+                        for (const field in errors) {
+                            setInvalid($(`[name=${field}]`), errors[field][0]);
+                        }
+                    } else {
+                        alert('An unexpected error occurred. Please try again.');
+                    }
                 }
             });
         });
 
-        // OPEN EDIT MODAL AND POPULATE
+        // OPEN EDIT MODAL AND POPULATE DATA
         $(document).on('click', '.edit-btn-rule', function () {
-            clearValidation('#editRuleForm');
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-            const desc = $(this).data('description');
-            $('#edit_rule_id').val(id);
-            $('#edit_rule_name').val(name);
-            $('#edit_description').val(desc);
+            $('#edit_rule_id').val($(this).data('id'));
+            $('#edit_rule_name').val($(this).data('name'));
+            $('#edit_description').val($(this).data('description'));
+            $('#edit_violation_id').val($(this).data('violation'));
+            $('#edit_severity_id').val($(this).data('severity'));
             $('#editRuleModal').modal('show');
         });
 
-        // EDIT FORM SUBMIT
+        // EDIT RULE FORM SUBMIT
         $('#editRuleForm').submit(function (e) {
             e.preventDefault();
             clearValidation(this);
 
-            const ruleNameInput = $('#edit_rule_name');
-            const descriptionInput = $('#edit_description');
-            const ruleName = ruleNameInput.val().trim();
-            const description = descriptionInput.val().trim();
-            const id = $('#edit_rule_id').val();
+            const ruleName = $('#edit_rule_name').val().trim();
+            const description = $('#edit_description').val().trim();
+            const violation = $('#edit_violation_id').val();
+            const severity = $('#edit_severity_id').val();
 
-            if (!ruleName) {
-                setInvalid(ruleNameInput, 'Rule name is required.');
-                return;
-            }
-            if (!isValidRuleName(ruleName)) {
-                setInvalid(ruleNameInput, 'Invalid Rule Name. Use letters, spaces, or single hyphen.');
-                return;
+            let valid = true;
+
+            if (!ruleName || !isValidRuleName(ruleName)) {
+                setInvalid($('#edit_rule_name'), 'Invalid Rule Name. Example: fish-fish, fish/fish, or fish fish');
+                valid = false;
             }
             if (!description) {
-                setInvalid(descriptionInput, 'Description is required.');
-                return;
+                setInvalid($('#edit_description'), 'Description is required.');
+                valid = false;
+            }
+            if (!violation) {
+                setInvalid($('#edit_violation_id'), 'Please select a violation.');
+                valid = false;
+            }
+            if (!severity) {
+                setInvalid($('#edit_severity_id'), 'Please select a severity.');
+                valid = false;
             }
 
+            if (!valid) return;
+
             $.ajax({
-                url: `/update_rule/${id}`,
+                url: `/update_rule/${$('#edit_rule_id').val()}`,
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
                     rule_name: ruleName,
-                    description: description
+                    description: description,
+                    violation_id: violation,
+                    severity_id: severity
                 },
                 success: function () {
                     $('#editRuleModal').modal('hide');
-                    $('#ruleTable').load(location.href + " #ruleTable");
+                    $('#violationrecordstable').DataTable().ajax.reload(null, false);
+
                 },
                 error: function (xhr) {
-                    console.log('Update Rule Error:', xhr.responseText);
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors;
+                        for (const field in errors) {
+                            setInvalid($(`[name=edit_${field}]`), errors[field][0]);
+                        }
+                    } else {
+                        alert('An unexpected error occurred. Please try again.');
+                    }
                 }
             });
         });

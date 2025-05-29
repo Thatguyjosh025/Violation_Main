@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
 
 
+
 @php
     use App\Models\postviolation; 
     $violators = postviolation::get();
@@ -45,8 +46,8 @@
                             <th>Email</th>
                             <th>Violation</th>
                             <th>Status</th>
-                            <th>Created_on</th>
-                            <th>Updated_on</th>
+                            <th>Created On</th>
+                            <th>Modified On</th>
                             <th>Actions</th>
                         </tr>
                     </thead>

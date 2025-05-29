@@ -62,7 +62,7 @@ class SuperController extends Controller
                 'string',
                 'max:255',
                 'unique:tb_penalties',
-                'regex:/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/'
+                'regex:/^[a-zA-Z0-9\s\/-]+$/'
             ],
         ]);
 
@@ -78,33 +78,39 @@ class SuperController extends Controller
 
     
    public function rules(Request $request) {
-       $request->validate([
-            'rule_name' => ['required', 'string', 'max:255', 'unique:tb_rules', 'regex:/^[A-Za-z]+([ -][A-Za-z]+)*$/'],
-            'description' => 'required|string|max:500',
-            'violation_id' => 'required|exists:tb_violation,violation_id',
-            'severity_id' => 'required|exists:tb_severity,severity_id' 
-        ]);
+    $request->validate([
+        'rule_name' => [
+            'required',
+            'string',
+            'max:255',
+            'unique:tb_rules',
+            'regex:/^[A-Za-z]+([ \/-][A-Za-z]+)*$/'
+        ],
+        'description' => 'required|string|max:500',
+        'violation_id' => 'required|exists:tb_violation,violation_id',
+        'severity_id' => 'required|exists:tb_severity,severity_id'
+    ]);
 
-        $create = rules::create([
-            'rule_name' => $request->rule_name,
-            'description' => $request->description,
-            'violation_id' => $request->violation_id,
-            'severity_id' => $request->severity_id
-        ]);
+    $create = rules::create([
+        'rule_name' => $request->rule_name,
+        'description' => $request->description,
+        'violation_id' => $request->violation_id,
+        'severity_id' => $request->severity_id
+    ]);
 
-        $create->load('violation', 'severity');
+    $create->load('violation', 'severity');
 
-        return response()->json([
-            'message' => 'Rule added successfully',
-            'rule' => [
-                'rule_id' => $create->rule_id,
-                'rule_name' => $create->rule_name,
-                'description' => $create->description,
-                'violation_name' => $create->violation->violations,
-                'severity_name' => $create->severity->severity
-            ]
-        ]);
-    }
+    return response()->json([
+        'message' => 'Rule added successfully',
+        'rule' => [
+            'rule_id' => $create->rule_id,
+            'rule_name' => $create->rule_name,
+            'description' => $create->description,
+            'violation_name' => $create->violation->violations,
+            'severity_name' => $create->severity->severity
+        ]
+    ]);
+}
     
 
     //update functions
@@ -116,14 +122,14 @@ class SuperController extends Controller
         }
 
         $request->validate([
-            'penalties' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:tb_penalties,penalties,' . $id . ',penalties_id',
-                'regex:/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/'
-            ]
-        ]);
+                'penalties' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    'unique:tb_penalties,penalties,' . $id . ',penalties_id',
+                    'regex:/^[a-zA-Z0-9\s\/-]+$/'
+                ]
+            ]);
 
         $penalty->update([
             'penalties' => $request->penalties
@@ -149,24 +155,38 @@ class SuperController extends Controller
         return response()->json(['message' => 'Violation updated successfully']);
     }
 
-    public function updateRule(Request $request, $id) {
-        $rule = rules::find($id);
+  public function updateRule(Request $request, $id) {
+    $rule = rules::find($id);
 
-        if (!$rule) {
-            return response()->json(['message' => 'Rule not found'], 404);
-        }
-
-        $request->validate([
-            'rule_name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z]+([ -][A-Za-z]+)*$/'],
-            'description' => 'required|string|max:500'
-        ]);
-
-        $rule->rule_name = $request->rule_name;
-        $rule->description = $request->description;
-        $rule->save();
-
-        return response()->json(['message' => 'Rule updated successfully']);
+    if (!$rule) {
+        return response()->json(['message' => 'Rule not found'], 404);
     }
+
+    $request->validate([
+        'rule_name' => [
+            'required',
+            'string',
+            'max:255',
+            'unique:tb_rules,rule_name,' . $id . ',rule_id',
+            'regex:/^[A-Za-z]+([ \/-][A-Za-z]+)*$/'
+        ],
+        'description' => 'required|string|max:500',
+        'violation_id' => 'required|exists:tb_violation,violation_id',
+        'severity_id' => 'required|exists:tb_severity,severity_id'
+    ]);
+
+    $rule->update([
+        'rule_name' => $request->rule_name,
+        'description' => $request->description,
+        'violation_id' => $request->violation_id,
+        'severity_id' => $request->severity_id
+    ]);
+
+    return response()->json([
+        'message' => 'Rule updated successfully',
+        'rule' => $rule->load('violation', 'severity')
+    ]);
+}
 
     public function updateReferral(Request $request, $id){
         $referral = referals::find($id);

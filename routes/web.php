@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\users;
 use App\Models\MainModel;
 use App\Models\postviolation;
 use App\Http\Controllers\Auth;
