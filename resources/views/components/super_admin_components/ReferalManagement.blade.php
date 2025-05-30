@@ -1,5 +1,7 @@
 <!-- Referral Management Content -->
 <link rel="stylesheet" href="{{ asset('css/super_admin_css/ViolationManagement.css') }}">
+<link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
+
 
 @php
 use App\Models\referals;
@@ -29,7 +31,7 @@ $referalsdata = referals::get();
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="referalbody">
                     @foreach ($referalsdata as $data)
                     <tr>
                         <th scope="row">{{ $data->referal_id }}</th>
@@ -75,6 +77,15 @@ $referalsdata = referals::get();
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 
 <script>
+ $(document).ready(function() {
+    $('#referralTable').DataTable({
+        "paging": true,       
+        "searching": true,   
+        "ordering": true,    
+        "info": true,       
+        "responsive": true   
+    });
+});
 $(document).ready(function () {
     // Show modal for adding referral
     $('#addReferralBtn').on('click', function (e) {
@@ -126,7 +137,7 @@ $(document).ready(function () {
             },
             success: function (response) {
                 console.log(response.message);
-                $("#referralTable").load(location.href + " #referralTable > *");
+                $('#referalbody').load(location.href + " #referalbody > *");
                 $("#referals").val("");
                 $("#referal_id").val("");
                 $('#referralModal').modal('hide');

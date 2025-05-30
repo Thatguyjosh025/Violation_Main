@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="{{ asset('./css/faculty_css/IncidentRecords.css') }}">
+<link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
+
 @php
     use App\Models\postviolation;
     $update = postviolation::get();
@@ -10,7 +12,7 @@
     function filterbyname(){
     
     }
-
+ $hasRecords = true; 
 @endphp
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -23,10 +25,10 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="ms-auto d-flex gap-2">
                         <!-- Status Filter Dropdown -->
-                        <select id="statusFilter" class="form-select form-select-sm w-auto">
+                        <!-- <select id="statusFilter" class="form-select form-select-sm w-auto">
                             <option value="">All Status</option>
                             <option value="Ongoing">Ongoing</option>
-                            <option value="Resolved">Resolved</option>
+                            <option value="Resolved">Resolved</option> -->
                         </select>
                     </div>
                 </div>
@@ -37,17 +39,15 @@
                             <th>Student No.</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Violation</th>
+                            <th>Violation</th>  
                             <th>Status</th>
                             <th>Date</th>
-                            <!-- <th>Action</th> -->
                         </tr>
                     </thead>
                     <tbody>
                     @php $hasRecords = false; @endphp
                         @foreach ($update as $updatedata)
                             @if ($updatedata->faculty_name === fullname())
-                                @php $hasRecords = true; @endphp
                                 <tr>
                                     <td data-label="Student No.">{{$updatedata->student_no}}</td>
                                     <td data-label="Name">{{$updatedata->student_name}}</td>
@@ -56,17 +56,22 @@
                                     <td data-label="Status">
                                         <span class="badge text-dark">{{$updatedata->status->status}}</span>
                                     </td>
-                                    <td data-label="Date">{{$updatedata->Date_Created}}</td>
+                                    <td data-label="Date">{{ \Carbon\Carbon::parse($updatedata->Date_Created)->format('Y-m-d') }}</td>
                                 </tr>
                             @endif
                         @endforeach
-                        @if (!$hasRecords)
-                            <tr>
-                                <td colspan="6" class="text-center">No records found.</td>
-                            </tr>
-                        @endif
                     </tbody>
-                    
                 </table>
             </div>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#violationTable').DataTable({
+        "paging": true,       
+        "searching": true,   
+        "ordering": true,    
+        "info": true,       
+        "responsive": true   
+    });
+});
+</script>

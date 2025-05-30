@@ -40,7 +40,7 @@ $userdata = users::get();
 
     <!-- Table -->
     <div class="table-responsive-sm overflow-hidden">
-        <table class="table table-hover align-middle text-center table-mobile-wrap" id="authTable">
+        <table class="table table-hover table-mobile-wrap" id="authTable">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
