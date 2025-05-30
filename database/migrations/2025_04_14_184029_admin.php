@@ -15,7 +15,11 @@ return new class extends Migration
         Schema::create('tb_postviolation', function(Blueprint $table){
             $table->id('id');
 
+            // $table->string('student_no');
+
             $table->string('student_no');
+            $table->foreign('student_no')->references('student_no')->on('tb_users');
+
             $table->string('student_name');
             $table->string('course');
             $table->string('school_email');
@@ -48,7 +52,11 @@ return new class extends Migration
             $table->id();
 
             $table->string('student_name');
+            // $table->string('student_no');
+
             $table->string('student_no');
+            $table->foreign('student_no')->references('student_no')->on('tb_users');
+
             $table->string('course_section');
             $table->string('school_email');
             $table->string('faculty_name');

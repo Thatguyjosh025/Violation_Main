@@ -213,14 +213,15 @@ class AdminController extends Controller
         ]);
     }
 
-    public function updateStudentInfo(Request $request, $id){
+    public function updateStudentInfo(Request $request, $id)
+{
     $student = postviolation::with('status')->find($id);
 
     if (!$student) {
         return response()->json(['status' => 500, 'message' => 'Student not found']);
     }
 
-    $oldStatus = $student->status ? $student->status->status_text : null; 
+    $oldStatus = $student->status ? $student->status->status_text : null;
 
     $student->update([
         'student_no' => $request->update_student_no,
@@ -244,14 +245,21 @@ class AdminController extends Controller
 
     $newStatusText = statuses::find($request->update_status)->status ?? 'Unknown';
 
+    if ($newStatusText === 'Resolved') {
+        $student->is_active = false;
+        $student->save();
+    }
+
     if ($oldStatus != $newStatusText) {
+        $url = ($newStatusText === 'Resolved') ? '/violation_history' : '/violation_tracking';
+
         $notif = notifications::create([
             'title' => 'Violation Status Update',
             'message' => 'Your violation has been escalated to ' . $newStatusText,
             'role' => 'student',
             'student_no' => $request->update_student_no,
             'type' => 'approve',
-            'url' => '/violation_tracking',
+            'url' => $url,
             'date_created' => Carbon::now()->format('Y-m-d'),
             'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
         ]);
@@ -313,19 +321,19 @@ public function UpdateRejected(Request $request){
     return response()->json(['message' => 'Incident rejected successfully.']);
 }
 
-public function archive($id)
-{
-    $violation = postviolation::find($id);
+// public function archive($id)
+// {
+//     $violation = postviolation::find($id);
 
-    if (!$violation) {
-        return response()->json(['message' => 'Record not found'], 404);
-    }
+//     if (!$violation) {
+//         return response()->json(['message' => 'Record not found'], 404);
+//     }
 
-    $violation->is_active = false;
-    $violation->save();
+//     $violation->is_active = false;
+//     $violation->save();
 
-    return response()->json(['message' => 'Violation archived successfully.']);
-}
+//     return response()->json(['message' => 'Violation archived successfully.']);
+// }
 
 //student search
 public function student_search(Request $request)

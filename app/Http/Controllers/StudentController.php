@@ -32,6 +32,7 @@ class StudentController extends Controller
             if ($minutesSinceCreated > 5 && $violation->appeal === 'N/A') {
                 $violation->appeal = 'No Objection';
                 $violation->status_name = 3;
+                $violation->is_active = true;
                 $violation->save();
 
                 notifications::create([

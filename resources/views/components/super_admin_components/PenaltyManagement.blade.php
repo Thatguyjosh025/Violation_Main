@@ -84,6 +84,7 @@ $(document).ready(function () {
         $('#penaltyModal').modal('show');
     });
 
+    // Clear error on input
     $("#penalties").on("input", function () {
         if ($(this).hasClass("is-invalid")) {
             $(this).removeClass("is-invalid");
@@ -96,18 +97,18 @@ $(document).ready(function () {
         e.preventDefault();
 
         let penaltyName = $("#penalties").val().trim();
-        
-        // Validate minimum length 5
+
+        // Validate minimum length
         if (penaltyName.length < 5) {
             $("#penalties").addClass("is-invalid");
             $('.invalid-feedback').text("Penalty name must be at least 5 characters long.").show();
             return;
         }
 
-        // Client-side validation only
-        if (!/^[a-zA-Z0-9 ]+(\/[a-zA-Z0-9 ]+)*$/.test(penaltyName)) {
+        // Validate allowed characters: letters, numbers, spaces, slashes, hyphens
+        if (!/^[a-zA-Z0-9\s\/-]+$/.test(penaltyName)) {
             $("#penalties").addClass("is-invalid");
-            $('.invalid-feedback').text("Violation name can only contain letters, numbers, spaces, and slashes").show();
+            $('.invalid-feedback').text("Penalty name can only contain letters, numbers, spaces, slashes, and hyphens.").show();
             return;
         } else {
             $("#penalties").removeClass("is-invalid");

@@ -291,6 +291,9 @@ button.btn.btn-action.w-auto:hover {
 .container.mt-4 {
     max-width: 1750px;
 }
+td.dt-type-numeric.sorting_1 {
+    width: 22rem;
+}
 
   
   

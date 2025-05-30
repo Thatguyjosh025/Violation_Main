@@ -111,5 +111,7 @@ $(document).ready(function () {
 </script>
 
 </body>
+<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+<script src="{{ asset('./vendor/dataTables.min.js') }}"></script>
 
 </html>
