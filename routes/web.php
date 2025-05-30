@@ -98,34 +98,40 @@ Route::middleware(['permission:student', RedirectIfNotAuthenticated::class])->gr
     Route::get('/student_dashboard', [ViewController::class, 'student_dashboard'])->name('student_dashboard');
     Route::get('/violation_history', [ViewController::class, 'violation_history'])->name('violation_history');
     Route::get('/violation_tracking', [ViewController::class, 'violation_tracking'])->name('violation_tracking');
-});;
+    Route::get('/get_violations_records', [StudentController::class, 'getViolationsRecords']);
+    Route::post('/update_appeal_reason', [StudentController::class, 'updateAppealReason']);
+
+});
 
 
 //get routes
-Route::get('/get_rule/{violation_id}', [AdminController::class, 'getRule']);
-Route::get('/get_info', [AdminController::class, 'getStudentInfo']);
+
+
 Route::get('/get_violations', [DataController::class, 'getViolations']);
 Route::get('/get_penalty', [DataController::class, 'getPenalties']);
 Route::get('/get_referal', [DataController::class, 'getReferals']);
 Route::get('/get_status', [DataController::class, 'getStatus']);
 
-Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
-Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
-Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
-Route::get('/get_user_info', [AuthController::class, 'getuser']);
+Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipline'])->group(function () {
+    Route::get('/get_rule/{violation_id}', [AdminController::class, 'getRule']);
+    Route::get('/get_info', [AdminController::class, 'getStudentInfo']);
+    Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
+    Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
+    Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
+    Route::get('/get_user_info', [AuthController::class, 'getuser']);
+});
+
 
 
 
 //students
-Route::get('/get_violations_records', [StudentController::class, 'getViolationsRecords']);
-Route::post('/update_appeal_reason', [StudentController::class, 'updateAppealReason']);
 
 //notif
 Route::post('/update_notification_status', [NotificationController::class, 'updateNotificationStatus']);
 
 //handbookview
 Route::get('/violation_handbook', [ViewController::class, 'violation_handbook'])->name('violation_handbook')
-->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty']);
+->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty,super']);
 
 
 Route::get('/violation_records/data', function (Request $request) {

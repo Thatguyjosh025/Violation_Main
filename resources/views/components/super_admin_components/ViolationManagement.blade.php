@@ -130,9 +130,19 @@ $(document).ready(function () {
                 violations: violationName
             },
             success: function (response) {
-                console.log(response.message);
                 $('#violationbody').load(location.href + " #violationbody > *");
                 $("#violations").val("");
+                
+                let isEdit = $("#violation_id").val() ? true : false;
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: isEdit ? 'Violation Updated!' : 'Violation Added!',
+                    text: response.message || 'The violation has been successfully saved.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
                 $("#violation_id").val("");
                 $('#violationModal').modal('hide');
                 $('.modal-backdrop').remove();

@@ -135,13 +135,22 @@ $(document).ready(function () {
                 _token: "{{ csrf_token() }}",
                 referals: referralName
             },
-            success: function (response) {
-                console.log(response.message);
+           success: function (response) {
+                const isEdit = $("#referal_id").val() !== "";
+
                 $('#referalbody').load(location.href + " #referalbody > *");
                 $("#referals").val("");
                 $("#referal_id").val("");
                 $('#referralModal').modal('hide');
                 $('.modal-backdrop').remove();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: isEdit ? 'Referral Updated!' : 'Referral Added!',
+                    text: response.message || 'The referral has been successfully saved.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             },
             error: function (xhr) {
                 if (xhr.status === 422) {

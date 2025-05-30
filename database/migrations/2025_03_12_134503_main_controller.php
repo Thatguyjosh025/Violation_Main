@@ -69,8 +69,8 @@ return new class extends Migration
 
             ['firstname' => 'Jeff',
              'lastname' => 'Caber',
-             'middlename' => 'Queen',
-             'email' => 'admin@gmail.com',
+             'middlename' => 'Jeff',
+             'email' => 'discipline@gmail.com',
              'student_no' => 'ALA0159F',
              'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),
@@ -87,8 +87,8 @@ return new class extends Migration
              'role' => 'super',
              'status' => 'active'
             ],
-            ['firstname' => 'Rod',
-             'lastname' => 'Rufino',
+            ['firstname' => 'Angelo',
+             'lastname' => 'Pascua',
              'middlename' => 'Mark',
              'email' => 'faculty@gmail.com',
              'student_no' => 'ALA0157F',
