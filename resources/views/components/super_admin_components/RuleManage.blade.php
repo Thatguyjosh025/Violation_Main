@@ -240,6 +240,14 @@ $(document).ready(function() {
                 success: function () {
                     $('#createRuleModal').modal('hide');
                     $('#rulebody').load(location.href + " #rulebody > *");
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Rule Added!',
+                    text: 'The Rule has been successfully saved.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
                 },
                 error: function (xhr) {
                     if (xhr.status === 422) {
@@ -308,6 +316,13 @@ $(document).ready(function() {
                 success: function () {
                     $('#editRuleModal').modal('hide');
                     $('#rulebody').load(location.href + " #rulebody > *");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Rule Updated!',
+                    text: 'The Rule update has been successfully saved.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
 
                 },
                 error: function (xhr) {

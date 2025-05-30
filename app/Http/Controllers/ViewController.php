@@ -116,6 +116,8 @@ class ViewController extends Controller
                 return view('faculty_dashboard', ['views' => 'Handbook']);
             case 'discipline':
                 return view('discipline_dashboard', ['views' => 'Handbook']);
+            case 'super':
+                return view('super_dashboard', ['view' => 'Handbook']);
             default:
                 return redirect('/');
         }

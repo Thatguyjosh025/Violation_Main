@@ -34,7 +34,7 @@
         <a class="nav-link" href="#"><i class="bi bi-clipboard-data-fill"></i> <span>Reports and Analytics</span></a>
 
         <!-- Link to Student Handbook -->
-        <a class="nav-link" href="#"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
+        <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
     </nav>
 
     <div class="logout-container">
@@ -53,9 +53,17 @@
 
 
 <!-- Dynamically include the correct component based on the 'view' variable -->
-<div class="dashboard-content w-90">
-    @include('components.super_admin_components.' . $view)
-</div>
+
+         <div class="dashboard-content w-90">
+            @if(View::exists('components.super_admin_components.' . $view))
+                @include('components.super_admin_components.' . $view)
+            @elseif(View::exists('components.shared.' . $view))
+                @include('components.shared.' . $view)
+            @else
+                <p>View not found.</p>
+            @endif
+        </div>
+
 
 <!-- Scripts -->
 <script src="{{ asset('vendor/jquery.min.js') }}"></script>

@@ -136,12 +136,21 @@ $(document).ready(function () {
                 penalties: penaltyName
             },
             success: function (response) {
-                console.log(response.message);
+                const isEdit = $("#penalties_id").val() !== ""; 
+
                 $('#penaltybody').load(location.href + " #penaltybody > *");
                 $("#penalties").val("");
                 $("#penalties_id").val("");
                 $('#penaltyModal').modal('hide');
                 $('.modal-backdrop').remove();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: isEdit ? 'Penalty Updated!' : 'Penalty Added!',
+                    text: response.message || 'The penalty has been successfully saved.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             }
         });
     });
