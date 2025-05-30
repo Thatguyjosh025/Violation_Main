@@ -1,5 +1,7 @@
 <!-- Blade View: Rule Management -->
 <link rel="stylesheet" href="{{ asset('css/super_admin_css/RuleManagement.css') }}">
+<link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
+
 @php
     use App\Models\violation;
     use App\Models\severity;
@@ -35,7 +37,7 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="rulebody">
                     @foreach ($ruleinfo as $rule)
                         <tr>
                             <th>{{ $rule->rule_id }}</th>
@@ -155,6 +157,15 @@
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
+$(document).ready(function() {
+    $('#ruleTable').DataTable({
+        "paging": true,       
+        "searching": true,   
+        "ordering": true,    
+        "info": true,       
+        "responsive": true   
+    });
+});
     function isValidRuleName(name) {
         // Allow letters, spaces, slashes, and hyphens between words
         const pattern = /^[A-Za-z]+([ \/-][A-Za-z]+)*$/;
@@ -228,7 +239,7 @@
                 data: $(this).serialize(),
                 success: function () {
                     $('#createRuleModal').modal('hide');
-                    $('#ruleTable').load(location.href + " #ruleTable");
+                    $('#rulebody').load(location.href + " #rulebody > *");
                 },
                 error: function (xhr) {
                     if (xhr.status === 422) {
@@ -296,7 +307,7 @@
                 },
                 success: function () {
                     $('#editRuleModal').modal('hide');
-                    $('#violationrecordstable').DataTable().ajax.reload(null, false);
+                    $('#rulebody').load(location.href + " #rulebody > *");
 
                 },
                 error: function (xhr) {

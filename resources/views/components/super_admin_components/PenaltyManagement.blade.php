@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="{{ asset('css/super_admin_css/ViolationManagement.css') }}">
+<link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
+
 @php
 use App\Models\penalties;
 
@@ -28,7 +30,7 @@ $penaltydata = penalties::get();
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="penaltybody">
                     @foreach ($penaltydata as $data)
                     <tr>
                         <th scope="row">{{ $data->penalties_id }}</th>
@@ -74,6 +76,15 @@ $penaltydata = penalties::get();
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 
 <script>
+$(document).ready(function() {
+    $('#penaltyTable').DataTable({
+        "paging": true,       
+        "searching": true,   
+        "ordering": true,    
+        "info": true,       
+        "responsive": true   
+    });
+});
 $(document).ready(function () {
     // Show modal for adding a penalty
     $('#addPenaltyBtn').on('click', function (e) {
@@ -126,7 +137,7 @@ $(document).ready(function () {
             },
             success: function (response) {
                 console.log(response.message);
-                $("#penaltyTable").load(location.href + " #penaltyTable > *");
+                $('#penaltybody').load(location.href + " #penaltybody > *");
                 $("#penalties").val("");
                 $("#penalties_id").val("");
                 $('#penaltyModal').modal('hide');
