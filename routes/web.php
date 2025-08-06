@@ -58,6 +58,8 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
 
     // User Management
     Route::post('/update_user', [AuthController::class, 'updateUser']);
+    Route::get('/get_user_info', [AuthController::class, 'getuser']);
+
 });
 
 // ==========================
@@ -118,7 +120,6 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
     Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
     Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
     Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
-    Route::get('/get_user_info', [AuthController::class, 'getuser']);
 });
 
 

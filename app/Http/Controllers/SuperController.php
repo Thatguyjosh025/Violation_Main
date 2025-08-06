@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\rule;
+
 use App\Models\rules;
-use App\Models\penalties;
 use App\Models\referals;
+use App\Models\penalties;
 use App\Models\violation;
-use GuzzleHttp\Psr7\Message;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use function Laravel\Prompts\alert;
 
 class SuperController extends Controller
@@ -142,18 +142,29 @@ class SuperController extends Controller
     }
 
 
-   public function updateViolation(Request $request, $id) {
-        $violate = violation::find($id);
+   public function updateViolation(Request $request, $id){
+    $violate = violation::find($id);
 
-        if (!$violate) {
-            return response()->json(['message' => 'Violation not found'], 404);
-        }
-
-        $violate->violations = $request->violations;
-        $violate->save();
-
-        return response()->json(['message' => 'Violation updated successfully']);
+    if (!$violate) {
+        return response()->json(['message' => 'Violation not found'], 404);
     }
+
+    // Validation with uniqueness check, excluding current violation ID
+    $request->validate([
+        'violations' => [
+            'required',
+            'string',
+            'min:5',
+            'regex:/^[A-Za-z ]+$/',
+            Rule::unique('tb_violation', 'violations')->ignore($id,'violation_id'),
+        ],
+    ]);
+
+    $violate->violations = $request->violations;
+    $violate->save();
+
+    return response()->json(['message' => 'Violation updated successfully']);
+}
 
   public function updateRule(Request $request, $id) {
     $rule = rules::find($id);

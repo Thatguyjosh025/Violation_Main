@@ -14,7 +14,8 @@ return new class extends Migration
     {
         //
         Schema::create('tb_violation', function(Blueprint $table){
-            $table -> id('violation_id');
+            $table -> id();
+            $table -> string('violation_id')->unique();
             $table -> string('violations', length:255);
         });
 
@@ -37,7 +38,7 @@ return new class extends Migration
         
         Schema::create('tb_rules',function(Blueprint $table){
             $table -> id('rule_id');
-            $table -> unsignedBigInteger('violation_id');
+            $table -> string('violation_id');
             $table -> unsignedBigInteger('severity_id');
             $table -> string('rule_name');
             $table -> string('description', length:500);

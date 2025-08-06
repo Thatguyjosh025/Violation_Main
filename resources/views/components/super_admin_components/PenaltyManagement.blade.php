@@ -128,7 +128,7 @@ $(document).ready(function () {
 
         let url = $("#penalties_id").val() ? "/update_penalty/" + $("#penalties_id").val() : "/create_penalties";
 
-        $.ajax({
+         $.ajax({
             url: url,
             type: "POST",
             data: {
@@ -151,6 +151,21 @@ $(document).ready(function () {
                     timer: 2000,
                     showConfirmButton: false
                 });
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    if (errors && errors.penalties && errors.penalties.length > 0) {
+                        $("#penalties").addClass("is-invalid");
+                        $('.invalid-feedback').text(errors.penalties[0]).show();
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An unexpected error occurred.'
+                    });
+                }
             }
         });
     });

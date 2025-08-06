@@ -619,10 +619,10 @@ $(document).ready(function () {
             link.click();
         });
 
-
+        //name ng id or name ng button
         $('#printTable').click(function () {
             // Clone the DataTable and remove the Actions column
-            let clonedTable = $('#authTable').clone();
+            let clonedTable = $('#authTable').clone(); // dito mo lagay yung name ng table na target mo
 
             // Remove the last column (Actions)
             clonedTable.find('tr').each(function () {
