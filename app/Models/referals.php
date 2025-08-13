@@ -10,7 +10,7 @@ class referals extends Model
     
     protected $table = 'tb_referals';
     protected $primaryKey = 'referal_id';
-    protected $fillable = ['referals'];
+    protected $fillable = ['referals','referals_uid'];
 
     public $timestamps = false;
 

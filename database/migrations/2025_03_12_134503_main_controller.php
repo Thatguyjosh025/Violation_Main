@@ -70,7 +70,7 @@ return new class extends Migration
             ['firstname' => 'Jeff',
              'lastname' => 'Caber',
              'middlename' => 'Jeff',
-             'email' => 'discipline@gmail.com',
+             'email' => 'admin@gmail.com',
              'student_no' => 'ALA0159F',
              'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),

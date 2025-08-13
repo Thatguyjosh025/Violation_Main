@@ -12,7 +12,7 @@ class violation extends Model
     protected $table = 'tb_violation';
     protected $primaryKey = 'violation_id';
 
-    protected $fillable = ['violations'];
+    protected $fillable = ['violations','violation_uid'];
     public $timestamps = false;
 
     

@@ -25,11 +25,11 @@ class StudentController extends Controller
 
         // 5 mins violation demo expiration check
         foreach ($violations as $violation) {
-            $createdDate = Carbon::parse($violation->Date_Created,'Asia/Manila'); // Note: always set the timezone this is fucking sucks
+            $createdDate = Carbon::parse($violation->Date_Created,'Asia/Manila'); // Note: always set the timezone in asia this is fucking sucks
             $now = Carbon::now('Asia/Manila');
             $minutesSinceCreated = $createdDate->diffInMinutes($now);
 
-            if ($minutesSinceCreated > 5 && $violation->appeal === 'N/A') {
+            if ($minutesSinceCreated > 1 && $violation->appeal === 'N/A') {
                 $violation->appeal = 'No Objection';
                 $violation->status_name = 3;
                 $violation->is_active = true;
