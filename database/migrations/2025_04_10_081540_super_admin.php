@@ -39,6 +39,7 @@ return new class extends Migration
         
         Schema::create('tb_rules', function(Blueprint $table){
             $table->id('rule_id');
+            $table -> string('rule_uid')->unique();
             $table->unsignedBigInteger('violation_id');
             $table->unsignedBigInteger('severity_id');
             $table->string('rule_name');
@@ -56,7 +57,7 @@ return new class extends Migration
 
         DB::table('tb_violation')->insert([
             ['violation_uid' => 'VO001','violations' => 'Bullying'],
-            // ['violations' => 'Discourtesy or Disrespect'],
+            ['violation_uid' => 'VO002','violations' => 'Discourtesy or Disrespect'],
             // ['violations' => 'Improper Use of School Facilities/Equipment']
             // ['violations' => 'Cheating'],
             // ['violations' => 'Stealing/Tampering or Forgery of school records'],
@@ -92,7 +93,7 @@ return new class extends Migration
         ]);
         
         DB::table('tb_referals')->insert([
-            ['referal_uid' => '001','referals' => 'Verbal Reprimand'],
+            ['referal_uid' => 'RE001','referals' => 'Verbal Reprimand'],
         //    ['referals' => 'Held conference with the student'],
         //     ['referals' => 'Consulted DO/GA'],
         //     ['referals' => 'Contacted Parents'],
@@ -112,6 +113,7 @@ return new class extends Migration
 
         DB::table('tb_rules')->insert([
             [
+                'rule_uid' => 'RL001',
                 'violation_id' => 1,
                 'severity_id' => 4, 
                 'rule_name' => 'Anti-Bullying',

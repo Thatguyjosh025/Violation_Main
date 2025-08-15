@@ -76,16 +76,15 @@ $penaltydata = penalties::get();
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 
 <script>
-$(document).ready(function() {
-    $('#penaltyTable').DataTable({
-        "paging": true,       
-        "searching": true,   
-        "ordering": true,    
-        "info": true,       
-        "responsive": true   
-    });
-});
 $(document).ready(function () {
+    $('#penaltyTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        responsive: true
+    });
+
     // Show modal for adding a penalty
     $('#addPenaltyBtn').on('click', function (e) {
         e.preventDefault();
@@ -109,14 +108,12 @@ $(document).ready(function () {
 
         let penaltyName = $("#penalties").val().trim();
 
-        // Validate minimum length
         if (penaltyName.length < 5) {
             $("#penalties").addClass("is-invalid");
             $('.invalid-feedback').text("Penalty name must be at least 5 characters long.").show();
             return;
         }
 
-        // Validate allowed characters: letters, numbers, spaces, slashes, hyphens
         if (!/^[a-zA-Z0-9\s\/-]+$/.test(penaltyName)) {
             $("#penalties").addClass("is-invalid");
             $('.invalid-feedback').text("Penalty name can only contain letters, numbers, spaces, slashes, and hyphens.").show();
@@ -126,7 +123,9 @@ $(document).ready(function () {
             $('.invalid-feedback').hide();
         }
 
-        let url = $("#penalties_id").val() ? "/update_penalty/" + $("#penalties_id").val() : "/create_penalties";
+        let url = $("#penalties_id").val()
+            ? "/update_penalty/" + $("#penalties_id").val()
+            : "/create_penalties";
 
         $.ajax({
             url: url,
@@ -136,13 +135,20 @@ $(document).ready(function () {
                 penalties: penaltyName
             },
             success: function (response) {
-                const isEdit = $("#penalties_id").val() !== ""; 
+                const isEdit = $("#penalties_id").val() !== "";
+
+                if (response.message && response.message.includes("No changes detected")) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Changes',
+                        text: 'No changes were made to the penalty.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    return; // Keep modal open for further edits
+                }
 
                 $('#penaltybody').load(location.href + " #penaltybody > *");
-                $("#penalties").val("");
-                $("#penalties_id").val("");
-                $('#penaltyModal').modal('hide');
-                $('.modal-backdrop').remove();
 
                 Swal.fire({
                     icon: 'success',
@@ -151,6 +157,21 @@ $(document).ready(function () {
                     timer: 2000,
                     showConfirmButton: false
                 });
+
+                $("#penalties").val("");
+                $("#penalties_id").val("");
+                $('#penaltyModal').modal('hide');
+                $('.modal-backdrop').remove();
+            },
+            error: function (xhr) {
+                let errorMessage = "An error occurred. Please try again.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.penalties) {
+                    errorMessage = xhr.responseJSON.errors.penalties[0];
+                }
+                $("#penalties").addClass("is-invalid");
+                $('.invalid-feedback').text(errorMessage).show();
             }
         });
     });

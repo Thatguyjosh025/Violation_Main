@@ -75,16 +75,15 @@ $violationdata = violation::get();
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 
 <script>
-$(document).ready(function() {
-    $('#violationTable').DataTable({
-        "paging": true,       
-        "searching": true,   
-        "ordering": true,    
-        "info": true,       
-        "responsive": true   
-    });
-});
 $(document).ready(function () {
+    $('#violationTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        responsive: true
+    });
+
     // Show modal for adding a violation
     $('#addViolationBtn').on('click', function (e) {
         e.preventDefault();
@@ -120,7 +119,9 @@ $(document).ready(function () {
             $('.invalid-feedback').hide();
         }
 
-        let url = $("#violation_id").val() ? "/update_violation/" + $("#violation_id").val() : "/create_violation";
+        let url = $("#violation_id").val()
+            ? "/update_violation/" + $("#violation_id").val()
+            : "/create_violation";
 
         $.ajax({
             url: url,
@@ -131,19 +132,31 @@ $(document).ready(function () {
             },
             success: function (response) {
                 $('#violationbody').load(location.href + " #violationbody > *");
-                $("#violations").val("");
-                
+
                 let isEdit = $("#violation_id").val() ? true : false;
-                
+
+                if (response.message && response.message.includes("No changes detected")) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Changes',
+                        text: 'No changes were made to the violation.',
+                        timer: 5000,
+                        showConfirmButton: true
+                    });
+                    // Keep modal open for editing purposely did not remove the modal
+                    return;
+                }
+
                 Swal.fire({
                     icon: 'success',
                     title: isEdit ? 'Violation Updated!' : 'Violation Added!',
                     text: response.message || 'The violation has been successfully saved.',
-                    timer: 2000,
+                    timer: 3000,
                     showConfirmButton: false
                 });
-                
+
                 $("#violation_id").val("");
+                $("#violations").val("");
                 $('#violationModal').modal('hide');
                 $('.modal-backdrop').remove();
             },
@@ -163,7 +176,7 @@ $(document).ready(function () {
     // Edit Violation
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");
-        let violationCell = row.find("td:eq(0)");  // Correctly selects the violation name cell
+        let violationCell = row.find("td:eq(0)");
         let violationId = row.find("th").text();
 
         $("#violation_id").val(violationId);
