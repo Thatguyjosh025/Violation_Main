@@ -106,27 +106,28 @@ $(document).ready(function () {
 
     // Add/Edit Referral
     $("#referralForm").on("submit", function (e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        let referralName = $("#referals").val().trim();
+    let referralName = $("#referals").val().trim();
+    let referralId = $("#referal_id").val();
 
-        // Basic front-end validation
-        if (referralName.length < 3) {
-            $("#referals").addClass("is-invalid");
-            $('.invalid-feedback').text("Referral name must be at least 3 characters long.").show();
-            return;
-        }
+    // Basic front-end validation
+    if (referralName.length < 3) {
+        $("#referals").addClass("is-invalid");
+        $('.invalid-feedback').text("Referral name must be at least 3 characters long.").show();
+        return;
+    }
 
-        if (!/^[a-zA-Z0-9 /\-]+$/.test(referralName)) {
-            $("#referals").addClass("is-invalid");
-            $('.invalid-feedback').text("Referral name can only contain letters, numbers, spaces, hyphens, and slashes.").show();
-            return;
-        }
+    if (!/^[a-zA-Z0-9 /\-]+$/.test(referralName)) {
+        $("#referals").addClass("is-invalid");
+        $('.invalid-feedback').text("Referral name can only contain letters, numbers, spaces, hyphens, and slashes.").show();
+        return;
+    }
 
-        // Decide URL (create or update)
-        let url = $("#referal_id").val() 
-            ? "/update_referral/" + $("#referal_id").val() 
-            : "/create_referals";
+    // Decide URL (create or update)
+    let url = referralId 
+        ? "/update_referral/" + referralId 
+        : "/create_referals";
 
         $.ajax({
             url: url,
@@ -135,8 +136,19 @@ $(document).ready(function () {
                 _token: "{{ csrf_token() }}",
                 referals: referralName
             },
-           success: function (response) {
-                const isEdit = $("#referal_id").val() !== "";
+            success: function (response) {
+                const isEdit = referralId !== "";
+
+                if (response.status === "no_changes") {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Changes',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
 
                 $('#referalbody').load(location.href + " #referalbody > *");
                 $("#referals").val("");

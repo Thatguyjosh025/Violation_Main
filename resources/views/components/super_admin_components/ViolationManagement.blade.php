@@ -25,6 +25,7 @@ $violationdata = violation::get();
                     <thead class="table-light">
                         <tr>
                             <th scope="col">Violation ID</th>
+                            <th scope="col">Violation UID</th>
                             <th scope="col">Violation</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -33,6 +34,7 @@ $violationdata = violation::get();
                     @foreach ($violationdata as $data)
                         <tr>
                             <th scope="row">{{ $data->violation_id }}</th>
+                            <th scope="row">{{ $data->violation_uid }}</th>
                             <td contenteditable="false">{{ $data->violations }}</td>
                             <td>
                                 <button class="btn btn-primary btn-sm edit-btn">Edit</button>

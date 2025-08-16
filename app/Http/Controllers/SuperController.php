@@ -230,38 +230,52 @@ class SuperController extends Controller
         return response()->json(['message' => 'Violation updated successfully']);
     }
 
-  public function updateRule(Request $request, $id) {
-    $rule = rules::find($id);
+    public function updateRule(Request $request, $id){
+        $rule = rules::find($id);
 
-    if (!$rule) {
-        return response()->json(['message' => 'Rule not found'], 404);
+        if (!$rule) {
+            return response()->json(['message' => 'Rule not found'], 404);
+        }
+
+        //  Check if nothing changed
+        if (
+            $rule->rule_name === $request->rule_name &&
+            $rule->description === $request->description &&
+            $rule->violation_id == $request->violation_id &&
+            $rule->severity_id == $request->severity_id
+        ) {
+            return response()->json([
+                'message' => 'No changes were made to the rules.',
+                'status' => 'no_changes'
+            ]);
+        }
+
+        //  Validate only if changes exist
+        $request->validate([
+            'rule_name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:tb_rules,rule_name,' . $id . ',rule_id',
+                'regex:/^[A-Za-z]+([ \/-][A-Za-z]+)*$/'
+            ],
+            'description' => 'required|string|max:500',
+            'violation_id' => 'required|exists:tb_violation,violation_id',
+            'severity_id' => 'required|exists:tb_severity,severity_id'
+        ]);
+
+        $rule->update([
+            'rule_name' => $request->rule_name,
+            'description' => $request->description,
+            'violation_id' => $request->violation_id,
+            'severity_id' => $request->severity_id
+        ]);
+
+        return response()->json([
+            'message' => 'Rule updated successfully',
+            'rule' => $rule->load('violation', 'severity')
+        ]);
     }
-
-    $request->validate([
-        'rule_name' => [
-            'required',
-            'string',
-            'max:255',
-            'unique:tb_rules,rule_name,' . $id . ',rule_id',
-            'regex:/^[A-Za-z]+([ \/-][A-Za-z]+)*$/'
-        ],
-        'description' => 'required|string|max:500',
-        'violation_id' => 'required|exists:tb_violation,violation_id',
-        'severity_id' => 'required|exists:tb_severity,severity_id'
-    ]);
-
-    $rule->update([
-        'rule_name' => $request->rule_name,
-        'description' => $request->description,
-        'violation_id' => $request->violation_id,
-        'severity_id' => $request->severity_id
-    ]);
-
-    return response()->json([
-        'message' => 'Rule updated successfully',
-        'rule' => $rule->load('violation', 'severity')
-    ]);
-}
 
     public function updateReferral(Request $request, $id){
         $referral = referals::find($id);
@@ -270,9 +284,17 @@ class SuperController extends Controller
             return response()->json(['message' => 'Referral not found'], 404);
         }
 
-        // Validate input
+        // ✅ Check if no changes were made
+        if ($referral->referals === $request->referals) {
+            return response()->json([
+                'message' => 'No changes were made to the referal.',
+                'status' => 'no_changes'
+            ]);
+        }
+
+        // ✅ Validate input
         $request->validate([
-            'referals' => [
+            'referals' => [ 
                 'required',
                 'string',
                 'max:255',
@@ -281,13 +303,18 @@ class SuperController extends Controller
             ]
         ]);
 
-        // Update the referral using update()
+        // ✅ Update referral
         $referral->update([
             'referals' => $request->referals
         ]);
 
-        return response()->json(['message' => 'Referral updated successfully']);
+        return response()->json([
+            'message' => 'Referral updated successfully!',
+            'status' => 'updated',
+            'referral' => $referral
+        ]);
     }
+
 
     
 }

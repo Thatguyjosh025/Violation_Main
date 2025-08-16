@@ -134,8 +134,13 @@ class AuthController extends Controller
         ]);
     }
 
-    public function updateUser(Request $request) {
+    public function updateUser(Request $request)
+    {
         $user = users::find($request->id);
+
+        if (!$user) {
+            return response()->json(['status' => 404, 'message' => 'User not found']);
+        }
 
         $validatedData = $request->validate([
             'id' => 'required|exists:tb_users,id',
@@ -148,8 +153,28 @@ class AuthController extends Controller
             'status' => 'required|string|max:255',
         ]);
 
+        // Check if there are changes
+        $changes = false;
+        foreach ($validatedData as $key => $value) {
+            if ($user->$key != $value) {
+                $changes = true;
+                break;
+            }
+        }
+
+        if (!$changes) {
+            return response()->json([
+                'status' => 204,
+                'message' => 'No changes detected. Update not applied.'
+            ]);
+        }
+
         $user->update($validatedData);
-        return response()->json(['status' => 200, 'message' => 'User updated successfully']);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'User updated successfully'
+        ]);
     }
         
     public function logout(Request $request) {
