@@ -3,19 +3,17 @@
 
 @php
 use App\Models\penalties;
-
 $penaltydata = penalties::get();
 @endphp
 
-<!-- Penalty -->
+<!-- Header -->
 <div class="d-flex align-items-center">
     <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
     <h3 class="mb-0">Penalty Management</h3>
 </div>
 
-<!-- Content Sections -->
+<!-- Content -->
 <div class="container mt-4">
-    <!-- Penalty Type Section -->
     <div class="content-section active" id="penalty-type-section">
         <div class="mb-3" style="display: flex; justify-content: end;">
             <button class="btn btn-add btm-md" id="addPenaltyBtn">+ Add</button>
@@ -26,7 +24,9 @@ $penaltydata = penalties::get();
                 <thead class="table-light">
                     <tr>
                         <th scope="col">Penalty ID</th>
+                        <th scope="col">Penalty UID</th>
                         <th scope="col">Penalty</th>
+                        <th scope="col">Visibility</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
@@ -34,7 +34,9 @@ $penaltydata = penalties::get();
                     @foreach ($penaltydata as $data)
                     <tr>
                         <th scope="row">{{ $data->penalties_id }}</th>
+                        <td>{{ $data->penalties_uid }}</td>
                         <td>{{ $data->penalties }}</td>
+                        <td>{{ $data->is_visible }}</td>
                         <td>
                             <button class="btn btn-primary btn-sm edit-btn">Edit</button>
                         </td>
@@ -55,9 +57,12 @@ $penaltydata = penalties::get();
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+
                 <form id="penaltyForm" class="mb-4">
                     @csrf
                     <input type="hidden" name="penalties_id" id="penalties_id">
+
+                    <!-- Penalty Name -->
                     <div class="mb-3">
                         <label for="penalties" class="form-label">Penalty:</label>
                         <input type="text" name="penalties" id="penalties" class="form-control" min="5" required>
@@ -65,13 +70,26 @@ $penaltydata = penalties::get();
                             Penalty name should only contain alphanumeric characters and hyphens.
                         </div>
                     </div>
+
+                    <!-- Visibility Dropdown -->
+                    <div class="mb-3">
+                        <label for="is_visible" class="form-label">Visibility:</label>
+                        <select name="is_visible" id="is_visible" class="form-select" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit -->
                     <button type="submit" class="btn btn-primary">Save Penalty</button>
                 </form>
+
             </div>
         </div>
     </div>
 </div>
 
+<!-- Scripts -->
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 
@@ -85,16 +103,17 @@ $(document).ready(function () {
         responsive: true
     });
 
-    // Show modal for adding a penalty
+    // Show Add Modal
     $('#addPenaltyBtn').on('click', function (e) {
         e.preventDefault();
         $("#penalties_id").val("");
         $("#penalties").val("").removeClass("is-invalid");
+        $("#is_visible").val("active"); // default
         $('.invalid-feedback').hide();
         $('#penaltyModal').modal('show');
     });
 
-    // Clear error on input
+    // Clear error on typing
     $("#penalties").on("input", function () {
         if ($(this).hasClass("is-invalid")) {
             $(this).removeClass("is-invalid");
@@ -102,11 +121,12 @@ $(document).ready(function () {
         }
     });
 
-    // Add/Edit Penalty
+    // Save Penalty (Create or Update)
     $("#penaltyForm").on("submit", function (e) {
         e.preventDefault();
 
         let penaltyName = $("#penalties").val().trim();
+        let visibility = $("#is_visible").val();
 
         if (penaltyName.length < 5) {
             $("#penalties").addClass("is-invalid");
@@ -132,7 +152,8 @@ $(document).ready(function () {
             type: "POST",
             data: {
                 _token: "{{ csrf_token() }}",
-                penalties: penaltyName
+                penalties: penaltyName,
+                is_visible: visibility
             },
             success: function (response) {
                 const isEdit = $("#penalties_id").val() !== "";
@@ -145,7 +166,7 @@ $(document).ready(function () {
                         timer: 2000,
                         showConfirmButton: false
                     });
-                    return; // Keep modal open for further edits
+                    return;
                 }
 
                 $('#penaltybody').load(location.href + " #penaltybody > *");
@@ -160,6 +181,7 @@ $(document).ready(function () {
 
                 $("#penalties").val("");
                 $("#penalties_id").val("");
+                $("#is_visible").val("active");
                 $('#penaltyModal').modal('hide');
                 $('.modal-backdrop').remove();
             },
@@ -176,16 +198,18 @@ $(document).ready(function () {
         });
     });
 
-    // Edit Penalty
+    // Edit Button
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");
-        let penaltyId = row.find("th").text();
-        let penaltyValue = row.find("td:eq(0)").text();
+        let penaltyId = row.find("th:eq(0)").text();     
+        let penaltyName = row.find("td:eq(1)").text();   
+        let visibilityValue = row.find("td:eq(2)").text().trim(); 
 
         $("#penalties_id").val(penaltyId);
-        $("#penalties").val(penaltyValue).removeClass("is-invalid");
+        $("#penalties").val(penaltyName).removeClass("is-invalid");
+        $("#is_visible").val(visibilityValue);
         $('.invalid-feedback').hide();
         $('#penaltyModal').modal('show');
+        });
     });
-});
 </script>

@@ -27,6 +27,7 @@ $violationdata = violation::get();
                             <th scope="col">Violation ID</th>
                             <th scope="col">Violation UID</th>
                             <th scope="col">Violation</th>
+                            <th scope="col">is_visible</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -36,6 +37,7 @@ $violationdata = violation::get();
                             <th scope="row">{{ $data->violation_id }}</th>
                             <th scope="row">{{ $data->violation_uid }}</th>
                             <td contenteditable="false">{{ $data->violations }}</td>
+                            <th scope="row">{{ $data->is_visible }}</th>
                             <td>
                                 <button class="btn btn-primary btn-sm edit-btn">Edit</button>
                             </td>
@@ -47,7 +49,7 @@ $violationdata = violation::get();
         </div>
     </div>
 
-    <!-- Violation Modal -->
+   <!-- Violation Modal -->
     <div class="modal fade" id="violationModal" tabindex="-1" aria-labelledby="violationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -59,6 +61,8 @@ $violationdata = violation::get();
                     <form id="violationForm" class="mb-4">
                         @csrf
                         <input type="hidden" name="violation_id" id="violation_id">
+
+                        <!-- Violation Name -->
                         <div class="mb-3">
                             <label for="violations" class="form-label">Violation:</label>
                             <input type="text" name="violations" id="violations" class="form-control" required>
@@ -66,6 +70,17 @@ $violationdata = violation::get();
                                 Violation name should only contain alphabetic characters and spaces.
                             </div>
                         </div>
+
+                        <!-- Visibility Dropdown -->
+                        <div class="mb-3">
+                            <label for="is_visible" class="form-label">Visibility:</label>
+                            <select name="is_visible" id="is_visible" class="form-select" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Save Button -->
                         <button type="submit" class="btn btn-primary">Save Violation</button>
                     </form>
                 </div>
@@ -91,6 +106,7 @@ $(document).ready(function () {
         e.preventDefault();
         $("#violation_id").val("");
         $("#violations").val("").removeClass("is-invalid");
+        $("#is_visible").val("active"); // default to active
         $('.invalid-feedback').hide();
         $('#violationModal').modal('show');
     });
@@ -102,11 +118,12 @@ $(document).ready(function () {
         }
     });
 
-    // Add/Edit Violation
+    // Add/Edit Violation Submit
     $("#violationForm").on("submit", function (e) {
         e.preventDefault();
 
         let violationName = $("#violations").val().trim();
+        let isVisible = $("#is_visible").val();
 
         if (violationName.length < 5) {
             $("#violations").addClass("is-invalid");
@@ -130,7 +147,8 @@ $(document).ready(function () {
             type: "POST",
             data: {
                 _token: "{{ csrf_token() }}",
-                violations: violationName
+                violations: violationName,
+                is_visible: isVisible
             },
             success: function (response) {
                 $('#violationbody').load(location.href + " #violationbody > *");
@@ -145,7 +163,7 @@ $(document).ready(function () {
                         timer: 5000,
                         showConfirmButton: true
                     });
-                    // Keep modal open for editing purposely did not remove the modal
+                    // Keep modal open for editing
                     return;
                 }
 
@@ -159,6 +177,7 @@ $(document).ready(function () {
 
                 $("#violation_id").val("");
                 $("#violations").val("");
+                $("#is_visible").val("active");
                 $('#violationModal').modal('hide');
                 $('.modal-backdrop').remove();
             },
@@ -178,13 +197,17 @@ $(document).ready(function () {
     // Edit Violation
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");
-        let violationCell = row.find("td:eq(0)");
-        let violationId = row.find("th").text();
 
-        $("#violation_id").val(violationId);
-        $("#violations").val(violationCell.text()).removeClass("is-invalid");
+        // Match correct columns
+        let penaltyId = row.find("th:eq(0)").text().trim();       // penalties_id
+        let penaltyName = row.find("td:eq(0)").text().trim();     // penalties
+        let visibility = row.find("th:eq(3)").text().trim();      // is_visible
+
+        $("#penalties_id").val(penaltyId);
+        $("#penalties").val(penaltyName).removeClass("is-invalid");
+        $("#is_visible").val(visibility.toLowerCase()); // normalize to match <option>
         $('.invalid-feedback').hide();
-        $('#violationModal').modal('show');
+        $('#penaltyModal').modal('show');
     });
 });
 </script>

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Validation\Rule;
 use App\Models\rules;
-use App\Models\penalties;
 use App\Models\referals;
+use App\Models\penalties;
 use App\Models\violation;
-
 use Illuminate\Http\Request;
+
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use function Laravel\Prompts\alert;
 
 class SuperController extends Controller
@@ -40,7 +41,8 @@ class SuperController extends Controller
     // Create the new violation with generated UID
     $create = violation::create([
         'violation_uid' => $newUID,
-        'violations'    => $request->violations
+        'violations'    => $request->violations,
+        'is_visible' => 'active'
     ]);
 
     return response()->json([
@@ -144,7 +146,8 @@ class SuperController extends Controller
             'rule_name' => $request->rule_name,
             'description' => $request->description,
             'violation_id' => $request->violation_id,
-            'severity_id' => $request->severity_id
+            'severity_id' => $request->severity_id,
+            'is_visible' => 'active'
         ]);
 
         $create->load('violation', 'severity');
@@ -171,7 +174,6 @@ class SuperController extends Controller
             return response()->json(['message' => 'Penalty not found'], 404);
         }
 
-        // Validation
         $request->validate([
             'penalties' => [
                 'required',
@@ -180,18 +182,21 @@ class SuperController extends Controller
                 'regex:/^[a-zA-Z0-9\s\/-]+$/',
                 Rule::unique('tb_penalties', 'penalties')->ignore($id, 'penalties_id')
             ],
+            'is_visible' => 'required|in:active,inactive'   
         ]);
 
-        // No change check (case-insensitive)
-        if (strcasecmp($penalty->penalties, $request->penalties) === 0) {
+        if (
+            strcasecmp($penalty->penalties, $request->penalties) === 0 &&
+            $penalty->is_visible === $request->is_visible
+        ) {
             return response()->json([
                 'message' => 'No changes detected. Update not performed.'
             ], 200);
         }
 
-        // Perform update
         $penalty->update([
-            'penalties' => $request->penalties
+            'penalties' => $request->penalties,
+            'is_visible' => $request->is_visible
         ]);
 
         return response()->json([
@@ -201,7 +206,8 @@ class SuperController extends Controller
     }
 
 
-   public function updateViolation(Request $request, $id){
+
+    public function updateViolation(Request $request, $id) {
         $violate = violation::find($id);
 
         if (!$violate) {
@@ -216,16 +222,28 @@ class SuperController extends Controller
                 'regex:/^[a-zA-Z ]+$/',
                 Rule::unique('tb_violation', 'violations')->ignore($id, 'violation_id')
             ],
+            'is_visible' => 'required|in:active,inactive'
         ]);
 
-        if (strcasecmp($violate->violations, $request->violations) === 0) {
+        // check if there are no changes
+        if (
+            strcasecmp($violate->violations, $request->violations) === 0 &&
+            $violate->is_visible === $request->is_visible
+        ) {
             return response()->json([
                 'message' => 'No changes detected. Update not performed.'
             ], 200);
         }
 
+        // update violation
         $violate->violations = $request->violations;
+        $violate->is_visible = $request->is_visible;
         $violate->save();
+
+        // cascade update to rules fucking hassle i hope i dont do this again spend hours to fix this shit my eyes hurts
+        DB::table('tb_rules')
+            ->where('violation_id', $violate->violation_id)
+            ->update(['is_visible' => $violate->is_visible]);
 
         return response()->json(['message' => 'Violation updated successfully']);
     }
@@ -284,7 +302,7 @@ class SuperController extends Controller
             return response()->json(['message' => 'Referral not found'], 404);
         }
 
-        // ✅ Check if no changes were made
+        //Check if no changes were made
         if ($referral->referals === $request->referals) {
             return response()->json([
                 'message' => 'No changes were made to the referal.',
@@ -292,7 +310,6 @@ class SuperController extends Controller
             ]);
         }
 
-        // ✅ Validate input
         $request->validate([
             'referals' => [ 
                 'required',
@@ -303,7 +320,6 @@ class SuperController extends Controller
             ]
         ]);
 
-        // ✅ Update referral
         $referral->update([
             'referals' => $request->referals
         ]);

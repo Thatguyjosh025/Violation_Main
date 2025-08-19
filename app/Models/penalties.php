@@ -11,7 +11,7 @@ class penalties extends Model
     use HasFactory;
     protected $table = 'tb_penalties';
     protected $primaryKey = 'penalties_id';
-    protected $fillable = ['penalties','penalties_uid'];
+    protected $fillable = ['penalties','penalties_uid','is_visible'];
     public $timestamps = false;
     public function violation()
     {

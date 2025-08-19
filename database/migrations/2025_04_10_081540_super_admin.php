@@ -17,12 +17,14 @@ return new class extends Migration
             $table -> id('violation_id');
             $table -> string('violation_uid')->unique();
             $table -> string('violations', length:255);
+            $table->enum('is_visible',['active','inactive']);
         });
 
         Schema::create('tb_penalties', function(Blueprint $table){
             $table -> id('penalties_id');
             $table -> string('penalties_uid')->unique();
             $table -> string('penalties', length:255);
+            $table->enum('is_visible',['active','inactive']);
         });
 
         Schema::create('tb_status',function(Blueprint $table){
@@ -46,9 +48,10 @@ return new class extends Migration
             $table->string('description', 500);
             $table->foreign('violation_id')->references('violation_id')->on('tb_violation');
             $table->foreign('severity_id')->references('severity_id')->on('tb_severity');
+            $table->enum('is_visible',['active','inactive']);
         });
 
-        Schema::create('tb_referals', function(Blueprint $table){
+        Schema::create('tb_referals', callback: function(Blueprint $table){
             $table -> id('referal_id');
             $table -> string("referal_uid")->unique();
             $table -> string('referals');
@@ -56,8 +59,8 @@ return new class extends Migration
 
 
         DB::table('tb_violation')->insert([
-            ['violation_uid' => 'VO001','violations' => 'Bullying'],
-            ['violation_uid' => 'VO002','violations' => 'Discourtesy or Disrespect'],
+            // ['violation_uid' => 'VO001','violations' => 'Bullying'],
+            // ['violation_uid' => 'VO002','violations' => 'Discourtesy or Disrespect'],
             // ['violations' => 'Improper Use of School Facilities/Equipment']
             // ['violations' => 'Cheating'],
             // ['violations' => 'Stealing/Tampering or Forgery of school records'],
@@ -71,7 +74,7 @@ return new class extends Migration
         ]);
 
         DB::table('tb_penalties')->insert([
-            ['penalties_uid' => 'PE001','penalties' => 'Verbal / Oral Warning'],
+            // ['penalties_uid' => 'PE001','penalties' => 'Verbal / Oral Warning'],
             // ['penalties' => 'Written Apology'],
             // ['penalties' => 'Written Reprimand'],
             // ['penalties' => 'Corrective Reinforcement'],
@@ -89,7 +92,6 @@ return new class extends Migration
             ['severity' => 'Major B'],
             ['severity' => 'Major C'],
             ['severity' => 'Major D'],
-
         ]);
         
         DB::table('tb_referals')->insert([
@@ -112,13 +114,13 @@ return new class extends Migration
         ]);
 
         DB::table('tb_rules')->insert([
-            [
-                'rule_uid' => 'RL001',
-                'violation_id' => 1,
-                'severity_id' => 4, 
-                'rule_name' => 'Anti-Bullying',
-                'description' => 'STI is committed to providing a healthy learning environment where students support and respect each other. Thus, within the school, it is made clear that bullying will not be tolerated'
-            ]
+            // [
+            //     'rule_uid' => 'RL001',
+            //     'violation_id' => 1,
+            //     'severity_id' => 4, 
+            //     'rule_name' => 'Anti-Bullying',
+            //     'description' => 'STI is committed to providing a healthy learning environment where students support and respect each other. Thus, within the school, it is made clear that bullying will not be tolerated'
+            // ]
             // [
             //     'violation_id' => 2,
             //     'severity_id' => 4,
