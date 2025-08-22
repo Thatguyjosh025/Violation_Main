@@ -146,8 +146,7 @@ class SuperController extends Controller
             'rule_name' => $request->rule_name,
             'description' => $request->description,
             'violation_id' => $request->violation_id,
-            'severity_id' => $request->severity_id,
-            'is_visible' => 'active'
+            'severity_id' => $request->severity_id
         ]);
 
         $create->load('violation', 'severity');
@@ -207,7 +206,7 @@ class SuperController extends Controller
 
 
 
-    public function updateViolation(Request $request, $id) {
+  public function updateViolation(Request $request, $id) {
         $violate = violation::find($id);
 
         if (!$violate) {
@@ -222,10 +221,10 @@ class SuperController extends Controller
                 'regex:/^[a-zA-Z ]+$/',
                 Rule::unique('tb_violation', 'violations')->ignore($id, 'violation_id')
             ],
-            'is_visible' => 'required|in:active,inactive'
+            'is_visible' => 'required|in:active,inactive',
         ]);
 
-        // check if there are no changes
+        // check if there are no changes (compare both fields)
         if (
             strcasecmp($violate->violations, $request->violations) === 0 &&
             $violate->is_visible === $request->is_visible
@@ -239,11 +238,6 @@ class SuperController extends Controller
         $violate->violations = $request->violations;
         $violate->is_visible = $request->is_visible;
         $violate->save();
-
-        // cascade update to rules fucking hassle i hope i dont do this again spend hours to fix this shit my eyes hurts
-        DB::table('tb_rules')
-            ->where('violation_id', $violate->violation_id)
-            ->update(['is_visible' => $violate->is_visible]);
 
         return response()->json(['message' => 'Violation updated successfully']);
     }

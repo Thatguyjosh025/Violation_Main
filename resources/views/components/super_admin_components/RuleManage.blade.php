@@ -34,7 +34,6 @@
                         <th>Description</th>
                         <th>Violation</th>
                         <th>Severity</th>
-                        <th>Visibility</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -46,7 +45,6 @@
                             <td>{{ $rule->description }}</td>
                             <td>{{ $rule->violation->violations }}</td>
                             <td>{{ $rule->severity->severity }}</td>
-                            <td>{{ $rule->is_visible }}</td>
                             <td>
                                 <button class="btn btn-primary btn-sm edit-btn-rule"
                                     data-id="{{ $rule->rule_id }}"

@@ -48,7 +48,6 @@ return new class extends Migration
             $table->string('description', 500);
             $table->foreign('violation_id')->references('violation_id')->on('tb_violation');
             $table->foreign('severity_id')->references('severity_id')->on('tb_severity');
-            $table->enum('is_visible',['active','inactive']);
         });
 
         Schema::create('tb_referals', callback: function(Blueprint $table){

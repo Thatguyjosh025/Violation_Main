@@ -163,7 +163,6 @@ $(document).ready(function () {
                         timer: 5000,
                         showConfirmButton: true
                     });
-                    // Keep modal open for editing
                     return;
                 }
 
@@ -198,16 +197,17 @@ $(document).ready(function () {
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");
 
-        // Match correct columns
-        let penaltyId = row.find("th:eq(0)").text().trim();       // penalties_id
-        let penaltyName = row.find("td:eq(0)").text().trim();     // penalties
-        let visibility = row.find("th:eq(3)").text().trim();      // is_visible
+        // Use children().eq() so th/td mix doesn't break
+        let violationID = row.children().eq(0).text().trim();   // violation_id
+        let violationUID = row.children().eq(1).text().trim();  // violation_uid 
+        let violationName = row.children().eq(2).text().trim(); // violations
+        let visibility = row.children().eq(3).text().trim();    // is_visible
 
-        $("#penalties_id").val(penaltyId);
-        $("#penalties").val(penaltyName).removeClass("is-invalid");
-        $("#is_visible").val(visibility.toLowerCase()); // normalize to match <option>
+        $("#violation_id").val(violationID);
+        $("#violations").val(violationName).removeClass("is-invalid");
+        $("#is_visible").val(visibility.toLowerCase()); 
         $('.invalid-feedback').hide();
-        $('#penaltyModal').modal('show');
+        $('#violationModal').modal('show');
     });
 });
 </script>

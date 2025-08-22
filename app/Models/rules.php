@@ -9,7 +9,7 @@ class rules extends Model {
     protected $primaryKey = 'rule_id';
     public $timestamps = false;
 
-    protected $fillable = ['rule_name','rule_uid', 'description', 'violation_id', 'severity_id','is_visible'];
+    protected $fillable = ['rule_name','rule_uid', 'description', 'violation_id', 'severity_id'];
 
     public function violation() {
         return $this->belongsTo(violation::class, 'violation_id', 'violation_id');
