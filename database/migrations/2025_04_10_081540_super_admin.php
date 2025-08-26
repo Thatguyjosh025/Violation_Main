@@ -56,6 +56,16 @@ return new class extends Migration
             $table -> string('referals');
         });
 
+        Schema::create('tb_audit', function (Blueprint $table) {
+            $table->id();
+            $table->timestamp('changed_at');
+            $table->string('changed_by');
+            $table->string('event_type');
+            $table->string('field_name');
+            $table->text('old_value')->nullable();
+            $table->text('new_value')->nullable();
+        });
+
 
         DB::table('tb_violation')->insert([
             // ['violation_uid' => 'VO001','violations' => 'Bullying'],
@@ -149,5 +159,6 @@ return new class extends Migration
         Schema::dropIfExists('tb_rules');
         Schema::dropIfExists('tb_severity'); 
         Schema::dropIfExists('tb_referals');
+        Schema::dropIfExists('tb_audit');
     }
 };

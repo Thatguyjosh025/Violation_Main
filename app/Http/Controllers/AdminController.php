@@ -18,15 +18,22 @@ class AdminController extends Controller
     //
 
     public function getRule($violation_id) {
-        $rule = rules::find($violation_id);
-    
+        $rule = rules::where('violation_id', $violation_id)
+            ->with('severity')
+            ->first();
+
         if (!$rule) {
-            return response()->json(['error' => 'No rule found'], 404);
+            return response()->json([
+                'rule_name'     => '-',
+                'description'   => '-',
+                'severity_name' => '-',
+                'test no rule found'
+            ]);
         }
-    
+
         return response()->json([
-            'rule_name' => $rule->rule_name,
-            'description' => $rule->description, 
+            'rule_name'     => $rule->rule_name,
+            'description'   => $rule->description,
             'severity_name' => $rule->severity->severity
         ]);
     }

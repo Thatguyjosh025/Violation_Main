@@ -565,7 +565,7 @@ $(document).on("change", "#edit_violation_type", function (e) {
 
         $.get("/get_rule/" + violation_id, function (response) {
             if (response.error) {
-                updateRuleDetails("", "", "");
+                updateRuleDetails("-", "-", "-");
             } else {
                 updateRuleDetails(response.rule_name, response.description, response.severity_name);
             }

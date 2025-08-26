@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\rules;
+use App\Models\audits;
 use App\Models\referals;
 use App\Models\penalties;
 use App\Models\violation;
@@ -11,11 +12,13 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use function Laravel\Prompts\alert;
+use Illuminate\Support\Facades\Auth;
 
 class SuperController extends Controller
 {
     //create functions
-   public function violation(Request $request){
+  public function violation(Request $request)
+{
     $request->validate([
         'violations' => [
             'required',
@@ -30,19 +33,29 @@ class SuperController extends Controller
     $latestUID = violation::orderBy('violation_id', 'desc')->value('violation_uid');
 
     if ($latestUID) {
-        // Extract the number and increment
         $num = intval(substr($latestUID, 2)) + 1;
         $newUID = 'VO' . str_pad($num, 3, '0', STR_PAD_LEFT);
     } else {
-        // starting count
         $newUID = 'VO001';
     }
 
-    // Create the new violation with generated UID
+    // Create the new violation
     $create = violation::create([
         'violation_uid' => $newUID,
         'violations'    => $request->violations,
-        'is_visible' => 'active'
+        'is_visible'    => 'active'
+    ]);
+
+    // Create audit entry
+    $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+
+    $audit = audits::create([
+        'changed_at' => now()->format('Y-m-d H:i'),
+        'changed_by' => $name,
+        'event_type' => 'Create',
+        'field_name' => 'violations',
+        'old_value'  => null,
+        'new_value'  => $request->violations,
     ]);
 
     return response()->json([
@@ -206,41 +219,69 @@ class SuperController extends Controller
 
 
 
-  public function updateViolation(Request $request, $id) {
-        $violate = violation::find($id);
 
-        if (!$violate) {
-            return response()->json(['message' => 'Violation not found'], 404);
-        }
+public function updateViolation(Request $request, $id)
+{
+    $violate = violation::find($id);
 
-        $request->validate([
-            'violations' => [
-                'required',
-                'string',
-                'max:255',
-                'regex:/^[a-zA-Z ]+$/',
-                Rule::unique('tb_violation', 'violations')->ignore($id, 'violation_id')
-            ],
-            'is_visible' => 'required|in:active,inactive',
-        ]);
-
-        // check if there are no changes (compare both fields)
-        if (
-            strcasecmp($violate->violations, $request->violations) === 0 &&
-            $violate->is_visible === $request->is_visible
-        ) {
-            return response()->json([
-                'message' => 'No changes detected. Update not performed.'
-            ], 200);
-        }
-
-        // update violation
-        $violate->violations = $request->violations;
-        $violate->is_visible = $request->is_visible;
-        $violate->save();
-
-        return response()->json(['message' => 'Violation updated successfully']);
+    if (!$violate) {
+        return response()->json(['message' => 'Violation not found'], 404);
     }
+
+    $request->validate([
+        'violations' => [
+            'required',
+            'string',
+            'max:255',
+            'regex:/^[a-zA-Z ]+$/',
+            Rule::unique('tb_violation', 'violations')->ignore($id, 'violation_id')
+        ],
+        'is_visible' => 'required|in:active,inactive',
+    ]);
+
+    // Check if there are no changes
+    if (
+        strcasecmp($violate->violations, $request->violations) === 0 &&
+        $violate->is_visible === $request->is_visible
+    ) {
+        return response()->json([
+            'message' => 'No changes detected. Update not performed.'
+        ], 200);
+    }
+
+    // Get user name for audit
+    $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+
+    // Audit changed fields
+    if (strcasecmp($violate->violations, $request->violations) !== 0) {
+        audits::create([
+            'changed_at' => now(),
+            'changed_by' => $name,
+            'event_type' => 'Update',
+            'field_name' => 'violations',
+            'old_value'  => $violate->violations,
+            'new_value'  => $request->violations,
+        ]);
+    }
+
+    if ($violate->is_visible !== $request->is_visible) {
+        audits::create([
+            'changed_at' => now(),
+            'changed_by' => $name,
+            'event_type' => 'Update',
+            'field_name' => 'is_visible',
+            'old_value'  => $violate->is_visible,
+            'new_value'  => $request->is_visible,
+        ]);
+    }
+
+    // Update violation
+    $violate->violations = $request->violations;
+    $violate->is_visible = $request->is_visible;
+    $violate->save();
+
+    return response()->json(['message' => 'Violation updated successfully']);
+}
 
     public function updateRule(Request $request, $id){
         $rule = rules::find($id);
