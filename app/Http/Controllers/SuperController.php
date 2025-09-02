@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\rules;
+use App\Models\users;
 use App\Models\audits;
 use App\Models\referals;
 use App\Models\penalties;
 use App\Models\violation;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use function Laravel\Prompts\alert;
@@ -366,6 +367,77 @@ public function updateViolation(Request $request, $id)
         ]);
     }
 
+    public function exportUsersCSV()
+    {
+        $fileName = 'user_records.csv';
+        $users = Users::all(['firstname', 'lastname', 'middlename', 'email', 'password', 'role', 'student_no', 'course_and_section', 'status', 'suffix']); 
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['First Name', 'Last Name', 'Middle Name', 'Email', 'Password', 'Role', 'Student No', 'Course & Section', 'Status', 'Suffix'];
+
+        $callback = function() use($users, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($users as $user) {
+                fputcsv($file, [
+                    $user->firstname,
+                    $user->lastname,
+                    $user->middlename,
+                    $user->email,
+                    $user->password, // this is danger but okay
+                    $user->role,
+                    $user->student_no,
+                    $user->course_and_section,
+                    $user->status,
+                    $user->suffix
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function importUsersCSV(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv'
+        ]);
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getRealPath(), 'r');
+        $header = fgetcsv($handle);
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $data = array_combine($header, $row);
+
+            // Insert only if email does not exist
+            users::firstOrCreate(
+                ['email' => $data['Email']], // Unique identifier
+                [
+                    'firstname'   => $data['First Name'],
+                    'lastname'    => $data['Last Name'],
+                    'student_no'  => $data['Student No'],
+                    'role'        => $data['Role'],
+                    'status'      => $data['Status'],
+                    'password'    => $data['Password'], 
+                ]
+            );
+        }
+
+        fclose($handle);
+
+        return response()->json(['status' => 200, 'message' => 'CSV imported successfully']);
+    }
 
     
 }

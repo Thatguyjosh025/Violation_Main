@@ -46,37 +46,37 @@ return new class extends Migration
 
 
         DB::table('tb_users')->insert([
-            ['firstname' => 'Josh',
-             'lastname' => 'Calinog',
-             'middlename' => 'Artamia',
-             'email' => 'student@gmail.com',
-             'student_no' => '02000782190',
-             'course_and_section' => 'BSIT 611',
-             'password' => bcrypt('123456789'),
-             'role' => 'student',
-             'status' => 'active'
-            ],
-            ['firstname' => 'Vince',
-             'lastname' => 'Mangampo',
-             'middlename' => 'Nolasco',
-             'email' => 'vince@gmail.com',
-             'student_no' => '02000782193',
-             'course_and_section' => 'BSIT 611',
-             'password' => bcrypt('123456789'),
-             'role' => 'student',
-             'status' => 'active'
-            ],
+            // ['firstname' => 'Josh',
+            //  'lastname' => 'Calinog',
+            //  'middlename' => 'Artamia',
+            //  'email' => 'student@gmail.com',
+            //  'student_no' => '02000782190',
+            //  'course_and_section' => 'BSIT 611',
+            //  'password' => bcrypt('123456789'),
+            //  'role' => 'student',
+            //  'status' => 'active'
+            // ],
+            // ['firstname' => 'Vince',
+            //  'lastname' => 'Mangampo',
+            //  'middlename' => 'Nolasco',
+            //  'email' => 'vince@gmail.com',
+            //  'student_no' => '02000782193',
+            //  'course_and_section' => 'BSIT 611',
+            //  'password' => bcrypt('123456789'),
+            //  'role' => 'student',
+            //  'status' => 'active'
+            // ],
 
-            ['firstname' => 'Jeff',
-             'lastname' => 'Caber',
-             'middlename' => 'Jeff',
-             'email' => 'admin@gmail.com',
-             'student_no' => 'ALA0159F',
-             'course_and_section' => 'Faculty',
-             'password' => bcrypt('123456789'),
-             'role' => 'discipline',
-             'status' => 'active'
-            ],
+            // ['firstname' => 'Jeff',
+            //  'lastname' => 'Caber',
+            //  'middlename' => 'Jeff',
+            //  'email' => 'admin@gmail.com',
+            //  'student_no' => 'ALA0159F',
+            //  'course_and_section' => 'Faculty',
+            //  'password' => bcrypt('123456789'),
+            //  'role' => 'discipline',
+            //  'status' => 'active'
+            // ],
             ['firstname' => 'John',
              'lastname' => 'Baybay',
              'middlename' => 'Renaund',
@@ -87,16 +87,16 @@ return new class extends Migration
              'role' => 'super',
              'status' => 'active'
             ],
-            ['firstname' => 'Angelo',
-             'lastname' => 'Pascua',
-             'middlename' => 'Mark',
-             'email' => 'faculty@gmail.com',
-             'student_no' => 'ALA0157F',
-             'course_and_section' => 'Faculty',
-             'password' => bcrypt('123456789'),
-             'role' => 'faculty',
-             'status' => 'active'
-            ]
+            // ['firstname' => 'Angelo',
+            //  'lastname' => 'Pascua',
+            //  'middlename' => 'Mark',
+            //  'email' => 'faculty@gmail.com',
+            //  'student_no' => 'ALA0157F',
+            //  'course_and_section' => 'Faculty',
+            //  'password' => bcrypt('123456789'),
+            //  'role' => 'faculty',
+            //  'status' => 'active'
+            // ]
         ]);
 
     }

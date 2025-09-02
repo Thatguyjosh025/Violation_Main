@@ -20,6 +20,10 @@
             <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
                 <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
+                <form id="importCSVForm" enctype="multipart/form-data">
+                <input type="file" id="importCSVInput" name="csv_file" accept=".csv" style="display:none;">
+            </form>
+                <button type="button" class="btn btn-sm btn-success" id="importCSVBtn">Import CSV</button>
             </div>
             <!-- Right side: Add button -->
             <button class="btn btn-action w-auto" type="button" data-bs-toggle="modal" data-bs-target="#adduser">
@@ -605,24 +609,7 @@
             }
 
             $('#exportCSV').click(function () {
-                let csv = [];
-                let table = cloneTableWithoutActions();
-
-                table.find('tr').each(function () {
-                    let row = [];
-                    $(this).find('th, td').each(function () {
-                        let text = $(this).text().replace(/"/g, '""');
-                        row.push('"' + text + '"');
-                    });
-                    csv.push(row.join(','));
-                });
-
-                let csvString = csv.join('\n');
-                let blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-                let link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'user_records.csv';
-                link.click();
+                window.location.href = '/export-users-csv';
             });
 
 
@@ -661,4 +648,29 @@
                 printWindow.print();
             });
         });
+
+        $('#importCSVBtn').on('click', function() {
+            $('#importCSVInput').click();
+        });
+
+        $('#importCSVInput').on('change', function() {
+            var formData = new FormData($('#importCSVForm')[0]);
+            formData.append('_token', $('meta[name="csrf-token"]').attr('content')); // add csrf token
+
+            $.ajax({
+                url: '/import_users_csv',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    Swal.fire({ icon: "success", text: "CSV imported successfully!" });
+                    $('#authbody').load(location.href + " #authbody > *");
+                },
+                error: function(xhr) {
+                    Swal.fire({ icon: "error", text: "Failed to import CSV." });
+                }
+            });
+        });
+
     </script>

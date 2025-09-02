@@ -16,6 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'permission' => CheckRole::class
         ]);
+
+        //bypass csrf for import csv
+        $middleware->validateCsrfTokens(except: [
+            'import_users_csv',
+        ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

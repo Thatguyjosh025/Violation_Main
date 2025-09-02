@@ -124,6 +124,12 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
 });
 
 
+//import csv
+Route::post('/import_users_csv', [App\Http\Controllers\SuperController::class, 'importUsersCSV']);
+
+//export csv
+Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
+
 
 
 //students
