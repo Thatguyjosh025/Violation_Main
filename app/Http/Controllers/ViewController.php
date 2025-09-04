@@ -55,6 +55,12 @@ class ViewController extends Controller
     {
         return view('super_dashboard', ['view' => 'ReferalManagement']);
     }
+     public function audit_management()
+    {
+        return view('super_dashboard', ['view' => 'AuditLogs']);
+    }
+
+
 
     //discipline components
     public function admin_dashboard()

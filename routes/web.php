@@ -43,6 +43,7 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
     Route::get('/violation_management', [ViewController::class, 'violation_management'])->name('violation_management');
     Route::get('/penalty_management', [ViewController::class, 'penalty_management'])->name('penalty_management');
     Route::get('/referal_management', [ViewController::class, 'referal_management'])->name('referal_management');
+    Route::get('/audit_management', [ViewController::class, 'audit_management'])->name('audit_management');
 
     // Create
     Route::post('/create_penalties', [SuperController::class, 'penalties']);
