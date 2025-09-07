@@ -17,6 +17,7 @@ use App\Http\Controllers\SuperController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MicrosoftLoginController;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
 
 
@@ -24,6 +25,12 @@ use App\Http\Middleware\RedirectIfNotAuthenticated;
 Route::get('/', function () {
     return view('Landing_page');
 });
+
+
+
+//ms route
+Route::get('/auth', [MicrosoftLoginController::class, 'redirectToProvider'])->name('microsoft.auth');
+Route::get('/callback', [MicrosoftLoginController::class, 'handleProviderCallback'])->name('microsoft.callback');
 
 
 //Auth Routes

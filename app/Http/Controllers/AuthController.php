@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Session;
 class AuthController extends Controller
 {
 
-    //roles = faculty,counselor,dicipline,registar,student
+    // sooon to be refractored
     public function register(Request $request){
         $request->validate([
             'firstname' => ['required', 'string', 'min:2', 'max:55', 'regex:/^(ma\.|Ma\.|[A-Za-zÑñ]+)(?:[ .\'-][A-Za-zÑñ]+)*$/'],
@@ -40,6 +40,7 @@ class AuthController extends Controller
     
         return redirect()->intended('/');
     }
+    //** 
 
     public function login(Request $request){
         $credentials = $request->only('email', 'password');

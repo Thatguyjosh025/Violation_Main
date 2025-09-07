@@ -17,13 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('firstname');
             $table->string('lastname');
-            $table->string('middlename')->nullable();
-            $table->string('suffix')->nullable();
             $table->string('email')->unique();
-            $table->string('student_no')->unique();
+            $table->string('student_no')->unique()->nullable();
             $table->string('course_and_section')->nullable();
-            $table->string('password');
-            $table->enum('role',['student','counselor','discipline','faculty','registar','super']);
+            $table->string('password')->nullable();
+            $table->enum('role',['student','counselor','discipline','faculty','registar','super'])->nullable();
             $table->enum('status',['active','inactive']);
         });
 
@@ -46,57 +44,15 @@ return new class extends Migration
 
 
         DB::table('tb_users')->insert([
-            // ['firstname' => 'Josh',
-            //  'lastname' => 'Calinog',
-            //  'middlename' => 'Artamia',
-            //  'email' => 'student@gmail.com',
-            //  'student_no' => '02000782190',
-            //  'course_and_section' => 'BSIT 611',
-            //  'password' => bcrypt('123456789'),
-            //  'role' => 'student',
-            //  'status' => 'active'
-            // ],
-            // ['firstname' => 'Vince',
-            //  'lastname' => 'Mangampo',
-            //  'middlename' => 'Nolasco',
-            //  'email' => 'vince@gmail.com',
-            //  'student_no' => '02000782193',
-            //  'course_and_section' => 'BSIT 611',
-            //  'password' => bcrypt('123456789'),
-            //  'role' => 'student',
-            //  'status' => 'active'
-            // ],
-
-            // ['firstname' => 'Jeff',
-            //  'lastname' => 'Caber',
-            //  'middlename' => 'Jeff',
-            //  'email' => 'admin@gmail.com',
-            //  'student_no' => 'ALA0159F',
-            //  'course_and_section' => 'Faculty',
-            //  'password' => bcrypt('123456789'),
-            //  'role' => 'discipline',
-            //  'status' => 'active'
-            // ],
             ['firstname' => 'John',
              'lastname' => 'Baybay',
-             'middlename' => 'Renaund',
              'email' => 'super@gmail.com',
              'student_no' => 'ALA0158F',
              'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),
              'role' => 'super',
              'status' => 'active'
-            ],
-            // ['firstname' => 'Angelo',
-            //  'lastname' => 'Pascua',
-            //  'middlename' => 'Mark',
-            //  'email' => 'faculty@gmail.com',
-            //  'student_no' => 'ALA0157F',
-            //  'course_and_section' => 'Faculty',
-            //  'password' => bcrypt('123456789'),
-            //  'role' => 'faculty',
-            //  'status' => 'active'
-            // ]
+            ]
         ]);
 
     }

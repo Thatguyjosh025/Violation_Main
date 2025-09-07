@@ -21,6 +21,9 @@
                             </span>
                         </div>
                     </div>
+                    <div style="text-align:center; margin-top:100px;">
+                        <a href="{{ route('microsoft.auth') }}" class="login-btn">Login with Microsoft</a>
+                    </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <a href="#" class="text-decoration-none" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#">Forgot Password?</a>
                     </div>
