@@ -178,13 +178,27 @@ class AuthController extends Controller
         ]);
     }
         
-    public function logout(Request $request) {
-        Auth::logout(); 
-        Session::flush(); 
+    public function logout(Request $request)
+    {
+        $user = Auth::user();
+
+        // Laravel logout
+        Auth::logout();
+        Session::flush();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/'); // Redirect to landing page after logout
+        // If user was 'super', skip Microsoft logout
+        if ($user && $user->role === 'super') {
+            return redirect('/');
+        }
+
+        // Otherwise, redirect to Microsoft logout
+        $microsoftLogoutUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/logout?' . http_build_query([
+            'post_logout_redirect_uri' => url('/')
+        ]);
+
+        return redirect($microsoftLogoutUrl);
     }
 
 

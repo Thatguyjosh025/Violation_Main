@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\users;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
@@ -40,68 +41,97 @@ class MicrosoftLoginController extends Controller
     }
 
     public function handleProviderCallback(Request $request)
-    {
-        $state = $request->get('state');
-        $code  = $request->get('code');
+{
+    $state = $request->get('state');
+    $code  = $request->get('code');
 
-        if (!$state || !$code || $state !== Session::get('oauth_state')) {
-            abort(403, 'Access Denied: Invalid state');
-        }
-
-        Session::forget('oauth_state');
-
-        $tokenResponse = Http::asForm()->post("https://login.microsoftonline.com/{$this->tenantId}/oauth2/v2.0/token", [
-            'client_id'     => $this->clientId,
-            'client_secret' => $this->clientSecret,
-            'code'          => $code,
-            'redirect_uri'  => $this->redirectUri,
-            'grant_type'    => 'authorization_code',
-            'scope'         => $this->scopes,
-        ]);
-
-        if (!$tokenResponse->ok() || !isset($tokenResponse['access_token'])) {
-            abort(500, 'Failed to retrieve access token');
-        }
-
-        $accessToken = $tokenResponse['access_token'];
-
-        $userResponse = Http::withToken($accessToken)->get('https://graph.microsoft.com/v1.0/me');
-
-        if (!$userResponse->ok()) {
-            abort(500, 'Failed to retrieve user info');
-        }
-
-        $userData = $userResponse->json();
-
-        $allowedDomain = 'alabang.sti.edu.ph';
-        if (!str_ends_with($userData['userPrincipalName'], "@$allowedDomain")) {
-            return redirect('/403');
-        }
-
-        $role = null;
-        if (isset($userData['displayName']) && str_contains($userData['displayName'], '(Student)')) {
-            $role = 'student';
-        }
-
-        // Check if user exists
-        $existingUser = users::where('email', $userData['mail'])->first();
-
-        if (!$existingUser) {
-            // Create new user
-            $newUser = users::create([
-                'firstname' => $userData['givenName'],
-                'lastname'  => $userData['surname'],
-                'email'      => $userData['mail'],
-                'phone'      => $userData['mobilePhone'] ?? null,
-                'password'   => null,
-                'role'       => $role,
-            ]);
-            $user = $newUser;
-        } else {
-            $user = $existingUser;
-        }
-
-        Session::put('user', $userData); // Or store $user if needed
-        return redirect('/');
+    if (!$state || !$code || $state !== Session::get('oauth_state')) {
+        abort(403, 'Access Denied: Invalid state');
     }
+
+    Session::forget('oauth_state');
+
+    // Exchange code for access token
+    $tokenResponse = Http::asForm()->post("https://login.microsoftonline.com/{$this->tenantId}/oauth2/v2.0/token", [
+        'client_id'     => $this->clientId,
+        'client_secret' => $this->clientSecret,
+        'code'          => $code,
+        'redirect_uri'  => $this->redirectUri,
+        'grant_type'    => 'authorization_code',
+        'scope'         => $this->scopes,
+    ]);
+
+    if (!$tokenResponse->ok() || !isset($tokenResponse['access_token'])) {
+        abort(500, 'Failed to retrieve access token');
+    }
+
+    $accessToken = $tokenResponse['access_token'];
+
+    // Fetch user info from Microsoft Graph
+    $userResponse = Http::withToken($accessToken)->get('https://graph.microsoft.com/v1.0/me');
+
+    if (!$userResponse->ok()) {
+        abort(500, 'Failed to retrieve user info');
+    }
+
+    $userData = $userResponse->json();
+
+    // Domain restriction
+    $allowedDomain = 'alabang.sti.edu.ph';
+    if (!str_ends_with($userData['userPrincipalName'], "@$allowedDomain")) {
+        return redirect('/403');
+    }
+
+    // Determine role and status
+    $role = null;
+    $status = 'active';
+
+    if (isset($userData['displayName'])) {
+        if (str_contains($userData['displayName'], '(Student)')) {
+            $role = 'student';
+        } elseif (str_contains($userData['displayName'], '(Faculty)')) {
+            $role = 'faculty';
+            $status = 'inactive';
+        }
+    }
+
+    // Extract student ID
+    preg_match('/\.(\d+)@/', $userData['mail'], $matches);
+    $student_id = isset($matches[1]) ? '02000' . $matches[1] : null;
+
+    // Check if user exists
+    $user = Users::where('email', $userData['mail'])->first();
+
+    if (!$user) {
+        $user = Users::create([
+            'firstname'   => $userData['givenName'],
+            'lastname'    => $userData['surname'],
+            'email'       => $userData['mail'],
+            'password'    => null,
+            'role'        => $role,
+            'student_no'  => $student_id,
+            'status'      => $status,
+        ]);
+    }
+
+    // Block login if inactivesdsdsdsd
+    if ($user->status === 'inactive') {
+        return redirect()->route('login')->withErrors([
+            'email' => 'Your account is inactive. Please contact support.'
+        ]);
+    }
+
+    // Log in the user
+    Auth::login($user);
+
+    // Redirect based on role
+    return match ($user->role) {
+        'discipline' => redirect()->route('discipline_dashboard'),
+        // 'super'      => redirect()->route('super_dashboard') ingore this line since the credentials will be embeded in the ENV,
+        'student'    => redirect()->route('student_dashboard'),
+        'faculty'    => redirect()->route('faculty_dashboard'),
+        default      => redirect()->route('home'),
+    };
+}
+
 }
