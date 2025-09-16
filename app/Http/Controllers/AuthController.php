@@ -182,7 +182,7 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
-        // Laravel logout
+        // Laravel logout manual logins
         Auth::logout();
         Session::flush();
         $request->session()->invalidate();

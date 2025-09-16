@@ -24,7 +24,7 @@ use App\Http\Middleware\RedirectIfNotAuthenticated;
 //Landing routes
 Route::get('/', function () {
     return view('Landing_page');
-});
+})->name('landing');
 
 
 

@@ -89,6 +89,7 @@ class MicrosoftLoginController extends Controller
     if (isset($userData['displayName'])) {
         if (str_contains($userData['displayName'], '(Student)')) {
             $role = 'student';
+            // $status = 'inactive';
         } elseif (str_contains($userData['displayName'], '(Faculty)')) {
             $role = 'faculty';
             $status = 'inactive';
@@ -116,9 +117,7 @@ class MicrosoftLoginController extends Controller
 
     // Block login if inactivesdsdsdsd
     if ($user->status === 'inactive') {
-        return redirect()->route('login')->withErrors([
-            'email' => 'Your account is inactive. Please contact support.'
-        ]);
+        return response()->view('errors.Inactive', [], 403);
     }
 
     // Log in the user
