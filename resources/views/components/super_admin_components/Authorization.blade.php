@@ -25,10 +25,16 @@
             </form>
                 <button type="button" class="btn btn-sm btn-success" id="importCSVBtn">Import CSV</button>
             </div>
-            <!-- Right side: Add button -->
-            <button class="btn btn-action w-auto" type="button" data-bs-toggle="modal" data-bs-target="#adduser">
-                + Add
-            </button>
+
+            <!-- This Button is for consulting whether to remove or keep since all the accounts comes from microsoft 
+                and Super Admin will be ENV Credentials -->            
+                <!-- <button class="btn btn-action w-auto" type="button" data-bs-toggle="modal" data-bs-target="#adduser">
+                    + Add
+                </button> -->
+            <!-- END BUTTON CONCERN -->
+
+
+
         </div>
 
         <div class="table-container mt-3">
@@ -82,10 +88,17 @@
     <div class="modal fade" id="adduser" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="registerModalLabel">Add user</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+
+                <!-- This Button is for consulting whether to remove or keep since all the accounts comes from microsoft 
+                 and Super Admin will be ENV Credentials -->
+
+                    <!-- <div class="modal-header">
+                        <h5 class="modal-title" id="registerModalLabel">Add user</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div> -->
+
+                <!-- END BUTTON CONCERN -->
+                 
                 <div class="modal-body">
                     <form id="userForm" action="{{ url('add_user') }}" method="POST">
                         @csrf
@@ -98,7 +111,7 @@
                             <input type="text" class="form-control" id="lastname" name="lastname">
                         </div>
                         <div class="mb-3">
-                            <div class="row g-2 align-items-end">
+                            <!-- <div class="row g-2 align-items-end">
                                 <div class="col-md-9">
                                     <label for="middlename" class="form-label">Middle Name (Optional)</label>
                                     <input type="text" class="form-control" id="middlename" name="middlename"
@@ -115,7 +128,7 @@
                                         <option value="IV">IV</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
@@ -184,7 +197,7 @@
                             <input type="text" class="form-control" id="lastname" name="lastname">
                         </div>
                         <div class="mb-3">
-                            <div class="row g-2 align-items-end">
+                            <!-- <div class="row g-2 align-items-end">
                                 <div class="col-md-9">
                                     <label for="middlename" class="form-label">Middle Name (Optional)</label>
                                     <input type="text" class="form-control" id="middlename" name="middlename"
@@ -201,7 +214,7 @@
                                         <option value="IV">IV</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
@@ -274,6 +287,7 @@
             "responsive": true   
         });
     });
+
     $(document).ready(function () {
         // Toggle visibility of password when the eye icon is clicked
         $('#toggleUserPassword').on('click', function () {
@@ -512,25 +526,25 @@
                 fieldsToValidate.push({ id: "#edituser #student_no", regex: studentNumberRegex, message: "ID number must start with ALA0 and be followed by exactly 4 alphanumeric characters." });
             }
 
-            fieldsToValidate.forEach(function(field) {
-                var input = $(field.id);
-                var value = input.val().trim();
+            // fieldsToValidate.forEach(function(field) {
+            //     var input = $(field.id);
+            //     var value = input.val().trim();
 
-                if (field.id === "#edituser #middlename" && value === "") {
-                    return;
-                }
+            //     if (field.id === "#edituser #middlename" && value === "") {
+            //         return;
+            //     }
 
-                if (value.length < 2) {
-                    input.addClass("is-invalid").after('<div class="invalid-feedback">Must be at least 2 characters long.</div>');
-                    isValid = false;
-                } else if (field.regex && !field.regex.test(value)) {
-                    input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
-                    isValid = false;
-                } else if (!field.regex && !value) {
-                    input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
-                    isValid = false;
-                }
-            });
+            //     if (value.length < 2) {
+            //         input.addClass("is-invalid").after('<div class="invalid-feedback">Must be at least 2 characters long.</div>');
+            //         isValid = false;
+            //     } else if (field.regex && !field.regex.test(value)) {
+            //         input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
+            //         isValid = false;
+            //     } else if (!field.regex && !value) {
+            //         input.addClass("is-invalid").after('<div class="invalid-feedback">' + field.message + '</div>');
+            //         isValid = false;
+            //     }
+            // });
 
             if (!isValid) {
                 Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });

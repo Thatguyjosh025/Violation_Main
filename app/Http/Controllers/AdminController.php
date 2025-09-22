@@ -59,7 +59,7 @@ class AdminController extends Controller
     $request->validate([
         'student_no' => 'required|string',
         'student_name' => 'required|string',
-        'course' => 'required|string',
+        // 'course' => 'required|string',
         'school_email' => 'required|string',
         'violation_type' => 'required|integer',
         'penalty_type' => 'required|integer',

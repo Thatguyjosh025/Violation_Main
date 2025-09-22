@@ -29,8 +29,8 @@
                                     <label for="student_name" class="fw-bold">Student Name:</label>
                                     <p id="displaystudentname">-</p>
 
-                                    <label for="course_section" class="fw-bold">Course and Section:</label>
-                                    <p id="displaycourse">-</p>
+                                    <!-- <label for="course_section" class="fw-bold">Course and Section:</label>
+                                    <p id="displaycourse">-</p> -->
 
                                     <label for="school_email" class="fw-bold">School Email:</label>
                                     <p id="displayemail">-</p>

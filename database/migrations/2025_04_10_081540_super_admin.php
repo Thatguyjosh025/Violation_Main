@@ -68,7 +68,7 @@ return new class extends Migration
 
 
         DB::table('tb_violation')->insert([
-            // ['violation_uid' => 'VO001','violations' => 'Bullying'],
+            ['violation_uid' => 'VO001','violations' => 'Bullying'],
             // ['violation_uid' => 'VO002','violations' => 'Discourtesy or Disrespect'],
             // ['violations' => 'Improper Use of School Facilities/Equipment']
             // ['violations' => 'Cheating'],
@@ -83,7 +83,7 @@ return new class extends Migration
         ]);
 
         DB::table('tb_penalties')->insert([
-            // ['penalties_uid' => 'PE001','penalties' => 'Verbal / Oral Warning'],
+            ['penalties_uid' => 'PE001','penalties' => 'Verbal / Oral Warning'],
             // ['penalties' => 'Written Apology'],
             // ['penalties' => 'Written Reprimand'],
             // ['penalties' => 'Corrective Reinforcement'],
@@ -123,13 +123,13 @@ return new class extends Migration
         ]);
 
         DB::table('tb_rules')->insert([
-            // [
-            //     'rule_uid' => 'RL001',
-            //     'violation_id' => 1,
-            //     'severity_id' => 4, 
-            //     'rule_name' => 'Anti-Bullying',
-            //     'description' => 'STI is committed to providing a healthy learning environment where students support and respect each other. Thus, within the school, it is made clear that bullying will not be tolerated'
-            // ]
+            [
+                'rule_uid' => 'RL001',
+                'violation_id' => 1,
+                'severity_id' => 4, 
+                'rule_name' => 'Anti-Bullying',
+                'description' => 'STI is committed to providing a healthy learning environment where students support and respect each other. Thus, within the school, it is made clear that bullying will not be tolerated'
+            ]
             // [
             //     'violation_id' => 2,
             //     'severity_id' => 4,

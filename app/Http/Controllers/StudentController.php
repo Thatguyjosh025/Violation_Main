@@ -29,7 +29,7 @@ class StudentController extends Controller
             $now = Carbon::now('Asia/Manila');
             $minutesSinceCreated = $createdDate->diffInMinutes($now);
 
-            if ($minutesSinceCreated > 1 && $violation->appeal === 'N/A') {
+            if ($minutesSinceCreated > 5 && $violation->appeal === 'N/A') {
                 $violation->appeal = 'No Objection';
                 $violation->status_name = 3;
                 $violation->is_active = true;

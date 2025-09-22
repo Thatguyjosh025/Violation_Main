@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('lastname');
             $table->string('email')->unique();
             $table->string('student_no')->unique()->nullable();
-            $table->string('course_and_section')->nullable();
+            // $table->string('course_and_section')->nullable();
             $table->string('password')->nullable();
             $table->enum('role',['student','counselor','discipline','faculty','registar','super'])->nullable();
             $table->enum('status',['active','inactive']);
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('message');
             $table->string('role');
             $table->string('type');
-            // $table->string('student_no')->nullable();
+            $table->string('student_no')->nullable();
 
             $table->string('student_no')->nullable();
             $table->foreign('student_no')->references('student_no')->on('tb_users');
@@ -48,9 +48,20 @@ return new class extends Migration
              'lastname' => 'Baybay',
              'email' => 'super@gmail.com',
              'student_no' => 'ALA0158F',
-             'course_and_section' => 'Faculty',
+            //  'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),
              'role' => 'super',
+             'status' => 'active'
+            ]
+        ]);
+         DB::table('tb_users')->insert([
+            ['firstname' => 'Josh',
+             'lastname' => 'Calinog',
+             'email' => 'admin@gmail.com',
+             'student_no' => 'ALA0157F',
+             'course_and_section' => 'Faculty',
+             'password' => bcrypt('123456789'),
+             'role' => 'discipline',
              'status' => 'active'
             ]
         ]);

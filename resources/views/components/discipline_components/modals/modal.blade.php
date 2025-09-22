@@ -168,10 +168,10 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
+                  <!-- <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
                     <label for="course" class="form-label" style="font-size: 1rem; font-weight: 500;">Course:</label>
                     <p id="viewcourse" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
-                  </div>
+                  </div> -->
                   <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
                     <label for="schoolEmail" class="form-label" style="font-size: 1rem; font-weight: 500;">School Email:</label>
                     <p id="viewschool_email" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
