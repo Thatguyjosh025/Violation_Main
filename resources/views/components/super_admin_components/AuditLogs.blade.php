@@ -27,6 +27,7 @@ $auditdata = audits::get();
                             <th scope="col">ID</th>
                             <th>change_at</th>
                             <th>change_by</th>
+                            <th>change_by_email</th>
                             <th>event_type</th>
                             <th>field_name</th>
                             <th>old_value</th>
@@ -39,6 +40,7 @@ $auditdata = audits::get();
                                 <th scope="row">{{ $data->id }}</th>
                                 <td>{{ $data -> changed_at }}</td>
                                 <td>{{ $data -> changed_by }}</td>
+                                <td>{{ $data -> changed_by_email }}</td>
                                 <td>{{ $data -> event_type }}</td>
                                 <td>{{ $data -> field_name }}</td>
                                 <td>{{ $data -> old_value }}</td>

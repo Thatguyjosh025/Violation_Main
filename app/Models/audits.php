@@ -12,6 +12,7 @@ class audits extends Model
     protected $fillable = [
         'changed_at',
         'changed_by',
+        'changed_by_email',
         'event_type',
         'field_name',
         'old_value',

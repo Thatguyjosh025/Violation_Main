@@ -14,6 +14,7 @@ class notifications extends Model
     ['title',
     'message',
     'student_no',
+    'school_email',
     'role',
     'type',
     'is_read',

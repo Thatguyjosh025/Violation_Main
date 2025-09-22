@@ -86,7 +86,7 @@ class AdminController extends Controller
         $create = postviolation::create([
             'student_no' => $request->student_no,
             'student_name' => $request->student_name,
-            'course' => $request->course,
+            // 'course' => $request->course,
             'school_email' => $request->school_email,
             'violation_type' => $request->violation_type,
             'penalty_type' => $request->penalty_type,
@@ -130,7 +130,7 @@ class AdminController extends Controller
         $create = postviolation::create([
             'student_no' => $request->student_no,
             'student_name' => $request->student_name,
-            'course' => $request->course,
+            // 'course' => $request->course,
             'school_email' => $request->school_email,
             'violation_type' => $request->violation_type,
             'penalty_type' => $request->penalty_type,
@@ -158,6 +158,7 @@ class AdminController extends Controller
         'message' => 'A new violation has been assigned to you',
         'role' => 'student',
         'student_no' => $request->student_no,
+        'school_email' => $request->school_email,
         'type' => 'posted',
         'url' => '/violation_tracking',
         'date_created' => Carbon::now()->format('Y-m-d'),
@@ -233,7 +234,7 @@ class AdminController extends Controller
     $student->update([
         'student_no' => $request->update_student_no,
         'student_name' => $request->update_name,
-        'course' => $request->update_course,
+        // 'course' => $request->update_course, <------ DELTETE THIS MF
         'school_email' => $request->update_school_email,
         'violation_type' => $request->update_violation_type,
         'penalty_type' => $request->update_penalty_type,

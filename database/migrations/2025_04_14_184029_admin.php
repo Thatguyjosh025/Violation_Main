@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('student_no')->references('student_no')->on('tb_users');
 
             $table->string('student_name');
-            $table->string('course');
+            // $table->string('course');
             $table->string('school_email');
             $table->unsignedBigInteger('violation_type');
             $table->unsignedBigInteger('penalty_type');
@@ -57,7 +57,7 @@ return new class extends Migration
             $table->string('student_no');
             $table->foreign('student_no')->references('student_no')->on('tb_users');
 
-            $table->string('course_section');
+            // $table->string('course_section');
             $table->string('school_email');
             $table->string('faculty_name');
             $table->string('faculty_id');

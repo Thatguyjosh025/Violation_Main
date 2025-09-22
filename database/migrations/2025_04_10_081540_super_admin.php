@@ -60,6 +60,10 @@ return new class extends Migration
             $table->id();
             $table->timestamp('changed_at');
             $table->string('changed_by');
+
+            $table->string('changed_by_email', 255);
+            $table->foreign('changed_by_email')->references('email')->on('tb_users');
+
             $table->string('event_type');
             $table->string('field_name');
             $table->text('old_value')->nullable();

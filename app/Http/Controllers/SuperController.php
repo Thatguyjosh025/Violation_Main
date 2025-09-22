@@ -252,12 +252,14 @@ public function updateViolation(Request $request, $id)
 
     // Get user name for audit
     $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+    $email = Auth::user()->email;
 
     // Audit changed fields
     if (strcasecmp($violate->violations, $request->violations) !== 0) {
         audits::create([
             'changed_at' => now(),
             'changed_by' => $name,
+            'changed_by_email' => $email,
             'event_type' => 'Update',
             'field_name' => 'violations',
             'old_value'  => $violate->violations,
@@ -269,6 +271,7 @@ public function updateViolation(Request $request, $id)
         audits::create([
             'changed_at' => now(),
             'changed_by' => $name,
+            'change_by_email' => $email,
             'event_type' => 'Update',
             'field_name' => 'is_visible',
             'old_value'  => $violate->is_visible,
@@ -370,7 +373,7 @@ public function updateViolation(Request $request, $id)
     public function exportUsersCSV()
     {
         $fileName = 'user_records.csv';
-        $users = Users::all(['firstname', 'lastname', 'middlename', 'email', 'password', 'role', 'student_no', 'course_and_section', 'status', 'suffix']); 
+        $users = Users::all(['firstname', 'lastname','email', 'password', 'role', 'student_no','status']); 
 
         $headers = [
             "Content-type"        => "text/csv; charset=UTF-8",
@@ -380,7 +383,7 @@ public function updateViolation(Request $request, $id)
             "Expires"             => "0"
         ];
 
-        $columns = ['First Name', 'Last Name', 'Middle Name', 'Email', 'Password', 'Role', 'Student No', 'Course & Section', 'Status', 'Suffix'];
+        $columns = ['First Name', 'Last Name','Email', 'Password', 'Role', 'Student No', 'Status'];
 
         $callback = function() use($users, $columns) {
             $file = fopen('php://output', 'w');
@@ -390,14 +393,11 @@ public function updateViolation(Request $request, $id)
                 fputcsv($file, [
                     $user->firstname,
                     $user->lastname,
-                    $user->middlename,
                     $user->email,
                     $user->password, // this is danger but okay
                     $user->role,
                     $user->student_no,
-                    $user->course_and_section,
                     $user->status,
-                    $user->suffix
                 ]);
             }
 
