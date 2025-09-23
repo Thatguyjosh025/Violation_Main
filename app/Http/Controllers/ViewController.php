@@ -75,6 +75,10 @@ class ViewController extends Controller
     {
         return view('discipline_dashboard', ['views' => 'ViolationsManagement']);
     }
+     public function report_analytics()
+    {
+        return view('discipline_dashboard', ['views' => 'ReportandAnalytics']);
+    }
     public function violation_records()
     {
         $studentControllers = new StudentController();

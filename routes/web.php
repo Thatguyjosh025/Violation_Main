@@ -80,6 +80,7 @@ Route::middleware(['permission:discipline', RedirectIfNotAuthenticated::class])-
     Route::get('/incident_report', [ViewController::class, 'incident_report'])->name('incident_report');
     Route::get('/violation_manage', [ViewController::class, 'violation_manage'])->name('violation_manage');
     Route::get('/violation_records', [ViewController::class, 'violation_records'])->name('violation_records');
+    Route::get('/report_analytics', [ViewController::class, 'report_analytics'])->name('report_analytics');
 
     // Create/Update
     Route::post('/post_violation', [AdminController::class, 'postviolation']);

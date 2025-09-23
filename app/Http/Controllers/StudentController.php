@@ -48,7 +48,12 @@ class StudentController extends Controller
             }
         }
 
-        // 3-day demo expiration check
+
+        // ------------------------------------------------------------------------------------------------------------------------
+        // IMPORTANT: DO NOT DELETE THIS BLOCK OF CODE
+        // ------------------------------------------------------------------------------------------------------------------------
+
+        // 3-day demo expiration check 
         // foreach ($violations as $violation) {
         //     $createdDate = Carbon::parse($violation->Date_Created);
         //     $now = Carbon::now();

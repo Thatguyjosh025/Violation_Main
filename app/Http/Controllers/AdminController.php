@@ -59,7 +59,7 @@ class AdminController extends Controller
     $request->validate([
         'student_no' => 'required|string',
         'student_name' => 'required|string',
-        // 'course' => 'required|string',
+        // 'course' => 'required|string',  <------ DELTETE THIS MF
         'school_email' => 'required|string',
         'violation_type' => 'required|integer',
         'penalty_type' => 'required|integer',
@@ -86,7 +86,7 @@ class AdminController extends Controller
         $create = postviolation::create([
             'student_no' => $request->student_no,
             'student_name' => $request->student_name,
-            // 'course' => $request->course,
+            // 'course' => $request->course,  <------ DELETE THIS MF
             'school_email' => $request->school_email,
             'violation_type' => $request->violation_type,
             'penalty_type' => $request->penalty_type,
@@ -130,7 +130,7 @@ class AdminController extends Controller
         $create = postviolation::create([
             'student_no' => $request->student_no,
             'student_name' => $request->student_name,
-            // 'course' => $request->course,
+            // 'course' => $request->course,  <------ DELETE THIS MF
             'school_email' => $request->school_email,
             'violation_type' => $request->violation_type,
             'penalty_type' => $request->penalty_type,
@@ -197,7 +197,7 @@ class AdminController extends Controller
                 'view_id' => $student->id,
                 'student_no' => $student->student_no,
                 'student_name' => $student->student_name,
-                'course' => $student->course,
+                // 'course' => $student->course,  <------ DELETE THIS MF
                 'school_email' => $student->school_email,
                 'violation_type' => $student->violation->violation_id,
                 'violation_name' => $student->violation->violations,
@@ -234,7 +234,7 @@ class AdminController extends Controller
     $student->update([
         'student_no' => $request->update_student_no,
         'student_name' => $request->update_name,
-        // 'course' => $request->update_course, <------ DELTETE THIS MF
+        // 'course' => $request->update_course, <------ DELETE THIS MF
         'school_email' => $request->update_school_email,
         'violation_type' => $request->update_violation_type,
         'penalty_type' => $request->update_penalty_type,
@@ -292,7 +292,7 @@ public function getIncidentInfo(Request $request)
             'id' => $incident->id,
             'student_name' => $incident->student_name,
             'student_no' => $incident->student_no,
-            'course_section' => $incident->course_section,
+            // 'course_section' => $incident->course_section,  <------ DELETE THIS MF
             'school_email' => $incident->school_email,
             'violation_type' => $incident->violation_type,
             'violation_name' => $incident->violation->violations,

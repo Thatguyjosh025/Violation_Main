@@ -54,6 +54,7 @@ return new class extends Migration
             $table -> id('referal_id');
             $table -> string("referal_uid")->unique();
             $table -> string('referals');
+            $table->enum('is_visible',['active','inactive']);
         });
 
         Schema::create('tb_audit', function (Blueprint $table) {
@@ -61,8 +62,8 @@ return new class extends Migration
             $table->timestamp('changed_at');
             $table->string('changed_by');
 
-            $table->string('changed_by_email', 255);
-            $table->foreign('changed_by_email')->references('email')->on('tb_users');
+            // $table->string('changed_by_email', 255);
+            // $table->foreign('changed_by_email')->references('email')->on('tb_users');
 
             $table->string('event_type');
             $table->string('field_name');
