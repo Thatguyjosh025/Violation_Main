@@ -57,6 +57,7 @@ $auditdata = audits::get();
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./vendor/jquery.dataTables.min.js') }}"></script>
 
+
 <script>
     $(document).ready(function() {
         $('#auditTable').DataTable({
@@ -67,4 +68,5 @@ $auditdata = audits::get();
             "responsive": true   
         });
     });
+    
 </script>

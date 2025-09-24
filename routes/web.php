@@ -14,6 +14,7 @@ use App\Http\Controllers\DataController;
 use App\Http\Controllers\ViewController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NotificationController;
@@ -138,6 +139,10 @@ Route::post('/import_users_csv', [App\Http\Controllers\SuperController::class, '
 
 //export csv
 Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
+
+
+//report narrative
+Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
 
 
 
