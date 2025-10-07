@@ -29,8 +29,8 @@
                                 <img src="{{ asset('./Photos/avatar.png') }}" alt="Profile Picture" class="profile-img">
                                 <div class="flex-grow-1">
                                     <span class="badge badge-custom">Disciplinary Officer</span>
-                                    <h4 class="mt-2 mb-1">Name:{{ Auth::user()->firstname }} {{ Auth::user()->lastname }} {{ Auth::user()->middlename}}</h4>
-                                    <p class="mb-1">ID: {{ Auth::user()->student_no }}</p>
+                                    <h4 class="mt-2 mb-1">Name: {{ Auth::user()->firstname }} {{ Auth::user()->lastname }} {{ Auth::user()->middlename}}</h4>
+                                    <p class="mb-1">email: {{ Auth::user()->email }}</p>
                                 </div>
                             </div>
                         </div>

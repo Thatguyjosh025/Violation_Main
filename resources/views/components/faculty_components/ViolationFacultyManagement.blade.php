@@ -1,292 +1,291 @@
 <link rel="stylesheet" href="{{ asset('./css/faculty_css/FViolationManagment.css') }}">
 @php
 use App\Models\users;
- use App\Models\violation;
- use App\Models\referals;
- use App\Models\penalties;
-
- $violate = violation::get();
- $accounts = users::get();
-
+use App\Models\violation;
+use App\Models\referals;
+use App\Models\penalties;
+$violate = violation::get();
+$accounts = users::get();
 @endphp
+
 <div class="d-flex align-items-center">
-                <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
-                <h3 class="mb-0">Incident Report</h3>
+    <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
+    <h3 class="mb-0">Incident Report</h3>
+</div>
+
+<div class="container mt-4">
+    <div class="row mt-3">
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <div class="container-box p-3">
+                <h5>Student Information</h5>
+                <form action="" method="POST" id="IncidentReportForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="student-info">
+                        <label class="form-label fw-bold">Student name:</label>
+                        <p id="displaystudentname" class="mt-1 ms-1">-</p>
+                        <input type="text" class="form-control" id="incident_report_name" name="student_name" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" style="display: none;" readonly required>
+
+                        <label class="form-label fw-bold">Student No.</label>
+                        <p id="displaystudentno" class="mt-1 ms-1">-</p>
+                        <input type="text" class="form-control" id="incident_report_studentno" name="student_no" style="display: none;" readonly required>
+
+                        <label class="form-label fw-bold">School email</label>
+                        <p id="displayemail" class="mt-1 ms-1">-</p>
+                        <input type="email" class="form-control" id="incident_report_email" name="school_email" style="display: none;" readonly required>
+
+                        <p class="text-muted fw-bold">Kindly select a student from the list before submitting a violation.</p>
+
+                        <label class="form-label" style="display: none;">Faculty Name</label>
+                        <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" disabled hidden>
+                        <input type="hidden" name="faculty_id" id="incident_faculty_id" value="{{ Auth::user()->student_no }}">
+                    </div>
+
+                    <!-- Violation Dropdown Section -->
+                    <div class="mb-3">
+                        <label class="form-label">Reason/s for Referral</label>
+                        <div class="dropdown" id="dropdown1">
+                            <select class="form-select" name="violation_type" id="incident_report_violationType">
+                                <option value="">Select Violation</option>
+                                @foreach ($violate as $data)
+                                    <option value="{{ $data->violation_id }}">{{ $data->violations }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- RuleName, Description, Severity auto populate -->
+                    <label class="fw mt-2">Rule Name:</label>
+                    <p id="ruleName">-</p>
+                    <input type="hidden" id="incident_report_ruleName" name="rule_name" style="display: none;" readonly required>
+
+                    <label class="fw mt-2">Description: </label>
+                    <p id="descriptionName">-</p>
+                    <input type="hidden" id="incident_report_desc" name="description" style="display: none;" readonly required>
+
+                    <div class="Severity mb-2">
+                        <label class="fw">Severity of Offense: </label>
+                        <p id="severityName">-</p>
+                        <input type="hidden" id="incident_report_severity" name="severity" style="display: none;" readonly required>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="floatingTextarea">Details</label>
+                        <textarea class="form-control" id="incident_report_remarks" name="remarks" style="height: 100px; resize: none; font-size: 14px;" maxlength="500" required></textarea>
+                    </div>
+
+                    <!-- UPLOAD FILES (Bulk Upload) -->
+                    <div class="my-3">
+                        <label for="uploadEvidence"
+                               class="d-block w-100 p-5 border border-dark rounded text-center bg-white drop-area"
+                               style="cursor: pointer; border-style: dashed;">
+                            <div class="text-dark fw-medium">Upload Evidence</div>
+                            <small class="text-muted">Click to select files or drag them here</small>
+                        </label>
+                        <input type="file" id="uploadEvidence" name="upload_evidence[]" multiple hidden>
+                        <ul id="fileList" class="list-group mt-2" style="max-height: 150px; overflow-y: auto;"></ul>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-2 btn-submit-incident">Submit</button>
+                </form>
             </div>
+        </div>
 
-            <!-- Faculty Violation Managament Section -->
-             
-            <div class="container mt-4">
-                <div class="row mt-3">
-                    <!-- Main Content -->
-                <div class="col-md-8">
-                    <div class="container-box p-3">
-                        <h5>Student Information</h5>
-                            <form action="" id="IncidentReportForm">
-                                
-                                <div class="student-info">
-
-                                    <label class="form-label fw-bold">Student name:</label>
-                                    <p id="displaystudentname" class="mt-1 ms-1">-</p>
-                                    <input type="text" class="form-control" id="incident_report_name" name="student_name"  pattern="[A-Za-z]+" title="Only letters are allowed" style="display: none;" readonly required>
-                                  
-                                    <label class="form-label fw-bold">Student No.</label>
-                                    <p id="displaystudentno" class="mt-1 ms-1">-</p>
-                                    <input type="text" class="form-control" id="incident_report_studentno" name="student_no"  pattern="[A-Za-z]+" title="Only letters are allowed" style="display: none;" readonly required>
-                                
-                                    <label class="form-label  fw-bold ">Course and section</label>
-                                    <p id="displaycourse" class="mt-1 ms-1">-</p>
-                                    <input type="text" class="form-control" id="incident_report_course" name="course_section"  pattern="[A-Za-z]+" title="Only letters are allowed" style="display: none;" readonly required>
-
-                                    <label class="form-label  fw-bold ">School email</label>
-                                    <p id="displayemail" class="mt-1 ms-1">-</p>
-                                    <input type="email" class="form-control" id="incident_report_email" name="school_email"  pattern="[A-Za-z]+" title="Only letters are allowed" style="display: none;" readonly required>
-                                    <p class="text-muted fw-bold">Kindly select a student from the list before submitting a violation.</p>
-
-                                    <label class="form-label">Faculty Name</label>
-                                    <input type="text" class="form-control" name="faculty_name" id="incident_report_facultyName" value="{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}"  pattern="[A-Za-z ]+" title="Only letters are allowed" disabled>
-                                    <input type="hidden" name="faculty_id" id="incident_faculty_id" value="{{ Auth::user()->student_no }}">
-                                </div>
-
-    
-
-                                <!-- Violation Dropdown Section -->
-                                <div class="mb-3">
-                                    <label class="form-label">Reason/s for Referral</label>
-                                    <div class="dropdown" id="dropdown1">
-                                        <select class="form-select" name="violation_type" id="incident_report_violationType">
-                                            <option value="">Select Violation</option>
-                                            @foreach ($violate as $data )
-                                                <option value="{{ $data -> violation_id }}">{{ $data -> violations }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <!-- End of Dropdown Section -->
-
-                                <!-- RuleName, Description, Severity auto populate -->
-                                    <label class="fw mt-2">Rule Name:</label>
-                                    <p id="ruleName">-</p>
-                                    <input type="hidden" id="incident_report_ruleNAme" name="rule_Name" style="display: none;" readonly required> 
-
-                                    <label class="fw mt-2">Description: </label>
-                                    <p id="descriptionName">-</p>
-                                    <input type="hidden" id="incident_report_desc" name="description_Name" style="display: none;" readonly required>
-
-                                    <div class="Severity mb-2">
-                                        <label class="fw">Severity of Offense: </label>
-                                        <p id="severityName">-</p> 
-                                        <input type="hidden" id="incident_report_severity" name="severity_Name" style="display: none;" readonly required> 
-                                    </div>
-                                <!-- RuleName, Description, Severity auto populate END -->
-
-                                <div class="form-group mt-3">
-                                    <label for="floatingTextarea">Details</label>
-                                    <textarea class="form-control" id="incident_report_remarks" style="height: 100px; resize: none; font-size: 14px;" maxlength="150"></textarea>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="uploadEvidence" class="form-label mt-2">Upload Evidence</label>
-                                    <input type="file" class="form-control form-control-sm" id="uploadEvidence" name="upload_evidence">
-                                </div>
-
-
-                                <button type="submit" class="btn btn-primary mt-2 btn-submit-incident">Submit</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Student List Section -->
-                    <div class="col-md-4">
-                        <div class="card card-custom p-3">
-                            <input type="text" id="search-student" class="form-control mb-3" placeholder="Search Student">
-                            <div class="student-list">
-                                <p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>
-                            </div>
-                        </div>
-                    </div>
-
-                     
+        <!-- Student List Section -->
+        <div class="col-md-4">
+            <div class="card card-custom p-3">
+                <input type="text" id="search-student" class="form-control mb-3" placeholder="Search Student">
+                <div class="student-list">
+                    <p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
-
 $(document).on("click", ".select-btn", function (e) {
     e.preventDefault();
-
     var studentId = $(this).data("id");
     var studentName = $(this).data("name");
     var email = $(this).data("email");
     var studentNo = $(this).data("student_no");
-    var course = $(this).data("course");
-
     $('#displaystudentname').text(studentName);
     $('#displaystudentno').text(studentNo);
-    $('#displaycourse').text(course);
     $('#displayemail').text(email);
-
     $("#incident_report_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
     $("#incident_report_email").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
     $("#incident_report_studentno").val(studentNo).removeClass("is-invalid").next(".invalid-feedback").remove();
-    $("#incident_report_course").val(course).removeClass("is-invalid").next(".invalid-feedback").remove();
 });
 
 $(document).on("change", "#incident_report_violationType", function (e) {
-        e.preventDefault();
-        
-        var violation_id = $(this).val();
-
-        if (!violation_id) {
-            updateRuleDetails("-", "-", "-");
-            return;
+    e.preventDefault();
+    var violation_id = $(this).val();
+    if (!violation_id) {
+        updateRuleDetails("-", "-", "-");
+        return;
+    }
+    $.get("/get_rule/" + violation_id, function (response) {
+        if (response.error) {
+            updateRuleDetails("", "", "");
+        } else {
+            updateRuleDetails(response.rule_name, response.description, response.severity_name);
         }
+    });
 
-        $.get("/get_rule/" + violation_id, function (response) {
-            if (response.error) {
-                updateRuleDetails("", "", "");
+    function updateRuleDetails(rule, desc, severity) {
+        $("#ruleName").text(rule);
+        $("#descriptionName").text(desc);
+        $("#severityName").text(severity);
+        $("#incident_report_desc").val(desc);
+        $("#incident_report_severity").val(severity);
+        $("#incident_report_ruleName").val(rule);
+    }
+});
+
+$(document).ready(function () {
+    let selectedFiles = [];
+    const fileInput = document.getElementById("uploadEvidence");
+    const fileList = document.getElementById("fileList");
+    const dropArea = document.querySelector(".drop-area");
+
+    function syncInput() {
+        let dt = new DataTransfer();
+        selectedFiles.forEach(f => dt.items.add(f));
+        fileInput.files = dt.files;
+    }
+
+    function handleFiles(files) {
+        for (const file of files) {
+            if (!selectedFiles.find(f => f.name === file.name)) {
+                selectedFiles.push(file);
+                const li = document.createElement("li");
+                li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+                li.textContent = file.name;
+                const removeBtn = document.createElement("button");
+                removeBtn.classList.add("btn", "btn-sm", "btn-danger");
+                removeBtn.textContent = "x";
+                removeBtn.onclick = () => {
+                    selectedFiles = selectedFiles.filter(f => f !== file);
+                    li.remove();
+                    syncInput();
+                };
+                li.appendChild(removeBtn);
+                fileList.appendChild(li);
+            }
+        }
+        syncInput();
+    }
+
+    fileInput.addEventListener("change", e => handleFiles([...e.target.files]));
+
+    ["dragenter","dragover"].forEach(evt =>
+        dropArea.addEventListener(evt, e => {
+            e.preventDefault(); e.stopPropagation();
+            dropArea.classList.add("bg-light");
+        })
+    );
+
+    ["dragleave","drop"].forEach(evt =>
+        dropArea.addEventListener(evt, e => {
+            e.preventDefault(); e.stopPropagation();
+            dropArea.classList.remove("bg-light");
+        })
+    );
+
+    dropArea.addEventListener("drop", e => handleFiles([...e.dataTransfer.files]));
+
+    // Search on Enter only
+    $('#search-student').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            e.preventDefault();
+            const query = $(this).val().trim();
+            if (query.length > 0) {
+                $.ajax({
+                    url: "/student_search",
+                    method: 'GET',
+                    data: { query: query },
+                    success: function(response) {
+                        if (response.length === 0) {
+                            $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
+                        } else {
+                            let html = '';
+                            response.forEach(function(data) {
+                                html += `
+                                    <div class="student-item">
+                                        <div class="d-flex align-items-center">
+                                            <img src="/Photos/avatar.png" alt="Student">
+                                            <div class="ms-2">
+                                                <p class="mb-0 fw-bold">Student No.</p>
+                                                <small>${data.student_no}</small>
+                                                <p>${data.firstname} ${data.lastname}</p>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-outline-primary btn-sm select-btn"
+                                            data-id="${data.id}"
+                                            data-name="${data.firstname} ${data.lastname}"
+                                            data-email="${data.email}"
+                                            data-student_no="${data.student_no}">
+                                            Select
+                                        </button>
+                                    </div>`;
+                            });
+                            $('.student-list').html(html);
+                        }
+                    }
+                });
+            }
+        }
+    });
+
+    // Form submission with explicit formData.append()
+    $("#IncidentReportForm").on('submit', function (e) {
+        e.preventDefault();
+        let isValid = true;
+        const requiredFields = [
+            {id: "#incident_report_name", msg: "Please enter the student name."},
+            {id: "#incident_report_studentno", msg: "Please enter the student number."},
+            {id: "#incident_report_email", msg: "Please enter the school email."},
+            {id: "#incident_report_violationType", msg: "Please select a violation type."},
+            {id: "#incident_report_remarks", msg: "Please provide a detailed description."},
+            {id: "#incident_report_ruleName", msg: "Rule name is required."},
+            {id: "#incident_report_desc", msg: "Description is required."},
+            {id: "#incident_report_severity", msg: "Severity is required."},
+        ];
+
+        requiredFields.forEach(field => {
+            if (!$(field.id).val()) {
+                $(field.id).addClass("is-invalid");
+                if ($(field.id).next(".invalid-feedback").length === 0) {
+                    $(field.id).after('<div class="invalid-feedback">'+field.msg+'</div>');
+                }
+                isValid = false;
             } else {
-                updateRuleDetails(response.rule_name, response.description, response.severity_name);
+                $(field.id).removeClass("is-invalid");
+                $(field.id).next(".invalid-feedback").remove();
             }
         });
 
-        function updateRuleDetails(rule, desc, severity) {
-            $("#ruleName").text(rule);
-            $("#descriptionName").text(desc);
-            $("#severityName").text(severity);
+        if (!isValid) return;
 
-            // Populate hidden inputs
-            $("#incident_report_desc").val(desc);
-            $("#incident_report_severity").val(severity);
-            $("#incident_report_ruleNAme").val(rule);
-        }
-  
-});
-
-//Incident Report
-$(document).ready(function () {
-
-    // removes the errors when field have inputs
-    $("#incident_report_name, #incident_report_studentno, #incident_report_course, #incident_report_email, #incident_report_violationType, #incident_report_remarks").on("input change", function () {
-        if ($(this).val()) {
-            $(this).removeClass("is-invalid");
-            $(this).next(".invalid-feedback").remove();
-        }   
-    });
-
-    $('#uploadEvidence').attr('accept', '.pdf,.jpg,.jpeg,.png,.docx');
-
-     $('#uploadEvidence').change(function() {
-        var file = this.files[0];
-        var maxSize = 2 * 1024 * 1024; // 2MB in bytes
-
-        // Remove any existing error message
-        $(this).next('.invalid-feedback').remove();
-        $(this).removeClass('is-invalid');
-
-        if (file) {
-            if (file.size > maxSize) {
-                $(this).addClass('is-invalid');
-                $(this).after('<div class="invalid-feedback">File size must be less than 2MB.</div>');
-            }
-        } else {
-            $(this).addClass('is-invalid');
-            $(this).after('<div class="invalid-feedback">Please select a file.</div>');
-        }
-    });
-
-    $("#IncidentReportForm").on('submit', function (e) {
-        e.preventDefault();
-
-        let isValid = true;
-
-        // Validate required fields
-        if (!$("#incident_report_name").val()) {
-            $("#incident_report_name").addClass("is-invalid");
-            if ($("#incident_report_name").next(".invalid-feedback").length === 0) {
-                $("#incident_report_name").after('<div class="invalid-feedback">Please enter the student name.</div>');
-            }
-            isValid = false;
-        } else {
-            $("#incident_report_name").removeClass("is-invalid");
-            $("#incident_report_name").next(".invalid-feedback").remove();
-        }
-
-        if (!$("#incident_report_studentno").val()) {
-            $("#incident_report_studentno").addClass("is-invalid");
-            if ($("#incident_report_studentno").next(".invalid-feedback").length === 0) {
-                $("#incident_report_studentno").after('<div class="invalid-feedback">Please enter the student number.</div>');
-            }
-            isValid = false;
-        } else {
-            $("#incident_report_studentno").removeClass("is-invalid");
-            $("#incident_report_studentno").next(".invalid-feedback").remove();
-        }
-
-        if (!$("#incident_report_course").val()) {
-            $("#incident_report_course").addClass("is-invalid");
-            if ($("#incident_report_course").next(".invalid-feedback").length === 0) {
-                $("#incident_report_course").after('<div class="invalid-feedback">Please enter the course and section.</div>');
-            }
-            isValid = false;
-        } else {
-            $("#incident_report_course").removeClass("is-invalid");
-            $("#incident_report_course").next(".invalid-feedback").remove();
-        }
-
-        if (!$("#incident_report_email").val()) {
-            $("#incident_report_email").addClass("is-invalid");
-            if ($("#incident_report_email").next(".invalid-feedback").length === 0) {
-                $("#incident_report_email").after('<div class="invalid-feedback">Please enter the school email.</div>');
-            }
-            isValid = false;
-        } else {
-            $("#incident_report_email").removeClass("is-invalid");
-            $("#incident_report_email").next(".invalid-feedback").remove();
-        }
-
-        if (!$("#incident_report_violationType").val()) {
-            $("#incident_report_violationType").addClass("is-invalid");
-            if ($("#incident_report_violationType").next(".invalid-feedback").length === 0) {
-                $("#incident_report_violationType").after('<div class="invalid-feedback">Please select a violation type.</div>');
-            }
-            isValid = false;
-        } else {
-            $("#incident_report_violationType").removeClass("is-invalid");
-            $("#incident_report_violationType").next(".invalid-feedback").remove();
-        }
-
-        if (!$("#incident_report_remarks").val()) {
-            $("#incident_report_remarks").addClass("is-invalid");
-            if ($("#incident_report_remarks").next(".invalid-feedback").length === 0) {
-                $("#incident_report_remarks").after('<div class="invalid-feedback">Please provide a detailed description.</div>');
-            }
-            isValid = false;
-        } else {
-            $("#incident_report_remarks").removeClass("is-invalid");
-            $("#incident_report_remarks").next(".invalid-feedback").remove();
-        }
-
+        // Create FormData and append all fields explicitly
         let formData = new FormData();
-
         formData.append('_token', $('input[name="_token"]').val());
-        formData.append('student_name', $('#incident_report_name').val());
-        formData.append('student_no', $('#incident_report_studentno').val());
-        formData.append('course_section', $('#incident_report_course').val());
-        formData.append('school_email', $('#incident_report_email').val());
-        formData.append('faculty_name', $('#incident_report_facultyName').val());
-        formData.append('violation_type', $('#incident_report_violationType').val());
-        formData.append('rule_name', $('#incident_report_ruleNAme').val());
-        formData.append('description', $('#incident_report_desc').val());
-        formData.append('severity', $('#incident_report_severity').val());
-        formData.append('remarks', $('#incident_report_remarks').val());
-        formData.append('faculty_id', $('#incident_faculty_id').val());
+        formData.append('student_name', $("#incident_report_name").val());
+        formData.append('student_no', $("#incident_report_studentno").val());
+        formData.append('school_email', $("#incident_report_email").val());
+        formData.append('faculty_name', $("#incident_report_facultyName").val());
+        formData.append('faculty_id', $("#incident_faculty_id").val());
+        formData.append('violation_type', $("#incident_report_violationType").val());
+        formData.append('rule_name', $("#incident_report_ruleName").val());
+        formData.append('description', $("#incident_report_desc").val());
+        formData.append('severity', $("#incident_report_severity").val());
+        formData.append('remarks', $("#incident_report_remarks").val());
 
-        const fileInput = $('#uploadEvidence')[0];
-        const file = fileInput.files[0];
-
-        if (file) {
-            formData.append('upload_evidence', file);
+        // Append files
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append("upload_evidence[]", fileInput.files[i]);
         }
 
         $.ajax({
@@ -296,21 +295,11 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function (response) {
-                console.log("Incident report submitted successfully!");
                 $('#IncidentReportForm')[0].reset();
-
-                var violation_id = $("#incident_report_violationType").val();
-                if (!violation_id) {
-                    $("#ruleName").text("-");
-                    $("#descriptionName").text("-");
-                    $("#severityName").text("-");
-                }
-
-                $('#displaystudentname').text('-');
-                $('#displaystudentno').text('-');
-                $('#displaycourse').text('-');
-                $('#displayemail').text('-');
-
+                $('#fileList').empty();
+                selectedFiles = [];
+                $("#ruleName, #descriptionName, #severityName").text("-");
+                $('#displaystudentname, #displaystudentno, #displayemail').text('-');
                 Swal.fire({
                     icon: "success",
                     text: "Incident report submitted successfully!",
@@ -318,59 +307,14 @@ $(document).ready(function () {
                 });
             },
             error: function (xhr) {
-                console.log("Error submitting form.");
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "Oops! It looks like some required fields are missing or incorrect. Please check your inputs.",
+                    text: xhr.responseJSON?.message || "An error occurred. Please try again.",
                 });
-                console.log(xhr.responseText);
+                console.error(xhr.responseText);
             }
         });
     });
-
-    $('#search-student').on('keypress', function(e) {
-        const query = $(this).val().trim();
-
-        if (e.which === 13 && query) {
-            e.preventDefault(); 
-
-            $.ajax({
-                url: "/student_search",
-                method: 'GET',
-                data: { query: query },
-                success: function(response) {
-                    if (response.length === 0) {
-                        $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
-                    } else {
-                        let html = '';
-                        response.forEach(function(data) {
-                            html += `
-                                <div class="student-item">
-                                    <div class="d-flex align-items-center">
-                                        <img src="/Photos/avatar.png" alt="Student">
-                                        <div class="ms-2">
-                                            <p class="mb-0 fw-bold">Student No.</p>
-                                            <small>${data.student_no}</small>
-                                            <p>${data.firstname} ${data.lastname}</p>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-outline-primary btn-sm select-btn"
-                                        data-id="${data.id}"
-                                        data-name="${data.firstname} ${data.lastname}"
-                                        data-email="${data.email}"
-                                        data-student_no="${data.student_no}"
-                                        data-course="${data.course_and_section}">
-                                        Select
-                                    </button>
-                                </div>`;
-                        });
-                        $('.student-list').html(html);
-                    }
-                }
-            });
-        }
-    });
 });
-
 </script>

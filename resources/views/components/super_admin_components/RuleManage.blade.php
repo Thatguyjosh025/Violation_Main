@@ -313,17 +313,28 @@ $(document).ready(function() {
                     violation_id: violation,
                     severity_id: severity
                 },
-                success: function () {
+                success: function (response) {
+                    if (response.status === "no_changes") {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'No Changes',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        return;
+                    }
+
                     $('#editRuleModal').modal('hide');
                     $('#rulebody').load(location.href + " #rulebody > *");
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Rule Updated!',
-                    text: 'The Rule update has been successfully saved.',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
 
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Rule Updated!',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 },
                 error: function (xhr) {
                     if (xhr.status === 422) {

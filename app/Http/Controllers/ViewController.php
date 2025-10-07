@@ -55,6 +55,12 @@ class ViewController extends Controller
     {
         return view('super_dashboard', ['view' => 'ReferalManagement']);
     }
+     public function audit_management()
+    {
+        return view('super_dashboard', ['view' => 'AuditLogs']);
+    }
+
+
 
     //discipline components
     public function admin_dashboard()
@@ -68,6 +74,10 @@ class ViewController extends Controller
     public function violation_manage()
     {
         return view('discipline_dashboard', ['views' => 'ViolationsManagement']);
+    }
+     public function report_analytics()
+    {
+        return view('discipline_dashboard', ['views' => 'ReportandAnalytics']);
     }
     public function violation_records()
     {

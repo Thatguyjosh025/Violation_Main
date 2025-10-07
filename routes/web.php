@@ -14,16 +14,24 @@ use App\Http\Controllers\DataController;
 use App\Http\Controllers\ViewController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MicrosoftLoginController;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
 
 
 //Landing routes
 Route::get('/', function () {
     return view('Landing_page');
-});
+})->name('landing');
+
+
+
+//ms route
+Route::get('/auth', [MicrosoftLoginController::class, 'redirectToProvider'])->name('microsoft.auth');
+Route::get('/callback', [MicrosoftLoginController::class, 'handleProviderCallback'])->name('microsoft.callback');
 
 
 //Auth Routes
@@ -43,6 +51,7 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
     Route::get('/violation_management', [ViewController::class, 'violation_management'])->name('violation_management');
     Route::get('/penalty_management', [ViewController::class, 'penalty_management'])->name('penalty_management');
     Route::get('/referal_management', [ViewController::class, 'referal_management'])->name('referal_management');
+    Route::get('/audit_management', [ViewController::class, 'audit_management'])->name('audit_management');
 
     // Create
     Route::post('/create_penalties', [SuperController::class, 'penalties']);
@@ -58,6 +67,9 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
 
     // User Management
     Route::post('/update_user', [AuthController::class, 'updateUser']);
+
+    //GET
+    Route::get('/get_user_info', [AuthController::class, 'getuser']);
 });
 
 // ==========================
@@ -69,6 +81,7 @@ Route::middleware(['permission:discipline', RedirectIfNotAuthenticated::class])-
     Route::get('/incident_report', [ViewController::class, 'incident_report'])->name('incident_report');
     Route::get('/violation_manage', [ViewController::class, 'violation_manage'])->name('violation_manage');
     Route::get('/violation_records', [ViewController::class, 'violation_records'])->name('violation_records');
+    Route::get('/report_analytics', [ViewController::class, 'report_analytics'])->name('report_analytics');
 
     // Create/Update
     Route::post('/post_violation', [AdminController::class, 'postviolation']);
@@ -118,9 +131,18 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
     Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
     Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
     Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
-    Route::get('/get_user_info', [AuthController::class, 'getuser']);
 });
 
+
+//import csv
+Route::post('/import_users_csv', [App\Http\Controllers\SuperController::class, 'importUsersCSV']);
+
+//export csv
+Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
+
+
+//report narrative
+Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
 
 
 

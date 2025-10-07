@@ -18,6 +18,7 @@ class StudentController extends Controller
     public function getViolationsRecords(Request $request){
         $user = Auth::user();
         $student_number = $user->student_no;
+        $school_email = $user->email;
     
         $violations = postviolation::with(['violation', 'penalty', 'referal', 'status'])
             ->where('student_no', $student_number)
@@ -25,11 +26,11 @@ class StudentController extends Controller
 
         // 5 mins violation demo expiration check
         foreach ($violations as $violation) {
-            $createdDate = Carbon::parse($violation->Date_Created,'Asia/Manila'); // Note: always set the timezone this is fucking sucks
+            $createdDate = Carbon::parse($violation->Date_Created,'Asia/Manila'); // Note: always set the timezone in asia this is fucking sucks
             $now = Carbon::now('Asia/Manila');
             $minutesSinceCreated = $createdDate->diffInMinutes($now);
 
-            if ($minutesSinceCreated > 5 && $violation->appeal === 'N/A') {
+            if ($minutesSinceCreated > 10 && $violation->appeal === 'N/A') {
                 $violation->appeal = 'No Objection';
                 $violation->status_name = 3;
                 $violation->is_active = true;
@@ -40,6 +41,7 @@ class StudentController extends Controller
                     'message' => 'Your violation has been automatically marked as Confirmed status due to no student appeal within the allowed time.',
                     'role' => 'student',
                     'student_no' => $student_number,
+                    'school_email' => $school_email,
                     'type' => 'incident',
                     'url' => '/violation_tracking',
                     'date_created' => Carbon::now()->format('Y-m-d'),
@@ -48,7 +50,12 @@ class StudentController extends Controller
             }
         }
 
-        // 3-day demo expiration check
+
+        // ------------------------------------------------------------------------------------------------------------------------
+        // IMPORTANT: DO NOT DELETE THIS BLOCK OF CODE
+        // ------------------------------------------------------------------------------------------------------------------------
+
+        // 3-day demo expiration check 
         // foreach ($violations as $violation) {
         //     $createdDate = Carbon::parse($violation->Date_Created);
         //     $now = Carbon::now();
@@ -113,6 +120,7 @@ class StudentController extends Controller
                 'referals' => optional($violation->referal)->referals, 
                 'status' => optional($violation->status)->status, 
                 'Remarks' => $violation->Remarks,
+                'upload_evidence' => $violation->upload_evidence,
                 'appeal' => $violation->appeal,
                 
             ];
@@ -122,49 +130,57 @@ class StudentController extends Controller
         return response()->json($mappedViolations);
     }
 
-public function updateAppealReason(Request $request)
+  public function updateAppealReason(Request $request)
 {
     $studentId = $request->input('studentId');
     $studentName = $request->input('studentName');
     $appealReason = $request->input('appealReason');
+    $user = Auth::user();
+    $school_email = $user->email;
 
     $violation = postviolation::where('id', $studentId)
                               ->where('student_name', $studentName)
                               ->first();
 
-    if ($violation) {
-
-        if ($appealReason === 'No Objection') {
-            // Student chose NOT to appeal
-            $violation->update([
-                'appeal' => $appealReason,
-                'status_name' => 3,
-            ]);
-        } else if (!empty($appealReason) && $appealReason !== 'N/A') {
-            // Student chose to appeal
-            $violation->update([
-                'appeal' => $appealReason,
-                'status_name' => 5,
-            ]);
-
-            notifications::create([
-                'title' => 'Student Appeal Submitted',
-                'message' => 'A student has submitted an appeal regarding a violation.',
-                'role' => 'admin',
-                'student_no' => null,
-                'type' => 'incident',
-                'url' => '/violation_records',
-                'date_created' => Carbon::now()->format('Y-m-d'),
-                'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
-            ]);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Invalid appeal input.']);
-        }
-
-        return response()->json(['success' => true]);
+    if (!$violation) {
+        return response()->json(['success' => false, 'message' => 'Violation not found']);
     }
 
-    return response()->json(['success' => false, 'message' => 'Violation not found']);
-}
+    $uploadedFiles = [];
+    if ($request->hasFile('upload_appeal_evidence')) {
+        foreach ($request->file('upload_appeal_evidence') as $file) {
+            $path = $file->store('appeal_evidence', 'public');
+            $uploadedFiles[] = $path;
+        }
+    }
 
+    if ($appealReason === 'No Objection') {
+        $violation->update([
+            'appeal' => $appealReason,
+            'status_name' => 3,
+        ]);
+    } elseif (!empty($appealReason) && $appealReason !== 'N/A') {
+        $violation->update([
+            'appeal' => $appealReason,
+            'status_name' => 5,
+            'appeal_evidence' => !empty($uploadedFiles) ? json_encode($uploadedFiles) : null,
+        ]);
+
+        notifications::create([
+            'title' => 'Student Appeal Submitted',
+            'message' => 'A student has submitted an appeal regarding a violation.',
+            'role' => 'admin',
+            'student_no' => null,
+            'school_email' => $school_email,
+            'type' => 'incident',
+            'url' => '/violation_records',
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
+        ]);
+    } else {
+        return response()->json(['success' => false, 'message' => 'Invalid appeal input.']);
+    }
+
+    return response()->json(['success' => true]);
+}
 }

@@ -8,29 +8,47 @@
 
                 <form id="loginForm" method="POST" action="{{ url('login') }}">
                     @csrf
+
                     <div class="mb-3">
                         <label for="login_email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="login_email" name="email" placeholder="Enter your email">
                     </div>
+
                     <div class="mb-3">
                         <label for="login_password" class="form-label">Password</label>
                         <div class="input-group" style="position: relative;">
-                        <input type="password" class="form-control" id="login_password" name="password" placeholder="Enter your password" style="border-radius: 6px;">
-                        <span id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; display: none;">
+                            <input type="password" class="form-control" id="login_password" name="password" placeholder="Enter your password" style="border-radius: 6px;">
+                            <span id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; display: none;">
                                 <i class="fas fa-eye"></i>
                             </span>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                    <!-- <div class="d-flex justify-content-between align-items-center mb-3">
                         <a href="#" class="text-decoration-none" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#">Forgot Password?</a>
-                    </div>
+                    </div> -->
+
                     <button type="button" id="loginButton" class="btn btn-primary w-100">Login</button>
+
+                    <!-- SEPERATOR -->
+                    <div class="my-2 d-flex align-items-center">
+                        <hr class="flex-grow-1">
+                        <span class="px-2 text-muted">or</span>
+                        <hr class="flex-grow-1">
+                    </div>
+
+                    <div class="mb-4 text-center">
+                        <a href="{{ route('microsoft.auth') }}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center" style="gap: 8px;">
+                            <i class="fab fa-microsoft"></i>
+                            <span>Login with Microsoft</span>
+                        </a>
+                    </div>
                 </form>
 
-                <p class="text-center mt-3">
+                <!-- <p class="text-center mt-3">
                     Don't have an Account?
                     <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Sign Up here</a>
-                </p>
+                </p> -->
             </div>
         </div>
     </div>

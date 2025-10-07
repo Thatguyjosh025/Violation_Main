@@ -11,7 +11,7 @@ class postviolation extends Model
     protected $fillable = [
         'student_no',
         'student_name',
-        'course',
+        // 'course',
         'school_email',
         'violation_type',
         'penalty_type',
@@ -26,6 +26,7 @@ class postviolation extends Model
         'Remarks',
         'Notes',
         'upload_evidence',
+        'appeal_evidence',
         'appeal',
         'Date_Created',
         'Time_Created',

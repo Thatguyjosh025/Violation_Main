@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('student_no')->references('student_no')->on('tb_users');
 
             $table->string('student_name');
-            $table->string('course');
+            // $table->string('course');
             $table->string('school_email');
             $table->unsignedBigInteger('violation_type');
             $table->unsignedBigInteger('penalty_type');
@@ -42,7 +42,8 @@ return new class extends Migration
             $table->string('Remarks',length:500);
             $table->string('Notes',length:500)->nullable();
             $table->string('appeal');
-            $table->string('upload_evidence')->nullable();
+            $table->json('upload_evidence')->nullable();
+            $table->json('appeal_evidence')->nullable();
             $table->dateTime('Date_Created');
             $table->date('Update_at');
             $table->boolean('is_active')->default(true);
@@ -57,7 +58,7 @@ return new class extends Migration
             $table->string('student_no');
             $table->foreign('student_no')->references('student_no')->on('tb_users');
 
-            $table->string('course_section');
+            // $table->string('course_section');
             $table->string('school_email');
             $table->string('faculty_name');
             $table->string('faculty_id');
@@ -71,7 +72,7 @@ return new class extends Migration
             $table->string('remarks');
             $table->string('status');
 
-            $table->string('upload_evidence')->nullable();
+            $table->json('upload_evidence')->nullable();
             $table->string('is_visible');
             $table->date('Date_Created');
 

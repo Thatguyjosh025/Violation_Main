@@ -145,6 +145,10 @@ $reports = incident::get();
                             <p id="write_incident_severity"><strong>Severity of Offense/s:</strong> Minor</p>
                             <p id="write_incident_facultyname"><strong>Submitted by:</strong> Keith Izzam Magante</p>
                             <p id="write_incident_date"><strong>Date Created:</strong>-</p>
+                            <label class="fw-bold">Submitted Evidence:</label>
+                             <ul id="fileList" class="list-group mt-2"
+                                style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px; scrollbar-width: none; -ms-overflow-style: none;">
+                            </ul>
                             <input type="hidden" id="incident_id">            
                             <input type="hidden" class="form-control" id="incident_name_input" name="student_name"> 
                             <input type="hidden" class="form-control" id="incident_no_input" name="student_no">                                                                                                                    
@@ -156,9 +160,10 @@ $reports = incident::get();
                             <input type="hidden" class="" id="incident_sev_input" name="severity_Name">
                             <input type="radio" name="faculty_involvement" value="Yes" id="faculty_involvement" style="display: none;" checked>
                             <input type="hidden" id="faculty_name" name="faculty_name">
+                            <input type="hidden" name="incident_evidence_input" id="incident_evidence_input">
                             <textarea class="form-control" id="appeal" name="appeal" style="display: none;" maxlength="200">N/A</textarea>
                                                                                                                       
-                            <hr>
+                            <hr>    
                            
                             <div id="incident-dropdowns">
                                 <!-- Referral Dropdown Section -->
@@ -315,13 +320,30 @@ $(document).ready(function(){
         $('#incident_sev_input').val(data.severity);
         $('#faculty_name').val(data.faculty_name);
 
-        if (data.upload_evidence !== 'N/A') {
-            $('#view_incident_evidence').html(
-                `<strong>Evidence/s:</strong> <a href="/storage/${data.upload_evidence}" target="_blank">View Evidence</a>`
-            );
+        const fileList = $('#fileList');
+        fileList.empty();
+
+        if (Array.isArray(data.upload_evidence) && data.upload_evidence.length > 0) {
+            data.upload_evidence.forEach((file, index) => {
+                const fileName = file.split('/').pop();
+                const listItem = `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${fileName}
+                        <a href="/storage/${file}" target="_blank" class="btn btn-sm btn-primary">View</a>
+                    </li>`;
+                fileList.append(listItem);
+            });
         } else {
-            $('#view_incident_evidence').html(`<strong>Evidence/s:</strong> <span class="fw-bold">N/A</span>`);
+            fileList.append('<li class="list-group-item text-center text-muted">No evidence uploaded.</li>');
         }
+
+        if (Array.isArray(data.upload_evidence) && data.upload_evidence.length > 0) {
+            $('#incident_evidence_input').val(JSON.stringify(data.upload_evidence));
+             console.log($('#incident_evidence_input').val()); 
+        } else {
+            $('#incident_evidence_input').val('');
+        }
+
 
         loadViolationDropdown('/get_violations', '#violation_type', data.violation_type);
     }

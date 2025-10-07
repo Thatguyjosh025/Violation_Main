@@ -16,8 +16,8 @@ class NotificationController extends Controller
 
     // Update the notification's is_read column to false
     $notification = \App\Models\notifications::findOrFail($request->notification_id);
-    $notification->is_read = true;  // Set the value to false
-    $notification->save();  // Save the update
+    $notification->is_read = true;  
+    $notification->save();  
 
     return response()->json(['success' => true]);
 }
