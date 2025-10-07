@@ -106,11 +106,11 @@ class AdminController extends Controller
                 }
             }
 
-            // 3️⃣ Merge incident evidence + new uploads
+            // Merge incident evidence + new uploads
             $allEvidence = array_merge($incidentEvidence, $newUploads);
             $evidenceJson = !empty($allEvidence) ? json_encode($allEvidence) : null;
 
-            // 4️⃣ Create postviolation record
+            // Create postviolation record
             $create = postviolation::create([
                 'student_no' => $request->student_no,
                 'student_name' => $request->student_name,
@@ -134,7 +134,7 @@ class AdminController extends Controller
                 'is_active' => true
             ]);
 
-            // 5️⃣ Delete incident and notify faculty
+            // Delete incident and notify faculty
             if ($incident) {
                 $facultyId = $incident->faculty_id;
                 $incident->delete();

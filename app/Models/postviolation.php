@@ -26,6 +26,7 @@ class postviolation extends Model
         'Remarks',
         'Notes',
         'upload_evidence',
+        'appeal_evidence',
         'appeal',
         'Date_Created',
         'Time_Created',
