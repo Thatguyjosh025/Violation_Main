@@ -3,18 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\incident;
-use Illuminate\Http\Request;
 use App\Models\notifications;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class FacultyController extends Controller
 {
-    //
-    public function submitIncidentReport(Request $request){
+    public function submitIncidentReport(Request $request)
+    {
         $request->validate([
             'student_name' => 'required|string',
             'student_no' => 'required|string',
-            'course_section' => 'required|string',
             'school_email' => 'required|email',
             'violation_type' => 'required|integer',
             'rule_name' => 'required|string',
@@ -23,19 +22,19 @@ class FacultyController extends Controller
             'faculty_name' => 'required|string',
             'faculty_id' => 'required|string',
             'remarks' => 'required|string|max:500',
-            'upload_evidence' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048',
+            'upload_evidence.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048',
         ]);
-    
+
+        $evidencePaths = [];
         if ($request->hasFile('upload_evidence')) {
-            $evidencePath = $request->file('upload_evidence')->store('incident_evidence', 'public');
-        } else {
-            $evidencePath = null;
+            foreach ($request->file('upload_evidence') as $file) {
+                $evidencePaths[] = $file->store('incident_evidence', 'public');
+            }
         }
-    
-        $create = incident::create([
+
+        $incident = incident::create([
             'student_name' => $request->student_name,
             'student_no' => $request->student_no,
-            'course_section' => $request->course_section,
             'school_email' => $request->school_email,
             'faculty_name' => $request->faculty_name,
             'faculty_id' => $request->faculty_id,
@@ -45,29 +44,26 @@ class FacultyController extends Controller
             'severity' => $request->severity,
             'remarks' => $request->remarks,
             'status' => 'Pending',
-            'upload_evidence' => $evidencePath,
+            'upload_evidence' => !empty($evidencePaths) ? json_encode($evidencePaths) : null,
             'is_visible' => 'show',
-            'Date_Created' => Carbon::now()
+            'Date_Created' => Carbon::now('Asia/Manila'),
         ]);
-    
-        $create->load('violation');
-    
-        $notif = notifications::create([
+
+        notifications::create([
             'title' => 'Incident Report',
-            'message' => 'You have new incident report',
+            'message' => 'A new incident report has been submitted.',
             'role' => 'admin',
             'student_no' => $request->faculty_id,
+            'school_email' => $request->school_email,
             'type' => 'incident',
             'url' => '/incident_report',
             'date_created' => Carbon::now()->format('Y-m-d'),
-            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
         ]);
-    
+
         return response()->json([
-            'incidentreport' => [
-                'message' => 'Incident report submitted successfully.',
-                'violation_type' => $create->violation->violations, 
-            ]
+            'message' => 'Incident report submitted successfully.',
+            'data' => $incident
         ]);
     }
 }

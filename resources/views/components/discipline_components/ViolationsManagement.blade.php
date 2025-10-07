@@ -76,7 +76,135 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function(){
-    // Show violation modal
+
+    let dropArea = document.getElementById("dropArea");
+    let fileInput = document.getElementById("uploadEvidence");
+    let fileList = document.getElementById("fileList");
+    let selectedFiles = []; 
+
+    // -----------------------------
+    // Drag & Drop Behaviors
+    // -----------------------------
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => {
+            dropArea.classList.add('bg-light');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => {
+            dropArea.classList.remove('bg-light');
+        }, false);
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+        let files = Array.from(e.dataTransfer.files);
+        handleFiles(files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        let files = Array.from(e.target.files);
+        handleFiles(files);
+    });
+
+    // -----------------------------
+    // File Handling with Duplicate Rules
+    // -----------------------------
+    function handleFiles(files) {
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (files.length > 1) {
+            let duplicates = files.filter(file => selectedFiles.find(f => f.name === file.name));
+            if (duplicates.length > 0) {
+                Swal.fire({ icon: "warning", text: `Multiple files have been already selected.` });
+                return;
+            }
+        } else if (files.length === 1) {
+            let file = files[0];
+            let existingIndex = selectedFiles.findIndex(f => f.name === file.name);
+            if (existingIndex !== -1) {
+                // Replace old file
+                selectedFiles[existingIndex] = file;
+                Swal.fire({ icon: "info", text: `${file.name} have already selected.` });
+
+                // Remove old entry
+                [...fileList.children].forEach(li => {
+                    if (li.firstChild.textContent.includes(file.name)) {
+                        li.remove();
+                    }
+                });
+            }
+        }
+
+        files.forEach(file => {
+            if (file.size > maxSize) {
+                Swal.fire({ icon: "error", text: `${file.name} exceeds 2MB limit.` });
+                return;
+            }
+
+            if (!selectedFiles.find(f => f.name === file.name)) {
+                selectedFiles.push(file);
+
+                let li = document.createElement("li");
+                li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+                li.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+
+                let removeBtn = document.createElement("button");
+                removeBtn.classList.add("btn", "btn-sm", "btn-danger");
+                removeBtn.textContent = "x";
+                removeBtn.onclick = () => {
+                    selectedFiles = selectedFiles.filter(f => f !== file);
+                    li.remove();
+                    syncInput();
+                };
+
+                li.appendChild(removeBtn);
+                fileList.appendChild(li);
+            }
+        });
+
+        syncInput();
+        fileInput.value = ""; // allow reselection of same file
+    }
+
+    function syncInput() {
+        let dataTransfer = new DataTransfer();
+        selectedFiles.forEach(f => dataTransfer.items.add(f));
+        fileInput.files = dataTransfer.files;
+    }
+
+    // -----------------------------
+    // Reusable reset function
+    // -----------------------------
+    function resetViolationForm() {
+        $('#postviolationForm').trigger('reset');
+
+        ["#ruleName", "#descriptionName", "#severityName"].forEach(sel => $(sel).text("-"));
+
+        $("#violation_type, #referal_type, #penalty_type, #remarks, input[name='faculty_involvement'], input[name='counseling_required'], #uploadEvidence, #facultyName").removeClass("is-invalid");
+        $(".invalid-feedback").remove();
+
+        $("#facultyLabel").hide();
+        $('#facultyName').hide().val('');
+
+        $('#fileList').empty();
+        selectedFiles = [];
+        syncInput();
+
+        $('#faculty_no').prop('checked', true);
+        $('#counseling_no').prop('checked', true);
+    }
+
+    // -----------------------------
+    // Modal Show / Close
+    // -----------------------------
     $('#createViolationbtn').on('click', function(e){
         e.preventDefault();
         $('#violationModal').modal('show');
@@ -84,44 +212,16 @@ $(document).ready(function(){
 
     $('#close-btn').on('click', function(e){
         e.preventDefault();
-        // Reset the form
-        $('#postviolationForm').trigger('reset');
-
-        // Reset display elements
-        ["#ruleName", "#descriptionName", "#severityName"].forEach(sel => $(sel).text("-"));
-
-        // Remove is-invalid classes and error messages from all form fields
-        $("#violation_type, #referal_type, #penalty_type, #remarks, input[name='faculty_involvement'], input[name='counseling_required'], #uploadEvidence, #facultyName").removeClass("is-invalid");
-        $(".invalid-feedback").remove();
-
-        $("#facultyLabel").hide();
-        $('#facultyName').hide().val('');
+        resetViolationForm();
     });
 
-
-    //file upload validations
-    $('#uploadEvidence').attr('accept', '.pdf,.jpg,.jpeg,.png,.docx');
-
-     $('#uploadEvidence').change(function() {
-        var file = this.files[0];
-        var maxSize = 2 * 1024 * 1024; // 2MB in bytes
-
-        // Remove any existing error message
-        $(this).next('.invalid-feedback').remove();
-        $(this).removeClass('is-invalid');
-
-        if (file) {
-            if (file.size > maxSize) {
-                $(this).addClass('is-invalid');
-                $(this).after('<div class="invalid-feedback">File size must be less than 2MB.</div>');
-            }
-        } else {
-            $(this).addClass('is-invalid');
-            $(this).after('<div class="invalid-feedback">Please select a file.</div>');
-        }
+    $('#violationModal').on('hidden.bs.modal', function () {
+        resetViolationForm();
     });
 
+    // -----------------------------
     // View button functionality
+    // -----------------------------
     $(document).on("click", ".view-btn", function (e) {
         e.preventDefault();
 
@@ -141,7 +241,6 @@ $(document).ready(function(){
         $("#student_no").val(studentNo).removeClass("is-invalid").next(".invalid-feedback").remove();
         $("#course_and_section").val(course).removeClass("is-invalid").next(".invalid-feedback").remove();
 
-        // Fetch violations for the student
         $.ajax({
             url: "/get_violators_history/" + encodeURIComponent(studentName) + "/" + studentNo,
             type: "GET",
@@ -170,7 +269,9 @@ $(document).ready(function(){
         });
     });
 
-    // Pre-fill modal fields on createViolation click
+    // -----------------------------
+    // Pre-fill modal fields
+    // -----------------------------
     $("#createViolationbtn").on('click', function (e) {
         e.preventDefault();
         $('#modal_student_no').val($('#student_no').val());
@@ -179,7 +280,9 @@ $(document).ready(function(){
         $('#modal_student_email').val($('#schoolEmail').val());
     });
 
-    // Remove error on input
+    // -----------------------------
+    // Validation clear on input
+    // -----------------------------
     $("#student_no, #student_name, #course_and_section, #schoolEmail,#remarks").on("input change", function () {
         if ($(this).val()) {
             $(this).removeClass("is-invalid");
@@ -187,7 +290,9 @@ $(document).ready(function(){
         }
     });
 
-    // Update rule details
+    // -----------------------------
+    // Rule details
+    // -----------------------------
     $(document).on("change", "#violation_type", function (e) {
         e.preventDefault();
         var violation_id = $(this).val();
@@ -216,7 +321,9 @@ $(document).ready(function(){
         }
     });
 
+    // -----------------------------
     // Faculty involvement toggle
+    // -----------------------------
     $('input[name="faculty_involvement"]').change(function () {
         if ($('#faculty_yes').is(':checked')) {
             $('#facultyName').show();
@@ -227,7 +334,9 @@ $(document).ready(function(){
         }
     });
 
-    // Remove validation error for select and radio inputs
+    // -----------------------------
+    // Validation for selects/radios
+    // -----------------------------
     $("#violation_type, #penalty_type, #referal_type").on("change", function () {
         if ($(this).val() !== "") {
             $(this).removeClass("is-invalid");
@@ -235,7 +344,6 @@ $(document).ready(function(){
         }
     });
 
-    // Remove validation error for radio inputs
     $("input[name='faculty_involvement'], input[name='counseling_required']").on("change", function () {
         if ($(this).is(':checked')) {
             $(this).removeClass("is-invalid");
@@ -243,31 +351,29 @@ $(document).ready(function(){
         }
     });
 
-    // Remove validation error for faculty name dropdown
     $("#facultyName").on("change", function () {
         if ($(this).val() !== "") {
             $(this).removeClass("is-invalid");
             $(this).next(".invalid-feedback").remove();
         }
     });
-    
+
+    // -----------------------------
     // Submit violation form
+    // -----------------------------
     $("#submit_violation").click(function (e) {
         e.preventDefault();
         let isValid = true;
 
-       // Remove existing error messages
         $(".invalid-feedback").remove();
         $("#violation_type, #referal_type, #penalty_type, #facultyName, #remarks, input[name='faculty_involvement'], input[name='counseling_required']").removeClass("is-invalid");
 
-        // Validate form fields
         const fieldsToValidate = [
             { id: "#violation_type", message: "Please select a violation." },
             { id: "#penalty_type", message: "Please select a penalty." },
             { id: "#referal_type", message: "Please select a referral action." },
             { id: "#remarks", message: "Please provide a remarks." }
         ];
-
         fieldsToValidate.forEach(field => {
             if (!$(field.id).val()) {
                 $(field.id).addClass("is-invalid").after(`<div class="invalid-feedback">${field.message}</div>`);
@@ -279,7 +385,6 @@ $(document).ready(function(){
             { name: "faculty_involvement", message: "Please select faculty involvement." },
             { name: "counseling_required", message: "Please select counseling requirement." }
         ];
-
         radioFieldsToValidate.forEach(field => {
             if (!$(`input[name='${field.name}']:checked`).val()) {
                 $(`input[name='${field.name}']`).addClass("is-invalid")
@@ -288,25 +393,15 @@ $(document).ready(function(){
             }
         });
 
-
-        // Validate the Faculty Name dropdown if it is visible
         if ($("#facultyName").is(":visible") && !$("#facultyName").val()) {
             $("#facultyName").addClass("is-invalid").after('<div class="invalid-feedback">Please select a faculty name.</div>');
             isValid = false;
         }
 
-       // Validate file upload
-        const fileUpload = $('#uploadEvidence')[0];
-        if (fileUpload.files[0]) {
-            var file = fileUpload.files[0];
-            var maxSize = 2 * 1024 * 1024; // 2MB in bytes
-
-            if (file.size > maxSize) {
-                $('#uploadEvidence').addClass('is-invalid').after('<div class="invalid-feedback">File size must be less than 2MB.</div>');
-                isValid = false;
-            }
+        if (selectedFiles.length === 0) {
+            Swal.fire({ icon: "warning", text: "Please upload at least one evidence file." });
+            isValid = false;
         }
-
 
         if (!isValid) {
             Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
@@ -314,8 +409,8 @@ $(document).ready(function(){
         }
 
         let facultyName = $('#faculty_yes').is(':checked') ? $("#facultyName").val() : "N/A";
-
         let formData = new FormData();
+
         formData.append('_token', $('input[name="_token"]').val());
         formData.append('student_no', $("#modal_student_no").val());
         formData.append('student_name', $("#modal_student_name").val());
@@ -333,10 +428,9 @@ $(document).ready(function(){
         formData.append('appeal', $("#appeal").val());
         formData.append('Remarks', $("#remarks").val());
 
-        const fileInput = $('#uploadEvidence')[0];
-        if (fileInput.files[0]) {
-            formData.append('upload_evidence', fileInput.files[0]);
-        }
+        selectedFiles.forEach(file => {
+            formData.append('upload_evidence[]', file);
+        });
 
         $.ajax({
             url: "/post_violation",
@@ -346,47 +440,37 @@ $(document).ready(function(){
             processData: false,
             success: function () {
                 $('#violationModal').modal('hide');
-
-                $('#postviolationForm').trigger('reset');
-                $("#facultyLabel").hide();
-                $('#facultyName').hide().val('');
-
-                //default to no after reset
-                $('#faculty_no').prop('checked', true);
-                $('#counseling_no').prop('checked', true);
+                resetViolationForm();
 
                 Swal.fire({ icon: "success", text: "Violation recorded successfully!", timer: 5000 });
 
-                // Reset display elements
                 ["#ruleName", "#descriptionName", "#severityName"].forEach(sel => $(sel).text("-"));
                 $('#displaystudentno').text("-");
                 $('#displaystudentname').text("-");
                 $('#displaycourse').text("-");
                 $('#displayemail').text("-");
 
-                // Reset student info inputs
                 $('#student_no').val('').hide();
                 $('#student_name').val('').hide();
                 $('#course_and_section').val('').hide();
                 $('#schoolEmail').val('').hide();
 
-                // Reset recent violations section
                 $('.recent-violation').html('<div class="violation-card-no" style="text-align: center;"><p>No selected student.</p></div>');
             },
-           error: function (xhr, message) {
+            error: function (xhr) {
                 Swal.fire({ icon: "error", title: "Oops...", text: "Oops! It looks like some required fields are missing or incorrect. Please check your inputs." });
                 console.log(xhr.responseText);
             }
         });
     });
 
+    // -----------------------------
     // Student search
+    // -----------------------------
     $('#search-student').on('keypress', function(e) {
         const query = $(this).val().trim();
-
         if (e.which === 13 && query) {
-            e.preventDefault(); 
-
+            e.preventDefault();
             $.ajax({
                 url: "/student_search",
                 method: 'GET',
@@ -412,9 +496,7 @@ $(document).ready(function(){
                                         data-name="${data.firstname} ${data.lastname}"
                                         data-email="${data.email}"
                                         data-student_no="${data.student_no}"
-                                        data-course="${data.course_and_section}">
-                                        View
-                                    </button>
+                                        data-course="${data.course_and_section}">View</button>
                                 </div>`;
                         });
                         $('.student-list').html(html);
@@ -423,5 +505,7 @@ $(document).ready(function(){
             });
         }
     });
+
 });
+
 </script>

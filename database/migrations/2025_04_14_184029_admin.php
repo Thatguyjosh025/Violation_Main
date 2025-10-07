@@ -42,7 +42,7 @@ return new class extends Migration
             $table->string('Remarks',length:500);
             $table->string('Notes',length:500)->nullable();
             $table->string('appeal');
-            $table->string('upload_evidence')->nullable();
+            $table->json('upload_evidence')->nullable();
             $table->dateTime('Date_Created');
             $table->date('Update_at');
             $table->boolean('is_active')->default(true);
@@ -71,7 +71,7 @@ return new class extends Migration
             $table->string('remarks');
             $table->string('status');
 
-            $table->string('upload_evidence')->nullable();
+            $table->json('upload_evidence')->nullable();
             $table->string('is_visible');
             $table->date('Date_Created');
 

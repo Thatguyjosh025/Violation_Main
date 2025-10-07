@@ -119,13 +119,24 @@
                         </div>
                     
                         <textarea class="form-control" id="appeal" name="appeal" style="display: none;" maxlength="200">N/A</textarea>
-
-                        <!-- file upload -->
-                        <div class="mb-3">
-                            <label for="uploadEvidence" class="form-label text text-dark">Upload Evidence</label>
-                            <input type="file" class="form-control" id="uploadEvidence" name="upload_evidence">
+                        
+                            <!-- UPLOAD FILES -->
+                        <div class="my-3">
+                          <label id="dropArea" 
+                                for="uploadEvidence" 
+                                class="d-block w-100 p-5 border border-dark rounded text-center bg-white" 
+                                style="cursor: pointer; border-style: dashed;">
+                            <div class="text-dark fw-medium">Upload Evidence</div>
+                            <small class="text-muted">Click to select files or drag them here</small>
+                          </label>
+                          <input type="file" id="uploadEvidence" name="upload_evidence[]" multiple hidden>
                         </div>
 
+                        <!-- preview stack -->
+                        <ul id="fileList" class="list-group mt-2" 
+                            style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+                        </ul>
+                        <br>
                         <button type="submit" id="submit_violation" class="btn btn-primary">Create Violation</button> 
 
                     </form>
