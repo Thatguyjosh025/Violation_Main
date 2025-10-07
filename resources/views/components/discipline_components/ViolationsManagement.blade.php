@@ -398,10 +398,10 @@ $(document).ready(function(){
             isValid = false;
         }
 
-        if (selectedFiles.length === 0) {
-            Swal.fire({ icon: "warning", text: "Please upload at least one evidence file." });
-            isValid = false;
-        }
+        // if (selectedFiles.length === 0) {
+        //     Swal.fire({ icon: "warning", text: "Please upload at least one evidence file." });
+        //     isValid = false;
+        // }
 
         if (!isValid) {
             Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });

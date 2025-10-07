@@ -25,7 +25,7 @@ $ruleinfos = rules::get();
             </div>
             <div class="modal-body">
                 <p class="text text-dark"><strong>Offense/s:</strong> <a href="#" id="offense"></a></p>
-                <p class="text text-dark"><strong>Rule:</strong> <span href="#" id="ruleLink"></span></p>
+                <p class="text text-dark"><strong>Rule:</strong> <span id="ruleLink"></span></p>
                 <p class="text text-dark" id="detailsDescription"></p>
                 <hr>
                 <p class="text text-dark"><strong>Severity:</strong> <span id="severity"></span></p>
@@ -35,6 +35,9 @@ $ruleinfos = rules::get();
                 <hr>
                 <p class="text text-dark"><strong>Message:</strong></p>
                 <p class="text text-dark" id="message"></p>
+                <hr>
+                <p class="text text-dark"><strong>Uploaded Evidence:</strong></p>
+                <ul id="evidenceList" class="list-group mb-3" style="max-height: 170px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"></ul>
                 <hr>
                 <!-- Appeal Section -->
                 <div id="appealSection">
@@ -98,7 +101,6 @@ $(document).ready(function () {
                         </div>
                     `;
                     cardsContainer.append(cardHtml);
-                // $("#activeViolationCards").load(location.href + " #activeViolationCards > *");
                 });
             }
         },
@@ -110,7 +112,7 @@ $(document).ready(function () {
     // View Button Click Event
     $(document).on('click', '.view-btn', function () {
         let violation = $(this).data('violation');
-        $('#offense').text(violation.type || 'N/A').attr('href', '/violation_handbook#' + violation.section_Id); // Use the section_Id from the response;
+        $('#offense').text(violation.type || 'N/A').attr('href', '/violation_handbook#' + violation.section_Id);
         $('#ruleLink').text(violation.rule_Name);
         $('#detailsDescription').text(violation.description_Name);
         $('#severity').text(violation.severity_Name);
@@ -118,27 +120,52 @@ $(document).ready(function () {
         $('#actionTaken').text(violation.referals || 'N/A');
         $('#message').text(violation.Remarks);
         $('#status').text(violation.status || 'N/A');
-        console.log('Hello world');
         
         // Store data for appeal submit
         $('#appealModal').data('studentId', violation.id);
         $('#appealModal').data('studentName', violation.student_name);
 
+        // 🧾 Reset evidence list
+        $('#evidenceList').empty();
 
+        // ✅ Load evidence with “View” button
+        if (violation.upload_evidence) {
+            try {
+                let files = JSON.parse(violation.upload_evidence);
+                if (Array.isArray(files) && files.length > 0) {
+                    files.forEach(function(filePath) {
+                        let fileName = filePath.split('/').pop();
+                        $('#evidenceList').append(`
+                            <li class="list-group-item">
+                                <a href="/storage/${filePath}" target="_blank">${fileName}</a>
+                            </li>
+                        `);
+                    });
+                } else {
+                    $('#evidenceList').append('<li class="text-muted">No uploaded evidence.</li>');
+                }
+            } catch (error) {
+                console.error('Error parsing evidence JSON:', error);
+                $('#evidenceList').append('<li class="text-muted">Invalid evidence data.</li>');
+            }
+        } else {
+            $('#evidenceList').append('<li class="text-muted">No uploaded evidence.</li>');
+        }
+
+        // Appeal logic
         if (violation.appeal === 'N/A' || violation.appeal === 'Warning') {
             $('#appealSection').show();
         } else {
             $('#appealSection').hide();
         }
 
-        // Reset appeal section state
         $('#appealFormContainer').hide();
         $('#appealReason').show();
         $('#submitAppeal').show();
         $('input[name="appeal"]').prop('checked', false);
     });
 
-    
+    // Appeal selection toggle
     $('input[name="appeal"]').change(function () {
         if ($('#appealYes').is(':checked')) {
             $('#appealFormContainer').show();
@@ -189,6 +216,4 @@ $(document).ready(function () {
         });
     });
 });
-
 </script>
-

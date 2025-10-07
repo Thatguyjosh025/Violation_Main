@@ -43,6 +43,7 @@ return new class extends Migration
             $table->string('Notes',length:500)->nullable();
             $table->string('appeal');
             $table->json('upload_evidence')->nullable();
+            $table->json('appeal_evidence')->nullable();
             $table->dateTime('Date_Created');
             $table->date('Update_at');
             $table->boolean('is_active')->default(true);

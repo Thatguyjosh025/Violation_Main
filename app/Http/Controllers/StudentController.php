@@ -18,6 +18,7 @@ class StudentController extends Controller
     public function getViolationsRecords(Request $request){
         $user = Auth::user();
         $student_number = $user->student_no;
+        $school_email = $user->email;
     
         $violations = postviolation::with(['violation', 'penalty', 'referal', 'status'])
             ->where('student_no', $student_number)
@@ -40,6 +41,7 @@ class StudentController extends Controller
                     'message' => 'Your violation has been automatically marked as Confirmed status due to no student appeal within the allowed time.',
                     'role' => 'student',
                     'student_no' => $student_number,
+                    'school_email' => $school_email,
                     'type' => 'incident',
                     'url' => '/violation_tracking',
                     'date_created' => Carbon::now()->format('Y-m-d'),
@@ -118,6 +120,7 @@ class StudentController extends Controller
                 'referals' => optional($violation->referal)->referals, 
                 'status' => optional($violation->status)->status, 
                 'Remarks' => $violation->Remarks,
+                'upload_evidence' => $violation->upload_evidence,
                 'appeal' => $violation->appeal,
                 
             ];
@@ -132,6 +135,8 @@ public function updateAppealReason(Request $request)
     $studentId = $request->input('studentId');
     $studentName = $request->input('studentName');
     $appealReason = $request->input('appealReason');
+    $user = Auth::user();
+    $school_email = $user->email;
 
     $violation = postviolation::where('id', $studentId)
                               ->where('student_name', $studentName)
@@ -157,11 +162,13 @@ public function updateAppealReason(Request $request)
                 'message' => 'A student has submitted an appeal regarding a violation.',
                 'role' => 'admin',
                 'student_no' => null,
+                'school_email' => $school_email,
                 'type' => 'incident',
                 'url' => '/violation_records',
                 'date_created' => Carbon::now()->format('Y-m-d'),
                 'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
             ]);
+            
         } else {
             return response()->json(['success' => false, 'message' => 'Invalid appeal input.']);
         }

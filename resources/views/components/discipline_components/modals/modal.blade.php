@@ -157,11 +157,14 @@
       <div class="modal-body">
         <input type="hidden" id="view_student_id" name="view_id">
         <div class="row">
-          <div class="UploadEvidence col-md-6" style="width: 100%;">
+          <!-- UPLOAD -->
+         <div class="UploadEvidence col-md-6" style="width: 100%;">
             <label for="uploadEvidence" class="form-label" style="font-size: 1rem; font-weight: 500; margin-bottom: .5rem;">Uploaded Evidence</label>
-            <a id="viewUploadEvidence" class="form-control" target="_blank" style="display: none;">View File</a>
+            <ul id="viewFileList" class="list-group mt-2"
+                style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px; scrollbar-width: none; -ms-overflow-style: none;">
+            </ul>
             <span id="noFileLabel" class="form-control" style="display: none;">N/A</span>
-          </div>
+        </div>
 
           <section class="StudentInformation">
             <hr>
@@ -434,63 +437,47 @@ $(document).on('click', '.btn-view-post', function () {
             } else if (response.status == 200) {
                 console.log(response);
 
-              $('#viewviolation_type').text(response.data.violation_name);
-              // if (!$('#viewviolation_type').val()) {
-              //     $('#viewviolation_type').append(
-              //         `<option value="${response.data.violation_type}" selected>${response.data.violation_name}</option>`
-              //     );
-              // }
+                // Populate fields
+                $('#viewviolation_type').text(response.data.violation_name);
+                $('#viewpenalty_type').text(response.data.penalty_name);
+                $('#viewstatus_name').text(response.data.status_label);
+                $('#viewreferal_type').text(response.data.referal_name);
+                $('#view_student_id').val(response.data.view_id);
+                $('#viewstudent_no').text(response.data.student_no);
+                $('#viewstudent_name').text(response.data.student_name);
+                $('#viewschool_email').text(response.data.school_email);
+                $('#viewseverity_Name').text(response.data.severity_Name);
+                $('#viewrule_Name').text(response.data.rule_Name);
+                $('#viewdescription_Name').text(response.data.description_Name);
+                $('#viewfaculty_involvement').text(response.data.faculty_involvement);
+                $('#viewfaculty_name').text(response.data.faculty_name);
+                $('#viewcounseling_required').text(response.data.counseling_required);
+                $('#viewRemarks').text(response.data.Remarks);
+                $('#viewappeal').text(response.data.appeal);
+                $('#viewDate_Created').text(response.data.Date_Created);
 
-              $('#viewpenalty_type').text(response.data.penalty_name);
-              // if(!$('#viewpenalty_type').val()){
-              //   $('#viewpenalty_type').append(
-              //         `<option value="${response.data.penalty_type}" selected>${response.data.penalty_name}</option>`
-              //     );
-              // }
+                // Handle uploaded evidence
+                $('#viewFileList').empty(); 
+                  if (response.data.upload_evidence) {
+                      var files = JSON.parse(response.data.upload_evidence);
+                      files.forEach(function(file, index) {
+                          var fileName = file.split('/').pop(); // get just the file name
+                          $('#viewFileList').append(
+                              `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                  <span>${fileName}</span>
+                                  <button type="button" class="btn btn-sm btn-primary" onclick="window.open('/storage/${file}', '_blank')">View</button>
+                              </li>`
+                          );
+                      });
+                      $('#viewFileList').show();
+                      $('#noFileLabel').hide();
+                  } else {
+                      $('#viewFileList').hide();
+                      $('#noFileLabel').show();
+                  }
 
-              $('#viewstatus_name').text(response.data.status_label);
-              // if(!$('#viewstatus_name').val()){
-              //   $('#viewstatus_name').append(
-              //         `<option value="${response.data.status_name}" selected>${response.data.status_label}</option>`
-              //     );
-              // }
-
-              $('#viewreferal_type').text(response.data.referal_name);
-              // if(!$('#viewreferal_type').val()){
-              //   $('#viewreferal_type').append(
-              //         `<option value="${response.data.referal_type}" selected>${response.data.referal_name}</option>`
-              //     );
-              // }
-
-              // Populate other fields
-              $('#view_student_id').val(response.data.view_id);
-              $('#viewstudent_no').text(response.data.student_no);
-              $('#viewstudent_name').text(response.data.student_name);
-              $('#viewcourse').text(response.data.course);
-              $('#viewschool_email').text(response.data.school_email);
-              $('#viewseverity_Name').text(response.data.severity_Name);
-              $('#viewrule_Name').text(response.data.rule_Name);
-              $('#viewdescription_Name').text(response.data.description_Name);
-              $('#viewfaculty_involvement').text(response.data.faculty_involvement);
-              $('#viewfaculty_name').text(response.data.faculty_name);
-              $('#viewcounseling_required').text(response.data.counseling_required);
-              $('#viewRemarks').text(response.data.Remarks);
-              $('#viewappeal').text(response.data.appeal);
-              $('#viewupload_evidence').text(response.data.upload_evidence);
-              $('#viewDate_Created').text(response.data.Date_Created);
-
-              if (response.data.upload_evidence) {
-                  // If there is a file, show the link
-                  $('#viewUploadEvidence').attr('href', '/storage/' + response.data.upload_evidence).text('View File').show();
-                  $('#noFileLabel').hide();
-              } else {
-                  // If there is no file shows "N/A" label
-                  $('#viewUploadEvidence').hide();
-                  $('#noFileLabel').show();
-              }
-
-              // Show the modal
-              $('#viewStudentModal').modal('show');
+                // Show the modal
+                $('#viewStudentModal').modal('show');
             }
         }
     });

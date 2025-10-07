@@ -86,10 +86,34 @@ class AdminController extends Controller
         $evidenceJson = !empty($evidencePaths) ? json_encode($evidencePaths) : null;
 
         if ($request->filled('incident_id')) {
+
+            $incident = incident::find($request->incident_id);
+            $incidentEvidence = [];
+            if ($incident && !empty($incident->upload_evidence)) {
+                // Incident evidence may be stored as JSON or array
+                if (is_string($incident->upload_evidence)) {
+                    $decoded = json_decode($incident->upload_evidence, true);
+                    $incidentEvidence = is_array($decoded) ? $decoded : [$incident->upload_evidence];
+                } elseif (is_array($incident->upload_evidence)) {
+                    $incidentEvidence = $incident->upload_evidence;
+                }
+            }
+
+            $newUploads = [];
+            if ($request->hasFile('upload_evidence')) {
+                foreach ($request->file('upload_evidence') as $file) {
+                    $newUploads[] = $file->store('evidence', 'public');
+                }
+            }
+
+            // 3️⃣ Merge incident evidence + new uploads
+            $allEvidence = array_merge($incidentEvidence, $newUploads);
+            $evidenceJson = !empty($allEvidence) ? json_encode($allEvidence) : null;
+
+            // 4️⃣ Create postviolation record
             $create = postviolation::create([
                 'student_no' => $request->student_no,
                 'student_name' => $request->student_name,
-                // 'course' => $request->course,  <------ DELETE THIS MF
                 'school_email' => $request->school_email,
                 'violation_type' => $request->violation_type,
                 'penalty_type' => $request->penalty_type,
@@ -110,25 +134,25 @@ class AdminController extends Controller
                 'is_active' => true
             ]);
 
-            $incident = incident::find($request->incident_id);
+            // 5️⃣ Delete incident and notify faculty
             if ($incident) {
                 $facultyId = $incident->faculty_id;
-
                 $incident->delete();
 
-                $notif = notifications::create([
+                notifications::create([
                     'title' => 'Incident Approval',
                     'message' => 'Your Incident Report has been approved',
                     'role' => 'faculty',
                     'student_no' => $facultyId,
+                    'school_email' => $create->school_email,
                     'type' => 'approve',
                     'url' => '/faculty_incident',
                     'date_created' => Carbon::now()->format('Y-m-d'),
                     'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
                 ]);
-
-                return response()->json(['message' => 'Updated']);
             }
+
+            return response()->json(['message' => 'Updated']);
         } else {
             $create = postviolation::create([
                 'student_no' => $request->student_no,
@@ -268,6 +292,7 @@ class AdminController extends Controller
             'message' => 'Your violation has been escalated to ' . $newStatusText,
             'role' => 'student',
             'student_no' => $request->update_student_no,
+            'school_email' => $request->update_school_email,
             'type' => 'approve',
             'url' => $url,
             'date_created' => Carbon::now()->format('Y-m-d'),
@@ -332,6 +357,7 @@ public function UpdateRejected(Request $request){
         'message' => 'Your Incident Report has been rejected',
         'role' => 'faculty',
         'student_no' => $facultyId,
+        'school_email' => $incident -> school_email,
         'type' => 'approve',
         'date_created' => Carbon::now()->format('Y-m-d'),
         'created_time' => Carbon::now('Asia/Manila')->format('h:i A')

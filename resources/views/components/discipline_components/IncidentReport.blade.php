@@ -160,7 +160,7 @@ $reports = incident::get();
                             <input type="hidden" class="" id="incident_sev_input" name="severity_Name">
                             <input type="radio" name="faculty_involvement" value="Yes" id="faculty_involvement" style="display: none;" checked>
                             <input type="hidden" id="faculty_name" name="faculty_name">
-                            <input type="file" name="incident_evidence_input" id="incident_evidence_input">
+                            <input type="hidden" name="incident_evidence_input" id="incident_evidence_input">
                             <textarea class="form-control" id="appeal" name="appeal" style="display: none;" maxlength="200">N/A</textarea>
                                                                                                                       
                             <hr>    
@@ -320,13 +320,12 @@ $(document).ready(function(){
         $('#incident_sev_input').val(data.severity);
         $('#faculty_name').val(data.faculty_name);
 
-        // ✅ Populate file list
         const fileList = $('#fileList');
         fileList.empty();
 
         if (Array.isArray(data.upload_evidence) && data.upload_evidence.length > 0) {
             data.upload_evidence.forEach((file, index) => {
-                const fileName = file.split('/').pop(); // Get only filename
+                const fileName = file.split('/').pop();
                 const listItem = `
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         ${fileName}
@@ -337,6 +336,14 @@ $(document).ready(function(){
         } else {
             fileList.append('<li class="list-group-item text-center text-muted">No evidence uploaded.</li>');
         }
+
+        if (Array.isArray(data.upload_evidence) && data.upload_evidence.length > 0) {
+            $('#incident_evidence_input').val(JSON.stringify(data.upload_evidence));
+             console.log($('#incident_evidence_input').val()); 
+        } else {
+            $('#incident_evidence_input').val('');
+        }
+
 
         loadViolationDropdown('/get_violations', '#violation_type', data.violation_type);
     }
