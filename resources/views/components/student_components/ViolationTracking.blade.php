@@ -13,7 +13,9 @@ $ruleinfos = rules::get();
 </div>
 
 <div class="container mt-4" id="activeViolationCards">
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3" id="violation-cards"></div>
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3" id="violation-cards">
+        <!-- Violation cards will be loaded here via AJAX -->
+    </div>
 </div>
 
 <!-- Modal Section -->
@@ -214,32 +216,63 @@ $(document).ready(function () {
     dropArea.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', e => handleFiles(e.target.files));
 
-    function handleFiles(files) {
-        const maxSize = 2 * 1024 * 1024; // 2MB
-        Array.from(files).forEach(file => {
-            if (file.size > maxSize) {
-                Swal.fire({ icon: "error", text: `${file.name} exceeds 2MB limit.` });
-                return;
-            }
-            if (!selectedFiles.some(f => f.name === file.name)) {
-                selectedFiles.push(file);
-                let li = document.createElement("li");
-                li.className = "list-group-item d-flex justify-content-between align-items-center";
-                li.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
-                let removeBtn = document.createElement("button");
-                removeBtn.className = "btn btn-sm btn-danger";
-                removeBtn.textContent = "x";
-                removeBtn.onclick = () => {
-                    selectedFiles = selectedFiles.filter(f => f !== file);
+   function handleFiles(files) {
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    // --- Check for duplicate filenames before adding ---
+    if (files.length > 1) {
+        let duplicates = Array.from(files).filter(file => 
+            selectedFiles.find(f => f.name === file.name)
+        );
+        if (duplicates.length > 0) {
+            Swal.fire({ icon: "warning", text: `Multiple files have already been selected.` });
+            return;
+        }
+    } else if (files.length === 1) {
+        let file = files[0];
+        let existingIndex = selectedFiles.findIndex(f => f.name === file.name);
+        if (existingIndex !== -1) {
+            // Replace old file and notify user
+            selectedFiles[existingIndex] = file;
+            Swal.fire({ icon: "info", text: `${file.name} has already been selected.` });
+
+            // Remove old entry from list
+            [...fileList.children].forEach(li => {
+                if (li.firstChild.textContent.includes(file.name)) {
                     li.remove();
-                    syncInput();
-                };
-                li.appendChild(removeBtn);
-                fileList.appendChild(li);
-            }
-        });
-        syncInput();
+                }
+            });
+        }
     }
+
+    // --- Handle valid files ---
+    Array.from(files).forEach(file => {
+        if (file.size > maxSize) {
+            Swal.fire({ icon: "error", text: `${file.name} exceeds 2MB limit.` });
+            return;
+        }
+
+        // Only add if not already added
+        if (!selectedFiles.some(f => f.name === file.name)) {
+            selectedFiles.push(file);
+            let li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+            let removeBtn = document.createElement("button");
+            removeBtn.className = "btn btn-sm btn-danger";
+            removeBtn.textContent = "x";
+            removeBtn.onclick = () => {
+                selectedFiles = selectedFiles.filter(f => f !== file);
+                li.remove();
+                syncInput();
+            };
+            li.appendChild(removeBtn);
+            fileList.appendChild(li);
+        }
+    });
+
+    syncInput();
+}
 
     function syncInput() {
         let dt = new DataTransfer();

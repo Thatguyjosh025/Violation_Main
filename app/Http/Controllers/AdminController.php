@@ -242,6 +242,7 @@ class AdminController extends Controller
                 'Remarks' => $student->Remarks,
                 'appeal' => $student->appeal,
                 'upload_evidence' => $student->upload_evidence,
+                'appeal_evidence' => $student->appeal_evidence,
                 'Date_Created' => Carbon::parse($student->Date_Created)->format('Y-m-d'),
             ]
         ]);
