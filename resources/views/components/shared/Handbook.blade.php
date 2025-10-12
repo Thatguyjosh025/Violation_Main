@@ -281,6 +281,10 @@
                                     <br>All sanctions shall go along with a one-on-one session with the School's Guidance Counselor or Associate.</p>
                             </section>
 
+                            <section>
+                                
+                            </section>
+
                             <section class="handbook-section-offenses">
                                 <h4 class="fw-bold mt-4">Offenses</h4>
                                 <p class="text-muted">Offenses are behaviors or visible actions exhibited by students that go against the school and institutional rules and regulations.</p>

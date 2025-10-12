@@ -28,7 +28,7 @@
             <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
         </nav>
         
-    <div class="logout-container">
+        <div class="logout-container">
             <a id="logout-link" class="logout-link" href="#" onclick="logout();">
                 <i class="bi bi-box-arrow-left"></i> <span>Log Out</span>
             </a>

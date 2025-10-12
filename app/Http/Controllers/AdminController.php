@@ -106,7 +106,7 @@ class AdminController extends Controller
                 }
             }
 
-            // Merge incident evidence + new uploads
+            // Merge incident evidence and new uploads
             $allEvidence = array_merge($incidentEvidence, $newUploads);
             $evidenceJson = !empty($allEvidence) ? json_encode($allEvidence) : null;
 

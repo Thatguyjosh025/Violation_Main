@@ -78,6 +78,17 @@ return new class extends Migration
              'status' => 'active'
             ]
         ]);
+        DB::table('tb_users')->insert([
+            ['firstname' => 'Mark Jecil',
+             'lastname' => 'Bausa',
+             'email' => 'counseling@gmail.com',
+             'student_no' => 'ALA0159F',
+            //  'course_and_section' => 'Faculty',
+             'password' => bcrypt('123456789'),
+             'role' => 'counselor',
+             'status' => 'active'
+            ]
+        ]);
 
     }
 

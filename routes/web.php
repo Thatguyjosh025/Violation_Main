@@ -70,6 +70,12 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
 
     //GET
     Route::get('/get_user_info', [AuthController::class, 'getuser']);
+
+    //import csv
+    Route::post('/import_users_csv', [SuperController::class, 'importUsersCSV']);
+
+    //export csv
+    Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
 });
 
 // ==========================
@@ -116,10 +122,17 @@ Route::middleware(['permission:student', RedirectIfNotAuthenticated::class])->gr
 
 });
 
+// counseling routes
+Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->group(function () {
+    // Dashboard & Views
+    Route::get('/counseling_dashboard', [ViewController::class, 'counseling_dashboard'])->name('counseling_dashboard');
+    Route::get('/referral_intake', [ViewController::class, 'referral_intake'])->name('referral_intake');
+    Route::get('/session_management', [ViewController::class, 'session_management'])->name('session_management');
+    Route::get('/student_counseling', [ViewController::class, 'student_counseling'])->name('student_counseling');
+});
 
-//get routes
 
-
+//get datas routes
 Route::get('/get_violations', [DataController::class, 'getViolations']);
 Route::get('/get_penalty', [DataController::class, 'getPenalties']);
 Route::get('/get_referal', [DataController::class, 'getReferals']);
@@ -134,17 +147,11 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
 });
 
 
-//import csv
-Route::post('/import_users_csv', [App\Http\Controllers\SuperController::class, 'importUsersCSV']);
 
-//export csv
-Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
 
 
 //report narrative
 Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
-
-
 
 //students
 
@@ -153,7 +160,7 @@ Route::post('/update_notification_status', [NotificationController::class, 'upda
 
 //handbookview
 Route::get('/violation_handbook', [ViewController::class, 'violation_handbook'])->name('violation_handbook')
-->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty,super']);
+->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty,super,counselor']);
 
 
 Route::get('/violation_records/data', function (Request $request) {

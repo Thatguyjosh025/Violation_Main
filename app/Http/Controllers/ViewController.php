@@ -100,6 +100,25 @@ class ViewController extends Controller
         return view('faculty_dashboard', ['views' => 'IncidentRecords']);
     }
 
+    //counseling components
+    public function counseling_dashboard()
+    {
+        return view('counseling_dashboard', ['views' => 'CounselingDashboard']);
+    }
+    public function referral_intake()
+    {
+        return view('counseling_dashboard', ['views' => 'ReferralIntake']);
+    }
+    public function session_management()
+    {
+        return view('counseling_dashboard', ['views' => 'SessionManagement']);
+    }
+    public function student_counseling()
+    {
+        return view('counseling_dashboard', ['views' => 'StudentCounseling']);
+    }
+
+
 
     //student components
     public function student_dashboard() 
@@ -116,7 +135,7 @@ class ViewController extends Controller
     {
         return view('student_dashboard', ['views' => 'ViolationTracking']);
     }
-     public function violation_handbook(){
+    public function violation_handbook(){
         $userRole = Auth::user()->role; 
 
         switch ($userRole) {
@@ -128,10 +147,12 @@ class ViewController extends Controller
                 return view('discipline_dashboard', ['views' => 'Handbook']);
             case 'super':
                 return view('super_dashboard', ['view' => 'Handbook']);
+            case 'counselor':
+                return view('counseling_dashboard', ['views' => 'Handbook']);
             default:
                 return redirect('/');
-        }
     }
+}
 
 
     
