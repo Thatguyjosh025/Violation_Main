@@ -1,8 +1,19 @@
-<link rel="stylesheet" href="{{ asset('./css/handbook.css') }}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Handbook</title>
+    <link rel="stylesheet" href="{{ asset('./vendor/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ asset('./css/handbook.css') }}">
+</head>
+<body>
         <!-- Dashboard-content -->
             <div class="d-flex align-items-center mb-4">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
                 <h3 class="mb-0">Dashboard</h3>
+                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
             </div>
 
             <!-- Student Handbook Card -->
@@ -11,11 +22,16 @@
                     <div class="row h-100">
                         <!-- Left Side (Blue Panel) -->
                         <div class="col-md-4 handbook-sidebar text-center d-flex flex-column justify-content-center">
+                            @if(Auth::user()->role === 'super')
+                                <button class="add-btn btn btn-success" id="openModalBtn" title="Add New">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            @endif
                             <h2 class="handbook-title">Student<br>Handbook</h2>
                         </div>
 
                         <!-- Right Side (Scrollable Content) -->
-                        <div class="col-md-8 handbook-content" id="frontpage">
+                        <div class="col-md-8 handbook-content">
                             <header class="text-center mb-4">
                                 <h3 class="section-title text-secondary fw-bold">STUDENT BEHAVIOR</h3>
                                 <h2 class="section-subtitle fw-bold">& DISCIPLINE</h2>
@@ -25,7 +41,7 @@
                                 authority, your fellow students, and the entire STI community. To ensure holistic development as an STI student, 
                                 you are expected to observe the following guidelines:</p>
 
-                            <section class="handbook-section-student-appearance" id="studentappearancesection">
+                            <section class="handbook-section-student-appearance">
                                 <h4 class="fw-bold mt-4">Student Appearance</h4>
                                 <p class="text-muted">Each student shall adhere to the conventions of good grooming as a sign of respect to oneself, others, and STI as an academic institution.</p>
 
@@ -53,7 +69,7 @@
                                 </ol>
                             </section>
 
-                            <section class="handbook-section-student-uniform" id="studentuniformsection">
+                            <section class="handbook-section-student-uniform">
                                 <h4 class="fw-bold mt-4">Student Uniform</h4>
                                 <p class="text-muted">Certain programs, courses, or activities require a different set of uniforms. Only STI issued or endorsed uniforms are allowed. 
                                     <br>For Physical Education (PE) classes, the prescribed shirt should be worn together with jogging pants, rubber shoes, and sports socks. 
@@ -106,7 +122,7 @@
                                     </ul>
                                 </ol>
 
-                                <h5 class="sub-header" id="antibullyingsection">Anti-Bullying & Anti-Cyberbullying Law Policy</h5>
+                                <h5 class="sub-header">Anti-Bullying & Anti-Cyberbullying Law Policy</h5>
                                 <p>STI is committed to providing a healthy learning environment where students support and respect each other. Thus, within the school, it is made clear that bullying will not be tolerated. "Bullying shall refer to any severe or repeated use by one (1) or more students of a written, verbal, or electronic expression, or a physical act or gesture, or any combination thereof, directed at another student that has the effect of actually causing or placing the latter in reasonable fear of physical or emotional harm or damage to their property; creating a hostile environment at school for the other students, infringing on the rights of the other student at school; or materially and substantially disrupting the education process or the orderly operation of a school." (Republic Act No. 10627, "Anti-Bullying Act of 2013").</p>
                                 <p>Due to the advancement in technology and social media, emphasis is given on the prevention of bullying in its electronic expression: Cyberbullying. Cyberbullying shall refer to acts of cruelty committed using the internet or any form of electronic media or technology that has the effect of stripping one's dignity or causing reasonable fear of physical or emotional harm.</p>
                                 <p>Strategies and mechanisms against bullying and cyberbullying (e.g., conducting anti- bullying/cyberbullying orientations to students and personnel, academic and discipline policies, guidance and counseling, information dissemination through student-teacher- parent leaflets, etc.) are meant to increase awareness and address the unacceptable nature of bullying in and around the school.</p>
@@ -115,7 +131,7 @@
                                 <h5 class="sub-header">Anti-Hazing Law Policy</h5>
                                 <p>STI is committed to ensuring a peaceful environment where camaraderie among students is fostered through various interest groups or clubs inside the campus. Every student organization is prohibited from using any form of violence, force, threat, or intimidation as a prerequisite for admission. Any STI student who is found to have committed or has conspired to commit the aforementioned shall be subject to Republic Act No. 11053, otherwise known "Anti-Hazing Act of 2018," and appropriate disciplinary action provided in this handbook.</p>
                             
-                                <h5 class="sub-header" id="antisexualsection">Anti-Sexual Harassment Policy</h5>
+                                <h5 class="sub-header">Anti-Sexual Harassment Policy</h5>
                                 <p>STI is committed to creating and maintaining an environment where all members of the STI community are free to study without fear of harassment of a sexual nature. STI adheres to Republic Act 7877, otherwise known as the "Anti-Sexual Harassment Act of 1995," which considers all forms of sexual harassment in the employment, education, or training unlawful and contrary to the dignity of every individual, as well as the latter's guarantee to respect of human rights. Given the seriousness of this matter, STI promulgates appropriate rules and regulations defining the offense of sexual harassment and outlining the procedure in the investigation and imposition of administrative sanctions in such cases.</p>
                             
                                 <h5 class="sub-header">Gender and Development Policy</h5>
@@ -143,7 +159,7 @@
                                 <p>Students who are found to be positive for drug use after the confirmatory analysis will be informed of their test results with utmost secrecy and confidentiality. The parents/ guardians of the "confirmed positive" students will be informed and required to attend a scheduled case conference. No "confirmed positive" student shall be grounded for expulsion or given any disciplinary action and should not be reflected in any and all academic records but they are required to undergo an intervention program under the supervision of a Department of Health (DOH)-accredited facility or physician, private practitioners, or social worker, in consultation with parents/guardians.</p>
                                 <p>However, a student who has undergone an intervention program but was found to be "confirmed positive" for the second time shall be sanctioned with either non-readmission or expulsion in accordance with the STI Drug Testing Policy.</p>
 
-                                <h5 class="sub-header" id="improperuseoffacilities">Use of School Facilities</h5>
+                                <h5 class="sub-header">Use of School Facilities</h5>
                                 <p>Students should strive to keep their classrooms clean, pleasant, and conducive to learning. Chairs and tables must be aligned at all times. Lights, electric fans, and air conditioners should be turned off whenever the students leave the room or if not in use.</p>
                                 <p>Students are also encouraged to keep the school building, study areas, and areas within the school property clean.</p>
                                 <p>In any incident of destruction, damaging, tampering, or losing of school property, the school reserves the right to charge to the concerned student/s the cost of damage, including labor or repair.</p>
@@ -281,8 +297,15 @@
                                     <br>All sanctions shall go along with a one-on-one session with the School's Guidance Counselor or Associate.</p>
                             </section>
 
-                            <section>
-                                
+
+
+                            <!-- Modal area -->
+                            @include('components.shared.modal.handbook-modal')
+
+                           <!-- Addtional Contents -->
+                            <section class="handbook-section-addtional-policies">
+                                <h4 class="fw-bold mt-4">Additional Policies</h4>
+                                    @include('components.shared.partials.handbook-sections')
                             </section>
 
                             <section class="handbook-section-offenses">
@@ -465,4 +488,9 @@
                     </div>
                 </div>
             </div>
-    </div>
+<script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="FacultyJS/StudentHandbook.js"></script>
+
+</body>
+
+</html>

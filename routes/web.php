@@ -16,6 +16,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FacultyController;
+use App\Http\Controllers\HandbookController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MicrosoftLoginController;
@@ -58,6 +59,7 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
     Route::post('/create_violation', [SuperController::class, 'violation']);
     Route::post('/create_referals', [SuperController::class, 'referal']);
     Route::post('/create_rules', [SuperController::class, 'rules']);
+    Route::post('/sections', [HandbookController::class, 'store'])->name('sections.store');
 
     // Update
     Route::post('/update_penalty/{id}', [SuperController::class, 'updatePenalty']);
@@ -147,13 +149,13 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
 });
 
 
-
+Route::get('/sections/refresh', [HandbookController::class, 'refresh'])->name('sections.refresh');
+Route::post('/sections/{id}', [HandbookController::class, 'update']);
+Route::get('/sections/{id}/html', [HandbookController::class, 'sectionHtml']);
 
 
 //report narrative
 Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
-
-//students
 
 //notif
 Route::post('/update_notification_status', [NotificationController::class, 'updateNotificationStatus']);

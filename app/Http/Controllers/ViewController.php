@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\accounts;
+use App\Models\sections;
 use Illuminate\Http\Request;
 use function Laravel\Prompts\alert;
+
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 
+use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\StudentController;
 
 class ViewController extends Controller
@@ -135,25 +136,28 @@ class ViewController extends Controller
     {
         return view('student_dashboard', ['views' => 'ViolationTracking']);
     }
-    public function violation_handbook(){
-        $userRole = Auth::user()->role; 
+ public function violation_handbook()
+    {
+        $sections = sections::orderBy('created_at')->get();
+        $userRole = Auth::user()->role;
+
+        $viewData = ['views' => 'Handbook', 'sections' => $sections];
 
         switch ($userRole) {
             case 'student':
-                return view('student_dashboard', ['views' => 'Handbook']);
+                return view('student_dashboard', $viewData);
             case 'faculty':
-                return view('faculty_dashboard', ['views' => 'Handbook']);
+                return view('faculty_dashboard', $viewData);
             case 'discipline':
-                return view('discipline_dashboard', ['views' => 'Handbook']);
+                return view('discipline_dashboard', $viewData);
             case 'super':
-                return view('super_dashboard', ['view' => 'Handbook']);
+                return view('super_dashboard', ['view' => 'Handbook', 'sections' => $sections]);
             case 'counselor':
-                return view('counseling_dashboard', ['views' => 'Handbook']);
+                return view('counseling_dashboard', $viewData);
             default:
                 return redirect('/');
+        }
     }
-}
-
 
     
 }

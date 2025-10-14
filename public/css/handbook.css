@@ -145,6 +145,57 @@ body {
     display: none;
 }
 
+/* Logo */
+img.sidebar-logo.full-logo{
+    margin-right: 0;
+}
+
+button#closeSidebar {
+    margin-right: 5px;
+}
+
+.sidebar-logo {
+    height: 70px;
+    transition: all 0.3s ease;
+}
+
+.full-logo {
+    display: block;
+}
+
+.icon-logo {
+    display: none;
+}
+
+.sidebar.collapsed .full-logo {
+    display: none;
+}
+
+.sidebar.collapsed .icon-logo {
+    display: block !important;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 1rem;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+}
+
+img.sidebar-logo.full-logo {
+    width: 12rem;
+    object-fit: cover;
+}
+
+img.sidebar-logo.icon-logo.d-none {
+    margin-right: 2rem;
+    height: 3rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -270,6 +321,30 @@ h5.sub-header.mt-4 {
     color: var(--main-color);
 }
 
+/* Add Button CSS */
+.add-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: var(--main-color);
+    border: none;
+    color: white;
+    border-radius: 100%;
+    width: 3.1rem;
+    height: 3.1rem;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.add-btn:hover {
+    background-color: var(--second-color);
+}
+
+
 @media (max-width: 768px) {
     .student-handbook-container {
         height: auto;
@@ -288,6 +363,11 @@ h5.sub-header.mt-4 {
     .section-subtitle {
         font-size: 1.5rem;
     }
+
+    .add-btn {
+        background-color: none;
+        box-shadow: none;
+    }
 }
 
 table {
@@ -302,3 +382,4 @@ table {
   th {
     background-color: #f2f2f2;
   }
+

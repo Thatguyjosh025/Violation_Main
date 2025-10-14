@@ -71,6 +71,13 @@ return new class extends Migration
             $table->text('new_value')->nullable();
         });
 
+        Schema::create('tb_sections', function (Blueprint $table) {
+            $table->id();
+            $table->string('header');
+            $table->text('description');    
+            $table->timestamps();
+        });
+
 
         DB::table('tb_violation')->insert([
             ['violation_uid' => 'VO001','violations' => 'Bullying'],
@@ -165,5 +172,6 @@ return new class extends Migration
         Schema::dropIfExists('tb_severity'); 
         Schema::dropIfExists('tb_referals');
         Schema::dropIfExists('tb_audit');
+        Schema::dropIfExists('tb_sections');
     }
 };
