@@ -43,7 +43,7 @@
                                 </td>
                                 <td data-label="Date">{{ \Carbon\Carbon::parse($person->Date_Created)->format('m/d/y') }}</td>
                                 <td data-label="Action">
-                                    <button class="btn btn-sm btn-secondary btn-action-consistent" data-bs-toggle="modal" data-bs-target="#CounselingReport">
+                                    <button class="btn btn-sm btn-secondary btn-action-consistent view-report" data-id="{{ $person->id }}" data-bs-toggle="modal" data-bs-target="#CounselingReport">
                                         <i class="bi bi-eye"></i> View
                                     </button>
                                 </td>
@@ -65,15 +65,20 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div id="reportView">
-                        <div class="field"><label>Name:</label> Mark Jecil Bausa</div>
-                        <div class="field"><label>Violation:</label> Misbehaviour</div>
-                        <div class="field"><label>Severity:</label> Major A</div>
-                        <div class="field"><label>Remarks:</label> Lorem ipsum dolor sit amet.</div>
-                        
+                        <div class="field"><label>Name:</label> <span id="report_name"></span></div>
+                        <div class="field"><label>Violation:</label> <span id="report_violation"></span></div>
+                        <div class="field"><label>Severity:</label> <span id="report_severity"></span></div>
+                        <div class="field"><label>Remarks:</label> <span id="report_remarks"></span></div>
+                        <input type="hidden" name="" id="report_student_no_input">
+                        <input type="hidden" name="" id="report_name_input">
+                        <input type="hidden" name="" id="report_email_input">
+                        <input type="hidden" name="" id="report_violation_input">
+                        <input type="hidden" name="" id="report_severity_input">
+                                                
                         <div class="btns">
                             <div>
-                                <button class="btn approve bi bi-check-lg" onclick="expandModal()"> Approve</button>
-                            <button class="btn reject bi bi-x-lg" onclick="closeModal()"> Reject</button>
+                                <button class="btn approve bi bi-check-lg"> Approve</button>
+                            <button class="btn reject bi bi-x-lg"> Reject</button>
                             </div>
                         </div>
                         </div>
@@ -83,18 +88,18 @@
                         <div class="approved-label">Approved</div>
                         <h4>Schedule a Counseling Session</h4> 
                         <div class="field">
-                            <label>Date</label>
-                            <input type="date" class="form-control rounded-pill px-3 py-2">
+                            <label>Start Date</label>
+                            <input type="date" id="start_date" class="form-control rounded-pill px-3 py-2">
                         </div>
                         <div class="field">
                             <label>Start Time</label>
-                            <input type="time" class="form-control rounded-pill px-3 py-2">
+                            <input type="time" id="start_time" name="start_time" class="form-control rounded-pill px-3 py-2">
                         </div>
                         <div class="field">
                             <label>End Time</label>
-                            <input type="time" class="form-control rounded-pill px-3 py-2">
+                            <input type="time" id="end_time" name="end_time" class="form-control rounded-pill px-3 py-2">
                         </div>
-                        <button class="btn schedule" onclick="closeModal()">Schedule</button>
+                        <button class="btn schedule">Set Schedule</button>
                         </div>
                     </div>
                 </div>
@@ -106,27 +111,91 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script>
-$(document).ready(function() {
+$(document).on('click', '.view-report', function () {
+    var id = $(this).data('id');
 
-    function openModal() {
-        $('#CounselingReport').css('display', 'flex');
-    }
+    $.ajax({
+        type: "GET",
+        url: "/counseling_report/" + id,
+        success: function (response) {
+            if (response.error) {
+                console.log(response.error);
+                alert('Counseling record not found.');
+            } else {
 
-    function closeModal() {
-        $('#CounselingReport').hide();
-        $('#modalBox').removeClass('expanded');
-        $('#reportView').show();
-        $('#scheduleView').removeClass('show');
-    }
+                // Populate modal fields
+                $('#report_name').text(response.name || 'N/A');
+                $('#report_violation').text(response.violation || 'N/A');
+                $('#report_severity').text(response.severity || 'N/A');
+                $('#report_remarks').text(response.remarks || 'N/A');
 
-    function expandModal() {
-        $('#modalBox').addClass('expanded');
-        $('#scheduleView').addClass('show');
-        $('.btns').hide();
-    }
+                $('#report_student_no_input').val(response.student_no || '');
+                $('#report_name_input').val(response.name || '');
+                $('#report_violation_input').val(response.violation || '');
+                $('#report_severity_input').val(response.severity || '');
+                $('#report_email_input').val(response.school_email || '');
 
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.expandModal = expandModal;
+                // Reset modal to default view
+                $('#modalBox').removeClass('expanded');
+                $('#reportView').show();
+                $('#scheduleView').removeClass('show');
+                $('.btns').show();
+
+                // Show the modal
+                $('#CounselingReport').modal('show');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX error:", error);
+            alert('Failed to fetch counseling report data.');
+        }
+    });
+});
+
+$(document).on('click', '.schedule', function () {
+    const data = {
+        student_no: $('#report_student_no_input').val(),
+        student_name: $('#report_name_input').val(),
+        school_email: $('#report_email_input').val(),
+        violation: $('#report_violation_input').val(),
+        severity: $('#report_severity_input').val(),
+        start_date: $('#start_date').val(),
+        start_time: $('#start_time').val(),
+        end_time: $('#end_time').val(),
+        _token: '{{ csrf_token() }}'
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/counseling_schedule',
+        data: data,
+        success: function (response) {
+            if (response.success) {
+                alert('Counseling schedule saved successfully.');
+                $('#CounselingReport').modal('hide');
+            } else {
+                alert('Failed to save schedule.');
+            }
+        },
+        error: function (xhr) {
+            console.error(xhr.responseText);
+            alert('Error occurred while saving schedule.');
+        }
+    });
+});
+
+// Expand modal (Approve)
+$(document).on('click', '.approve', function () {
+    $('#modalBox').addClass('expanded');
+    $('#scheduleView').addClass('show');
+    $('.btns').hide();
+});
+
+// Close expanded modal (Reject)
+$(document).on('click', '.reject', function () {
+    // $('#modalBox').removeClass('expanded');
+    // $('#scheduleView').removeClass('show');
+    // $('.btns').show();
+    $('#CounselingReport').modal('hide');
 });
 </script>

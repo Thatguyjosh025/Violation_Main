@@ -55,7 +55,7 @@ return new class extends Migration
             $table->string('student_name');
             // $table->string('student_no');
 
-            $table->string('student_no');
+            $table->string('student_no');   
             $table->foreign('student_no')->references('student_no')->on('tb_users');
 
             // $table->string('course_section');
@@ -77,6 +77,28 @@ return new class extends Migration
             $table->date('Date_Created');
 
 
+        });
+
+        Schema::create('tb_counseling', function (Blueprint $table) {
+            $table->id('id');
+            $table->string('student_no');   
+            $table->string('student_name');
+            $table->string('school_email');   
+            $table->string('violation');
+            $table->string('status');
+            $table->string('severity');
+
+            $table->string('start_date');
+            $table->string('end_date')->nullable();
+            $table->string('start_time');
+            $table->string('end_time');
+
+            $table->string('session_notes',length:550)->nullable();
+            $table->string('emotional_state',length:550)->nullable();
+            $table->string('behavior_observe',length:550)->nullable();
+            $table->string('plan_goals',length:550)->nullable();
+
+            $table->foreign('school_email')->references('email')->on('tb_users');
         });
 
     }

@@ -16,8 +16,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FacultyController;
-use App\Http\Controllers\HandbookController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\HandbookController;
+use App\Http\Controllers\CounselingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MicrosoftLoginController;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
@@ -36,7 +37,6 @@ Route::get('/callback', [MicrosoftLoginController::class, 'handleProviderCallbac
 
 
 //Auth Routes
-Route::post('/register',[AuthController::class,'register']);
 Route::post('/add_user',[AuthController::class,'addUser']);
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/logout',[AuthController::class,'logout']);
@@ -78,6 +78,13 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
 
     //export csv
     Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
+
+
+    //dynamic handbook routes soon to be migrated
+    Route::get('/sections/refresh', [HandbookController::class, 'refresh'])->name('sections.refresh');
+    Route::post('/sections/{id}', [HandbookController::class, 'update']);
+    Route::get('/sections/{id}/html', [HandbookController::class, 'sectionHtml']);
+    Route::delete('/sections/{id}', [HandbookController::class, 'destroy']);
 });
 
 // ==========================
@@ -96,6 +103,9 @@ Route::middleware(['permission:discipline', RedirectIfNotAuthenticated::class])-
     Route::post('/update_student_info/{id}', [AdminController::class, 'updateStudentInfo']);
     Route::post('/incident_rejected', [AdminController::class, 'UpdateRejected']);
     Route::post('/violation_records/{id}', [AdminController::class, 'archive']);
+
+    //report narrative
+    Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
 });
 
 // ==========================
@@ -124,21 +134,25 @@ Route::middleware(['permission:student', RedirectIfNotAuthenticated::class])->gr
 
 });
 
-// counseling routes
+// ==========================
+// COUSELING ROUTES
+// ==========================
 Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->group(function () {
     // Dashboard & Views
     Route::get('/counseling_dashboard', [ViewController::class, 'counseling_dashboard'])->name('counseling_dashboard');
     Route::get('/referral_intake', [ViewController::class, 'referral_intake'])->name('referral_intake');
     Route::get('/session_management', [ViewController::class, 'session_management'])->name('session_management');
     Route::get('/student_counseling', [ViewController::class, 'student_counseling'])->name('student_counseling');
+
+    Route::get('/counseling_report/{id}', [CounselingController::class, 'fetchCounselingReport']);
+
+    Route::post('/counseling_schedule', [CounselingController::class, 'storeCounselingSchedule']);
 });
 
 
-//get datas routes
-Route::get('/get_violations', [DataController::class, 'getViolations']);
-Route::get('/get_penalty', [DataController::class, 'getPenalties']);
-Route::get('/get_referal', [DataController::class, 'getReferals']);
-Route::get('/get_status', [DataController::class, 'getStatus']);
+// ==========================
+// SHARED ROLE ROUTES
+// ==========================
 
 Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipline'])->group(function () {
     Route::get('/get_rule/{violation_id}', [AdminController::class, 'getRule']);
@@ -148,15 +162,14 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
     Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
 });
 
+//get datas routes
+Route::get('/get_violations', [DataController::class, 'getViolations']);
+Route::get('/get_penalty', [DataController::class, 'getPenalties']);
+Route::get('/get_referal', [DataController::class, 'getReferals']);
+Route::get('/get_status', [DataController::class, 'getStatus']);
 
-Route::get('/sections/refresh', [HandbookController::class, 'refresh'])->name('sections.refresh');
-Route::post('/sections/{id}', [HandbookController::class, 'update']);
-Route::get('/sections/{id}/html', [HandbookController::class, 'sectionHtml']);
-Route::delete('/sections/{id}', [HandbookController::class, 'destroy']);
 
 
-//report narrative
-Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
 
 //notif
 Route::post('/update_notification_status', [NotificationController::class, 'updateNotificationStatus']);
