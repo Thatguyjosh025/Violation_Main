@@ -304,7 +304,6 @@
 
                            <!-- Addtional Contents -->
                             <section class="handbook-section-addtional-policies">
-                                <h4 class="fw-bold mt-4">Additional Policies</h4>
                                     @include('components.shared.partials.handbook-sections')
                             </section>
 

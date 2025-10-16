@@ -175,4 +175,48 @@ $(document).ready(function() {
         });
     });
 });
+
+
+$(document).ready(function() {
+    $('.delete-section-btn').on('click', function() {
+        const id = $(this).data('id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This will permanently delete the section.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/sections/${id}`,
+                    method: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: 'Section has been removed.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        $(`#section-${id}`).remove();
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to delete section.'
+                        });
+                    }
+                });
+            }
+        });
+    });
+});
 </script>

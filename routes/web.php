@@ -152,6 +152,7 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
 Route::get('/sections/refresh', [HandbookController::class, 'refresh'])->name('sections.refresh');
 Route::post('/sections/{id}', [HandbookController::class, 'update']);
 Route::get('/sections/{id}/html', [HandbookController::class, 'sectionHtml']);
+Route::delete('/sections/{id}', [HandbookController::class, 'destroy']);
 
 
 //report narrative

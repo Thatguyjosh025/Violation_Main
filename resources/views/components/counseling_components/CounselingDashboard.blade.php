@@ -1,4 +1,8 @@
 <link rel="stylesheet" href="{{ asset('./css/counseling_css/CounselingDashboard.css') }}">
+@php
+    use App\Models\notifications;
+    $notif = notifications::get();
+@endphp
         <!-- Dasboard Section -->
             <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -16,10 +20,8 @@
                                 <img src="/Photos/UserPic.jpg" alt="Profile Picture" class="profile-img">
                                 <div class="flex-grow-1">
                                     <span class="badge badge-custom">Guidance Counselor</span>
-                                    <h4 class="mt-2 mb-1">Mark Jecil Bausa</h4>
-                                    <p class="mb-1">Age: 21 &nbsp; | &nbsp; School: STI Alabang</p>
-                                    <p class="mb-1">Bachelor of Science in Information Technology</p>
-                                    <span>IT Department | Part Time Worker</span>
+                                    <h4 class="mt-2 mb-1">Name: {{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h4>
+                                    <p class="mb-1">email: {{ Auth::user()->email }}</p>
                                 </div>
                             </div>
                         </div>
@@ -60,32 +62,28 @@
                         <div class="card shadow-sm notif">
                             <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
                             <div class="notif-scrollable">
-                                <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">Student Appeal</h6>
-                                        <p class="mb-1 text-muted small">You’ve received an appeal from a student</p>
-                                        <small class="text-muted">20h ago</small>
+                                @if ($notif->where('role', 'counselor')->where('is_read', 0)->isEmpty())
+                                    <div class="text-center py-4 text-muted">
+                                        You have no notifications.
                                     </div>
-                                    <button class="btn-close ms-2 mt-1" aria-label="Close" onclick="dismissNotification(this)"></button>
-                                </div>
-                                <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">Student Appeal</h6>
-                                        <p class="mb-1 text-muted small">You’ve received an appeal from a student</p>
-                                        <small class="text-muted">20h ago</small>
-                                    </div>
-                                    <button class="btn-close ms-2 mt-1" aria-label="Close" onclick="dismissNotification(this)"></button>
-                                </div>
-                                <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">Student Appeal</h6>
-                                        <p class="mb-1 text-muted small">You’ve received an appeal from a student</p>
-                                        <small class="text-muted">20h ago</small>
-                                    </div>
-                                    <button class="btn-close ms-2 mt-1" aria-label="Close" onclick="dismissNotification(this)"></button>
-                                </div>
+                                @else
+                                    @foreach ($notif->where('role', 'counselor')->where('is_read', 0) as $notifdata)
+                                        <a href="{{ $notifdata->url }}" class="text-decoration-none text-dark">
+                                            <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">{{ $notifdata->title }}</h6>
+                                                    <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
+                                                    <small class="text-muted">{{ $notifdata->created_time }}</small>
+                                                    <small class="text-muted">{{ $notifdata->date_created }}</small>
+                                                </div>
+                                                <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>

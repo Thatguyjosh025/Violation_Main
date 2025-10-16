@@ -1,4 +1,9 @@
 <link rel="stylesheet" href="{{ asset('./css/counseling_css/ReferralIntake.css') }}">
+@php
+    use App\Models\postviolation;
+    $counselingperson = postviolation::where('counseling_required', 'Yes')->get();
+@endphp
+
 <!-- Module Section -->
             <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -22,24 +27,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td data-label="Student No.">02000911833</td>
-                            <td data-label="Name">Mark Jecil M. Bausa</td>
-                            <td data-label="Email">markjecil@gmail.com</td>
-                            <td data-label="Violation">Cheating</td>
-                            <td data-label="Status">
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            </td>
-                            <td data-label="Date">03/04/25</td>
-                            <td data-label="Action">
-                                <button class="btn btn-sm btn-secondary btn-action-consistent" data-bs-toggle="modal" data-bs-target="#CounselingReport">
-                                <i class="bi bi-eye"></i> View
-                                </button>
-                            </td>
-                        </tr>
+                        @if ($counselingperson->isEmpty())
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No pending counseling at the moment.</td>
+                            </tr>
+                        @else
+                            @foreach ($counselingperson as $person)
+                            <tr>
+                                <td data-label="Student No.">{{ $person->student_no }}</td>
+                                <td data-label="Name">{{ $person->student_name }}</td>
+                                <td data-label="Email">{{ $person->school_email }}</td>
+                                <td data-label="Violation">{{ $person->violation->violations}}</td>
+                                <td data-label="Status">
+                                    <span class="badge bg-warning text-dark">{{ $person->status->status }}</span>
+                                </td>
+                                <td data-label="Date">{{ \Carbon\Carbon::parse($person->Date_Created)->format('m/d/y') }}</td>
+                                <td data-label="Action">
+                                    <button class="btn btn-sm btn-secondary btn-action-consistent" data-bs-toggle="modal" data-bs-target="#CounselingReport">
+                                        <i class="bi bi-eye"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
+
+            <!-- next work try to pull datas from table to modal -->
+
             <!-- Modal Content -->
              <div class="modal fade" id="CounselingReport" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -83,41 +99,34 @@
                     </div>
                 </div>
             </div>
+            <!-- End modal Content -->
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+$(document).ready(function() {
 
-//  $(document).ready(function () {
-//     let table = $('#violationTable').DataTable({
-//         responsive: true
-//     });
+    function openModal() {
+        $('#CounselingReport').css('display', 'flex');
+    }
 
-//     $('#statusFilter').on('change', function () {
-//         let selected = $(this).val();
-//         if (selected) {
-//             table.column(4).search('^' + selected + '$', true, false).draw();
-//         } else {
-//             table.column(4).search('').draw();
-//         }
-//     });
-// });
+    function closeModal() {
+        $('#CounselingReport').hide();
+        $('#modalBox').removeClass('expanded');
+        $('#reportView').show();
+        $('#scheduleView').removeClass('show');
+    }
 
-//important
-function openModal() {
-    document.getElementById("CounselingReport").style.display = "flex";
-  }
-function closeModal() {
-    document.getElementById("CounselingReport").style.display = "none";
-    document.getElementById("modalBox").classList.remove("expanded");
-    document.getElementById("reportView").style.display = "block";
-    document.getElementById("scheduleView").classList.remove("show");
-}
-function expandModal() {
-    document.getElementById("modalBox").classList.add("expanded");
-    document.getElementById("scheduleView").classList.add("show");
-    document.querySelector(".btns").style.display = "none";
-}
+    function expandModal() {
+        $('#modalBox').addClass('expanded');
+        $('#scheduleView').addClass('show');
+        $('.btns').hide();
+    }
+
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.expandModal = expandModal;
+});
 </script>

@@ -48,4 +48,11 @@ class HandbookController extends Controller
         $section = sections::findOrFail($id);
         return view('components.shared.partials.single-section', compact('section'));
     }
+    public function destroy($id)
+    {
+        $section = sections::findOrFail($id);
+        $section->delete();
+
+        return response()->json(['success' => true]);
+    }
 }
