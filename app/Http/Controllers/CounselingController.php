@@ -40,7 +40,8 @@ class CounselingController extends Controller
             'end_time'     => 'required',
         ]);
 
-        counseling::create([
+        // Attempt to create the counseling record
+        $counseling = Counseling::create([
             'student_no'      => $validated['student_no'],  
             'student_name'    => $validated['student_name'],
             'school_email'    => $validated['school_email'],
@@ -57,6 +58,14 @@ class CounselingController extends Controller
             'plan_goals'      => null,
         ]);
 
-        return response()->json(['success' => true]);
+        // Only update postviolation if counseling was created
+        if ($counseling) {
+            postviolation::where('student_no', $validated['student_no'])
+                ->update(['is_admitted' => true]);
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Failed to create counseling record.'], 500);
     }
 }

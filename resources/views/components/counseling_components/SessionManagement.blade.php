@@ -1,4 +1,8 @@
 <link rel="stylesheet" href="{{ asset('./css/counseling_css/SessionManagement.css') }}">
+@php
+    use App\Models\counseling;
+    $counselingsessions = counseling::get();
+@endphp
 <!-- Counseling Section -->
             <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -106,22 +110,5 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-
-
-//to be edited
-
-//   $(document).ready(function () {
-//     let table = $('#violationTable').DataTable({
-//         responsive: true
-//     });
-
-//     $('#statusFilter').on('change', function () {
-//         let selected = $(this).val();
-//         if (selected) {
-//             table.column(4).search('^' + selected + '$', true, false).draw();
-//         } else {
-//             table.column(4).search('').draw();
-//         }
-//     });
-// });
+//soon scripts keep this
 </script>

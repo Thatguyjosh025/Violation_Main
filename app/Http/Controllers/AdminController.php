@@ -131,7 +131,8 @@ class AdminController extends Controller
                 'upload_evidence' => $evidenceJson,
                 'Date_Created' => Carbon::now('Asia/Manila'),
                 'Update_at' => Carbon::now('Asia/Manila'),
-                'is_active' => true
+                'is_active' => true,
+                'is_admitted' => false
             ]);
 
             // Delete incident and notify faculty
@@ -175,7 +176,8 @@ class AdminController extends Controller
                 'upload_evidence' => $evidenceJson,
                 'Date_Created' => Carbon::now('Asia/Manila'),
                 'Update_at' => Carbon::now('Asia/Manila'),
-                'is_active' => true
+                'is_active' => true,
+                'is_admitted' => false
             ]);
         }
 
@@ -366,20 +368,6 @@ public function UpdateRejected(Request $request){
 
     return response()->json(['message' => 'Incident rejected successfully.']);
 }
-
-// public function archive($id)
-// {
-//     $violation = postviolation::find($id);
-
-//     if (!$violation) {
-//         return response()->json(['message' => 'Record not found'], 404);
-//     }
-
-//     $violation->is_active = false;
-//     $violation->save();
-
-//     return response()->json(['message' => 'Violation archived successfully.']);
-// }
 
 //student search
 public function student_search(Request $request)

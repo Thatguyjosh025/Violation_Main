@@ -94,35 +94,6 @@
  
  // End of Calendar JS
   
-  // Chart.js Graph
-  var ctx = document.getElementById("violationChart").getContext("2d");
-  var violationChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-          labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          datasets: [
-              {
-                  label: "Minor",
-                  backgroundColor: "#f1c40f",
-                  data: [3, 7, 1, 10, 6, 2, 5]
-              },
-              {
-                  label: "Major",
-                  backgroundColor: "#e74c3c",
-                  data: [0, 2, 0, 0, 0, 5, 0]
-              }
-          ]
-      },
-      options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-              y: {
-                  beginAtZero: true
-              }
-          }
-      }
-  });
  //Notification JS
  function dismissNotification(button) {
          const card = button.closest('.notification-card');

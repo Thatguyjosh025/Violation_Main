@@ -51,6 +51,7 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./js/counseling_js/CounselingDashboard.js') }}"></script>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('./vendor/dataTables.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
