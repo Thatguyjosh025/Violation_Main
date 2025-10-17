@@ -147,6 +147,8 @@ Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->
     Route::get('/counseling_report/{id}', [CounselingController::class, 'fetchCounselingReport']);
 
     Route::post('/counseling_schedule', [CounselingController::class, 'storeCounselingSchedule']);
+
+    Route::get('/counseling/session/{id}', [CounselingController::class, 'getSession']);
 });
 
 

@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -11,6 +12,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+
+
         //
         Schema::create('tb_postviolation', function(Blueprint $table){
             $table->id('id');
@@ -80,13 +83,19 @@ return new class extends Migration
 
         });
 
+        Schema::create('tb_counselingstatus', function (Blueprint $table) {
+            $table->id();
+            $table->string('session_status');
+        });
+
         Schema::create('tb_counseling', function (Blueprint $table) {
             $table->id('id');
             $table->string('student_no');   
             $table->string('student_name');
             $table->string('school_email');   
             $table->string('violation');
-            $table->string('status');
+
+            $table->unsignedBigInteger('status');
             $table->string('severity');
 
             $table->string('start_date');
@@ -100,7 +109,17 @@ return new class extends Migration
             $table->string('plan_goals',length:550)->nullable();
 
             $table->foreign('school_email')->references('email')->on('tb_users');
+            $table->foreign('status')->references('id')->on('tb_counselingstatus');
+
         });
+
+        DB::table('tb_counselingstatus')->insert([
+            ['session_status' => 'Pending Intake'],
+            ['session_status' => 'In Session'],
+            ['session_status' => 'Follow-Up Needed'],
+            ['session_status' => 'Resolved'],
+        ]);
+
 
     }
 
@@ -112,6 +131,8 @@ return new class extends Migration
         //
         Schema::dropIfExists('tb_postviolation');
         Schema::dropIfExists('tb_incidentreport');
+        Schema::dropIfExists('tb_counseling');
+        Schema::dropIfExists('tb_counseling-status');
 
     }
 };

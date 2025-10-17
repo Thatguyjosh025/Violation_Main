@@ -43,7 +43,7 @@ return new class extends Migration
             $table->date('date_created');
             $table->string('created_time');
         });
-
+        
 
         DB::table('tb_users')->insert([
             ['firstname' => 'John',

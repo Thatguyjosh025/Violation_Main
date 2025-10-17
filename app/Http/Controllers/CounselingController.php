@@ -46,7 +46,7 @@ class CounselingController extends Controller
             'student_name'    => $validated['student_name'],
             'school_email'    => $validated['school_email'],
             'violation'       => $validated['violation'],
-            'status'          => 'Scheduled',
+            'status'          => 1, // Set to 'Pending Intake' status
             'severity'        => $validated['severity'],
             'start_date'      => $validated['start_date'],
             'end_date'        => null, 
@@ -67,5 +67,11 @@ class CounselingController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Failed to create counseling record.'], 500);
+    }
+
+    public function getSession($id)
+    {
+        $session = Counseling::findOrFail($id);
+        return response()->json($session);
     }
 }

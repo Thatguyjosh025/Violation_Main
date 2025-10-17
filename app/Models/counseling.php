@@ -26,5 +26,8 @@ class counseling extends Model
         'school_email',
     ];
     public $timestamps = false;
-
+    public function statusRelation()
+    {
+        return $this->belongsTo(sessionstatus::class, 'status', 'id');
+    }
 }

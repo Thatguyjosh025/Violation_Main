@@ -170,6 +170,18 @@ $(document).ready(function () {
                 }
 
                 $('#penaltybody').load(location.href + " #penaltybody > *");
+                const rowCount = $('#intakebody tr').length;
+
+                // If table body is empty after reload, show message manually
+                if (rowCount === 0) {
+                    $('#intakebody').html(`
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">
+                                No pending counseling at the moment.
+                            </td>
+                        </tr>
+                    `);
+                }
 
                 Swal.fire({
                     icon: 'success',

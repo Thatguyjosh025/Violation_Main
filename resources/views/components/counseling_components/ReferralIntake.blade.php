@@ -32,7 +32,7 @@
                 <td data-label="Email">{{ $person->school_email }}</td>
                 <td data-label="Violation">{{ $person->violation->violations }}</td>
                 <td data-label="Status">
-                    <span class="badge bg-warning text-dark">{{ $person->status->status }}</span>
+                    <span class="badge bg-warning text-dark">Pending Intake</span>
                 </td>
                 <td data-label="Date">{{ \Carbon\Carbon::parse($person->Date_Created)->format('m/d/y') }}</td>
                 <td data-label="Action">
@@ -104,15 +104,14 @@
 <script>
 $(document).ready(function () {
 
-    $('#IntakeTable').DataTable({
+    // Initialize DataTable
+    var table = $('#IntakeTable').DataTable({
         responsive: true,
         paging: true,
         searching: true,
         ordering: true,
         info: true,
-        language: {
-            emptyTable: "No pending counseling at the moment."
-        }
+        language: { emptyTable: "No pending counseling at the moment." }
     });
 
     // View report 
@@ -124,7 +123,6 @@ $(document).ready(function () {
             url: "/counseling_report/" + id,
             success: function (response) {
                 if (response.error) {
-                    console.log(response.error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Not Found',
@@ -151,7 +149,6 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr, status, error) {
-                console.error("AJAX error:", error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -205,12 +202,19 @@ $(document).ready(function () {
             data: data,
             success: function (response) {
                 if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Counseling schedule saved successfully.'
-                    }).then(() => {
-                        $('#CounselingReport').modal('hide');
+                    $('#CounselingReport').modal('hide');
+                    
+                    $('#CounselingReport').on('hidden.bs.modal', function () {
+                        $('.modal-backdrop').remove();  
+                        $('body').removeClass('modal-open').css('padding-right', '');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Counseling schedule saved successfully.'
+                        });
+
+                        $('#intakebody').load(location.href + " #intakebody > *");
                     });
                 } else {
                     Swal.fire({
@@ -221,7 +225,6 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
-                console.error(xhr.responseText);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -231,20 +234,21 @@ $(document).ready(function () {
         });
     });
 
-    // clears the errorr 
-    $('#start_date').on('input change', function () { if ($(this).val()) $('#error_start_date').text(''); });
-    $('#start_time').on('input change', function () { if ($(this).val()) $('#error_start_time').text(''); });
-    $('#end_time').on('input change', function () { if ($(this).val()) $('#error_end_time').text(''); });
+    // Clear errors on input
+    $('#start_date, #start_time, #end_time').on('input change', function () {
+        $(this).next('.error-msg').text('');
+    });
 
-    // clears the shi when modal is closed
+    // Reset modal when closed
     $('#CounselingReport').on('hidden.bs.modal', function () {
-        console.log('Modal hidden event triggered!');
         $('.error-msg').text('');
         $('#start_date, #start_time, #end_time').val('');
         $('#modalBox').removeClass('expanded');
         $('#scheduleView').removeClass('show');
         $('#reportView').show();
         $('.btns').show();
+        $('.modal-backdrop').remove(); // ensure backdrop removed
+        $('body').removeClass('modal-open').css('padding-right', '');
     });
 
 });
