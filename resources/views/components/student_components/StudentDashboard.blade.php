@@ -31,13 +31,19 @@
             <!-- Welcome Card -->
             <div class="card card-custom shadow-sm h-100">
               <h4>Welcome</h4>
+                @php
+                    $first = Auth::user()->firstname ?? '';
+                    $last = Auth::user()->lastname ?? '';
+                    $initials = strtoupper(substr($first, 0, 1) . substr($last, 0, 1));
+                @endphp
               <div class="d-flex align-items-center mt-4 flex-md-nowrap flex-wrap">
-                <img src="{{ asset('./Photos/avatar.png') }}" alt="Profile Picture" class="profile-img">
+                  <div class="profile-avatar me-3">
+                      {{ $initials }}
+                  </div>
                 <div class="flex-grow-1">
                   <span class="badge badge-custom">Student</span>
                   <h4 class="mt-2 mb-1">{{ Auth::user()-> firstname }} {{ Auth::user()-> lastname}} {{ Auth::user()-> middlename }}</h4>
                   <p class="mb-1">Student ID: {{ Auth::user()-> student_no }}</p>
-                  <span>Course and Section: {{ Auth::user()-> course_and_section }}</span>
                 </div>
               </div>
             </div>
