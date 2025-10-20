@@ -24,25 +24,28 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody id="intakebody">
-            @foreach ($counselingperson as $person)
-            <tr>
-                <td data-label="Student No.">{{ $person->student_no }}</td>
-                <td data-label="Name">{{ $person->student_name }}</td>
-                <td data-label="Email">{{ $person->school_email }}</td>
-                <td data-label="Violation">{{ $person->violation->violations }}</td>
-                <td data-label="Status">
-                    <span class="badge bg-warning text-dark">Pending Intake</span>
-                </td>
-                <td data-label="Date">{{ \Carbon\Carbon::parse($person->Date_Created)->format('m/d/y') }}</td>
-                <td data-label="Action">
-                    <button class="btn btn-sm btn-secondary btn-action-consistent view-report" data-id="{{ $person->id }}" data-bs-toggle="modal" data-bs-target="#CounselingReport">
-                        <i class="bi bi-eye"></i> View
-                    </button>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
+            <tbody id="intakebody">
+                @foreach ($counselingperson as $person)
+                    <tr>
+                        <td data-label="Student No.">{{ $person->student_no }}</td>
+                        <td data-label="Name">{{ $person->student_name }}</td>
+                        <td data-label="Email">{{ $person->school_email }}</td>
+                        <td data-label="Violation">{{ $person->violation->violations }}</td>
+                        <td data-label="Status">
+                            <span class="badge bg-warning text-dark">Pending Intake</span>
+                        </td>
+                        <td data-label="Date">{{ \Carbon\Carbon::parse($person->Date_Created)->format('m/d/y') }}</td>
+                        <td data-label="Action">
+                            <button class="btn btn-sm btn-secondary btn-action-consistent view-report" 
+                                    data-id="{{ $person->id }}" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#CounselingReport">
+                                <i class="bi bi-eye"></i> View
+                            </button>
+                        </td>
+                    </tr>
+                @endforeach
+    </tbody>
     </table>
 </div>
 
@@ -98,13 +101,12 @@
 </div>
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 $(document).ready(function () {
 
-    // Initialize DataTable
     var table = $('#IntakeTable').DataTable({
         responsive: true,
         paging: true,
@@ -182,6 +184,13 @@ $(document).ready(function () {
         if (!startTime) { $('#error_start_time').text('Start time is required.'); hasError = true; }
         if (!endTime) { $('#error_end_time').text('End time is required.'); hasError = true; }
 
+        const start = new Date(`${startDate}T${startTime}`);
+        const end = new Date(`${startDate}T${endTime}`);
+        if (end <= start) {
+            $('#error_end_time').text('End time must be after start time on the same day.');
+            hasError = true;
+        }
+
         if (hasError) return;
 
         const data = {
@@ -203,7 +212,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     $('#CounselingReport').modal('hide');
-                    
+
                     $('#CounselingReport').on('hidden.bs.modal', function () {
                         $('.modal-backdrop').remove();  
                         $('body').removeClass('modal-open').css('padding-right', '');
@@ -214,13 +223,25 @@ $(document).ready(function () {
                             text: 'Counseling schedule saved successfully.'
                         });
 
-                        $('#intakebody').load(location.href + " #intakebody > *");
+                        if ($.fn.DataTable.isDataTable('#IntakeTable')) {
+                            $('#IntakeTable').DataTable().destroy();
+                        }
+                        $('.table-container').load(location.href + " .table-container > *", function () {
+                            $('#IntakeTable').DataTable({
+                                responsive: true,
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                info: true,
+                                language: { emptyTable: "No pending counseling at the moment." }
+                            });
+                        });
                     });
                 } else {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Failed',
-                        text: 'Failed to save schedule.'
+                        text: response.message || 'Failed to save schedule.'
                     });
                 }
             },

@@ -84,19 +84,5 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 
-//   $(document).ready(function () {
-//     let table = $('#violationTable').DataTable({
-//         responsive: true
-//     });
-
-//     $('#statusFilter').on('change', function () {
-//         let selected = $(this).val();
-//         if (selected) {
-//             table.column(4).search('^' + selected + '$', true, false).draw();
-//         } else {
-//             table.column(4).search('').draw();
-//         }
-//     });
-// });
 </script>
 

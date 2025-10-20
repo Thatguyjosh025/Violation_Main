@@ -115,6 +115,7 @@ return new class extends Migration
 
         DB::table('tb_counselingstatus')->insert([
             ['session_status' => 'Pending Intake'],
+            ['session_status' => 'Scheduled'],
             ['session_status' => 'In Session'],
             ['session_status' => 'Follow-Up Needed'],
             ['session_status' => 'Resolved'],

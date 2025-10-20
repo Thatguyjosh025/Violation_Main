@@ -6,6 +6,7 @@ use App\Models\referals;
 use App\Models\statuses;
 use App\Models\penalties;
 use App\Models\violation;
+use App\Models\sessionstatus;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,9 @@ class DataController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:discipline')->only(['getViolations', 'getPenalties', 'getReferals', 'getStatus']);
+        $this->middleware(['permission:discipline,counselor'])->only([
+            'getViolations', 'getPenalties', 'getReferals', 'getStatus', 'getcounselingstatus'
+        ]);    
     }
 
     public function getViolations(Request $request)
@@ -36,4 +39,9 @@ class DataController extends Controller
     {
         return response()->json(['status_data' => statuses::all()]);
     }
+    public function getcounselingstatus(Request $request)
+    {
+        return response()->json(['counselingstatus_data' => sessionstatus::all()]);
+    }
+
 }

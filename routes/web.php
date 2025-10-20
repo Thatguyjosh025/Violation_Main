@@ -106,6 +106,11 @@ Route::middleware(['permission:discipline', RedirectIfNotAuthenticated::class])-
 
     //report narrative
     Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
+
+    Route::get('/get_violations', [DataController::class, 'getViolations']);
+    Route::get('/get_penalty', [DataController::class, 'getPenalties']);
+    Route::get('/get_referal', [DataController::class, 'getReferals']);
+    Route::get('/get_status', [DataController::class, 'getStatus']);
 });
 
 // ==========================
@@ -144,11 +149,18 @@ Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->
     Route::get('/session_management', [ViewController::class, 'session_management'])->name('session_management');
     Route::get('/student_counseling', [ViewController::class, 'student_counseling'])->name('student_counseling');
 
+    
     Route::get('/counseling_report/{id}', [CounselingController::class, 'fetchCounselingReport']);
 
     Route::post('/counseling_schedule', [CounselingController::class, 'storeCounselingSchedule']);
 
-    Route::get('/counseling/session/{id}', [CounselingController::class, 'getSession']);
+    Route::get('/counseling/getsession/{id}', [CounselingController::class, 'getSession']);
+
+    Route::post('/counseling/updatesession/{id}', [CounselingController::class, 'updateSession']);
+
+    Route::post('/counseling/reschedule/{id}', [CounselingController::class, 'rescheduleSession']);
+
+
 });
 
 
@@ -165,10 +177,8 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
 });
 
 //get datas routes
-Route::get('/get_violations', [DataController::class, 'getViolations']);
-Route::get('/get_penalty', [DataController::class, 'getPenalties']);
-Route::get('/get_referal', [DataController::class, 'getReferals']);
-Route::get('/get_status', [DataController::class, 'getStatus']);
+
+Route::get('/get_counselingstatus', [DataController::class, 'getcounselingstatus']);
 
 
 

@@ -1,0 +1,16 @@
+          // $('#intakebody').load(location.href + " #intakebody > *", function () {
+                        //     if ($('#intakebody tr').length === 0) {
+                        //         $('#intakebody').html(`
+                        //             <tr>
+                        //                 <td colspan="7" class="dt-empty text-center">
+                        //                     No pending counseling at the moment.
+                        //                 </td>
+                        //             </tr>   
+                        //         `);
+                        //     }
+
+                        //     // Optional: refresh DataTable info and visuals
+                        //     if ($.fn.DataTable.isDataTable('#IntakeTable')) {
+                        //         $('#IntakeTable').DataTable().rows().invalidate().draw();
+                        //     }
+                        // });
