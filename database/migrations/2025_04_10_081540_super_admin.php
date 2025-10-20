@@ -71,33 +71,25 @@ return new class extends Migration
             $table->text('new_value')->nullable();
         });
 
+        Schema::create('tb_sections', function (Blueprint $table) {
+            $table->id();
+            $table->string('header');
+            $table->text('description');    
+            $table->timestamps();
+        });
+
 
         DB::table('tb_violation')->insert([
             ['violation_uid' => 'VO001','violations' => 'Bullying'],
             // ['violation_uid' => 'VO002','violations' => 'Discourtesy or Disrespect'],
-            // ['violations' => 'Improper Use of School Facilities/Equipment']
-            // ['violations' => 'Cheating'],
-            // ['violations' => 'Stealing/Tampering or Forgery of school records'],
-            // ['violations' => 'Improper Use of School Facilities/Equipment'],
-            // ['violations' => 'Discourtesy or Disrespect'],
-            // ['violations' => 'Usage of Electronic Mobile Phone during class'],
-            // ['violations' => 'Gambling'],
-            // ['violations' => 'Bullying'],
-            // ['violations' => 'Bringing/Usage of prohibited items inside the campus'],
-            // ['violations' => 'Public Display of Affection/Lascivious acts'],
+
+            
         ]);
 
         DB::table('tb_penalties')->insert([
             ['penalties_uid' => 'PE001','penalties' => 'Verbal / Oral Warning'],
-            // ['penalties' => 'Written Apology'],
-            // ['penalties' => 'Written Reprimand'],
-            // ['penalties' => 'Corrective Reinforcement'],
-            // ['penalties' => 'Conference with the Dicipline Committee'],
-            // ['penalties' => 'Suspension a-Suspension from class'],
-            // ['penalties' => 'Suspension b-Preventive Suspension'],
-            // ['penalties' => 'Non-readmission'],
-            // ['penalties' => 'Exlcusion'],
-            // ['penalties' => 'Expulsion'],
+            // ['penalties_uid' => 'PE002','penalties' => 'Written Warning'],
+            // ['penalties_uid' => 'PE003','penalties' => 'Counseling Session'],
         ]);
         
         DB::table('tb_severity')->insert([
@@ -110,10 +102,8 @@ return new class extends Migration
         
         DB::table('tb_referals')->insert([
             ['referal_uid' => 'RE001','referals' => 'Verbal Reprimand'],
-        //    ['referals' => 'Held conference with the student'],
-        //     ['referals' => 'Consulted DO/GA'],
-        //     ['referals' => 'Contacted Parents'],
-        //     ['referals' => 'Held Conference with the Parent'], 
+            // ['referal_uid' => 'RE002','referals' => 'Written Reprimand'],
+            // ['referal_uid' => 'RE003','referals' => 'Counseling Session'],
         ]);
 
         DB::table('tb_status')->insert([
@@ -165,5 +155,6 @@ return new class extends Migration
         Schema::dropIfExists('tb_severity'); 
         Schema::dropIfExists('tb_referals');
         Schema::dropIfExists('tb_audit');
+        Schema::dropIfExists('tb_sections');
     }
 };

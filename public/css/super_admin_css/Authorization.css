@@ -228,11 +228,11 @@ input[type="date"]:focus {
     border-top-right-radius: 0.7rem;
     border-bottom-right-radius: 0.7rem;
 }
-.table-mobile-wrap td,
+/* .table-mobile-wrap td,
 .table-mobile-wrap th {
     white-space: normal !important;
     word-break: break-word;
-}
+} */
 .table-container {
     overflow-x: hidden;
     word-wrap: break-word;

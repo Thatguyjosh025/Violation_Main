@@ -106,7 +106,7 @@ class AdminController extends Controller
                 }
             }
 
-            // Merge incident evidence + new uploads
+            // Merge incident evidence and new uploads
             $allEvidence = array_merge($incidentEvidence, $newUploads);
             $evidenceJson = !empty($allEvidence) ? json_encode($allEvidence) : null;
 
@@ -131,7 +131,8 @@ class AdminController extends Controller
                 'upload_evidence' => $evidenceJson,
                 'Date_Created' => Carbon::now('Asia/Manila'),
                 'Update_at' => Carbon::now('Asia/Manila'),
-                'is_active' => true
+                'is_active' => true,
+                'is_admitted' => false
             ]);
 
             // Delete incident and notify faculty
@@ -175,7 +176,8 @@ class AdminController extends Controller
                 'upload_evidence' => $evidenceJson,
                 'Date_Created' => Carbon::now('Asia/Manila'),
                 'Update_at' => Carbon::now('Asia/Manila'),
-                'is_active' => true
+                'is_active' => true,
+                'is_admitted' => false
             ]);
         }
 
@@ -242,6 +244,7 @@ class AdminController extends Controller
                 'Remarks' => $student->Remarks,
                 'appeal' => $student->appeal,
                 'upload_evidence' => $student->upload_evidence,
+                'appeal_evidence' => $student->appeal_evidence,
                 'Date_Created' => Carbon::parse($student->Date_Created)->format('Y-m-d'),
             ]
         ]);
@@ -365,20 +368,6 @@ public function UpdateRejected(Request $request){
 
     return response()->json(['message' => 'Incident rejected successfully.']);
 }
-
-// public function archive($id)
-// {
-//     $violation = postviolation::find($id);
-
-//     if (!$violation) {
-//         return response()->json(['message' => 'Record not found'], 404);
-//     }
-
-//     $violation->is_active = false;
-//     $violation->save();
-
-//     return response()->json(['message' => 'Violation archived successfully.']);
-// }
 
 //student search
 public function student_search(Request $request)

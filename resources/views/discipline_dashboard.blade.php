@@ -28,7 +28,7 @@
             <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
         </nav>
         
-    <div class="logout-container">
+        <div class="logout-container">
             <a id="logout-link" class="logout-link" href="#" onclick="logout();">
                 <i class="bi bi-box-arrow-left"></i> <span>Log Out</span>
             </a>
@@ -49,6 +49,7 @@
         @endif
     </div>
 
+<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('./js/discipline_js/AdminDashboard.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -74,33 +75,32 @@
     });
 }
 
-     $(document).ready(function () {
-        // Get the current URL
-        var currentUrl = window.location.href;
+document.addEventListener('DOMContentLoaded', function () {
+    const currentUrl = window.location.href;
+    const navLinks = document.querySelectorAll('.nav-link');
+    let matched = false;
 
-        // Handle click events on navigation links
-        $('.nav-link').on('click', function (e) {
-            $('.nav-link').removeClass('active');
-            $(this).addClass('active');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
         });
 
-        // Set the active link based on the current URL
-        $('.nav-link').each(function() {
-            if ($(this).attr('href') === currentUrl) {
-                $('.nav-link').removeClass('active');
-                $(this).addClass('active');
-            }
-        });
-
-        // Set the Dashboard link as the default active link if no match is found
-        if (!$('.nav-link').hasClass('active')) {
-            $('.nav-link').removeClass('active');
-            $('.nav-link[href="' + "{{ url('discipline_dashboard') }}" + '"]').addClass('active');
+        if (link.href === currentUrl) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            matched = true;
         }
     });
+
+    if (!matched) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const fallback = document.querySelector(".nav-link[href='{{ url('discipline_dashboard') }}']");        
+        if (fallback) fallback.classList.add('active');
+    }
+});
 </script>
 </body>
-<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./vendor/dataTables.min.js') }}"></script>
 
 

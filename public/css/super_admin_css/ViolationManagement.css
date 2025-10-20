@@ -278,7 +278,6 @@ textarea {
       gap: 0.5rem;
     }
   
-    /* Add data labels */
     .table td::before {
       content: attr(data-label);
       font-weight: bold;
@@ -304,4 +303,7 @@ textarea {
   }
   .container.mt-4 {
     max-width: 1750px;
+}
+tr {
+    width: 20rem;
 }

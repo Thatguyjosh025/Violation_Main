@@ -132,6 +132,8 @@ $(document).ready(function () {
                         window.location.href = "{{ url('student_dashboard') }}";
                     } else if (response.role == 'faculty') {
                         window.location.href = "{{ url('faculty_dashboard') }}";
+                    }else if (response.role == 'counselor') {
+                        window.location.href = "{{ url('counseling_dashboard') }}";
                     }
                 } else {
                     // If the response has validation errors

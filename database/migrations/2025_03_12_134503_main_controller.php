@@ -43,7 +43,7 @@ return new class extends Migration
             $table->date('date_created');
             $table->string('created_time');
         });
-
+        
 
         DB::table('tb_users')->insert([
             ['firstname' => 'John',
@@ -75,6 +75,17 @@ return new class extends Migration
             //  'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),
              'role' => 'faculty',
+             'status' => 'active'
+            ]
+        ]);
+        DB::table('tb_users')->insert([
+            ['firstname' => 'Mark Jecil',
+             'lastname' => 'Bausa',
+             'email' => 'counseling@gmail.com',
+             'student_no' => 'ALA0159F',
+            //  'course_and_section' => 'Faculty',
+             'password' => bcrypt('123456789'),
+             'role' => 'counselor',
              'status' => 'active'
             ]
         ]);

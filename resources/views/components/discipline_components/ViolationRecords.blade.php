@@ -1,8 +1,6 @@
 <link rel="stylesheet" href="{{ asset('./css/discipline_css/ViolationRecords.css') }}">
 <link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
 
-
-
 @php
     use App\Models\postviolation; 
     $violators = postviolation::get();

@@ -65,7 +65,7 @@ $auditdata = audits::get();
             "searching": true,   
             "ordering": true,    
             "info": true,       
-            "responsive": true   
+            "responsive": true,
         });
     });
     

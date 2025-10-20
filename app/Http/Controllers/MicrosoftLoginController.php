@@ -129,6 +129,7 @@ class MicrosoftLoginController extends Controller
         // 'super'      => redirect()->route('super_dashboard') ingore this line since the credentials will be embeded in the ENV,
         'student'    => redirect()->route('student_dashboard'),
         'faculty'    => redirect()->route('faculty_dashboard'),
+        'counselor'  => redirect()->route('counseling_dashboard'),
         default      => redirect()->route('home'),
     };
 }

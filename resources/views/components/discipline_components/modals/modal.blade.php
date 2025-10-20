@@ -166,6 +166,15 @@
             <span id="noFileLabel" class="form-control" style="display: none;">N/A</span>
         </div>
 
+         <!-- APPEAL UPLOAD -->
+         <div class="AppealUploadEvidence col-md-6 mt-3" style="width: 100%;">
+            <label for="AppealuploadEvidence" class="form-label" style="font-size: 1rem; font-weight: 500; margin-bottom: .5rem;">Appeal Uploaded Evidence</label>
+            <ul id="AppealviewFileList" class="list-group mt-2"
+                style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px; scrollbar-width: none; -ms-overflow-style: none;">
+            </ul>
+            <span id="AppealnoFileLabel" class="form-control" style="display: none;">N/A</span>
+        </div>
+
           <section class="StudentInformation">
             <hr>
             <div class="container" style="background-color: #fcfcfc; padding: 1rem; border-radius: 0.3rem;">
@@ -474,6 +483,25 @@ $(document).on('click', '.btn-view-post', function () {
                   } else {
                       $('#viewFileList').hide();
                       $('#noFileLabel').show();
+                  }
+
+                  $('#AppealviewFileList').empty(); 
+                  if (response.data.appeal_evidence) {
+                      var files = JSON.parse(response.data.appeal_evidence);
+                      files.forEach(function(file) {
+                          var fileName = file.split('/').pop();
+                          $('#AppealviewFileList').append( 
+                              `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                  <span>${fileName}</span>
+                                  <button type="button" class="btn btn-sm btn-primary" onclick="window.open('/storage/${file}', '_blank')">View</button>
+                              </li>`
+                          );
+                      });
+                      $('#AppealviewFileList').show();
+                      $('#AppealnoFileLabel').hide();
+                  } else {
+                      $('#AppealviewFileList').hide();
+                      $('#AppealnoFileLabel').show();
                   }
 
                 // Show the modal

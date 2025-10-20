@@ -225,161 +225,207 @@ img.sidebar-logo.icon-logo.d-none {
     .close-btn {
         display: block !important;
     }
-
-    .dashboard-container .col-lg-7 {
-        margin-bottom: 1rem;
-    }
 }
 /* End of Side Bar CSS */
 
-/* Start of Student Handbook CSS */
-.student-handbook-wrapper {
+/* Table Styles */
+.table-container {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 1rem;
+}
+
+.table {
     width: 100%;
-    margin-top: 20px;
-}
-
-.student-handbook-container {
-    width: 100%;
-    max-width: 125rem;
-    height: 87vh;
-    border-radius: 7px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.handbook-sidebar {
-    background-color: var(--main-color);
-    color: white;
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-}
-
-.handbook-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-}
-
-.handbook-content {
-    padding: 3rem;
-    overflow-y: auto;
-    height: 100%;
-}
-
-.section-title,
-.section-subtitle {
-    font-size: 2rem;
-}
-
-.section-title {
-    margin-top: 22rem;
-}
-
-.section-subtitle {
-    margin-bottom: 25rem;
-}
-
-.section-subtitle {
-    color: #004581;
-}
-
-.handbook-section p {
-    line-height: 1.6;
-}
-
-.sub-header {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-top: 2rem;
-    color: #004581;
-}
-
-h5.sub-header.mt-4 {
-    font-size: 1.1rem;
-}
-
-.numbered-list {
-    padding-left: 2rem;
-    margin-top: 0.75rem;
-}
-
-.numbered-list li, .bulletin-list li {
-    margin-bottom: 0.6rem;
-    color: #444;
-    line-height: 1.5;
-}
-
-.numbered-list li:hover {
-    color: var(--main-color);
-}
-
-.Categories {
-    margin-left: 2rem;
-}
-
-.bulletin-list li:hover {
-    color: var(--main-color);
-}
-
-/* Add Button CSS */
-.add-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: var(--main-color);
-    border: none;
-    color: white;
-    border-radius: 100%;
-    width: 3.1rem;
-    height: 3.1rem;
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.add-btn:hover {
-    background-color: var(--second-color);
-}
-
-
-@media (max-width: 768px) {
-    .student-handbook-container {
-        height: auto;
-    }
-
-    .handbook-sidebar {
-        border-radius: 15px 15px 0 0;
-        padding: 20px 0;
-    }
-
-    .handbook-content {
-        padding: 2rem;
-    }
-
-    .section-title,
-    .section-subtitle {
-        font-size: 1.5rem;
-    }
-
-    .add-btn {
-        background-color: none;
-        box-shadow: none;
-    }
-}
-
-table {
+    margin-bottom: 0;
+    color: #212529;
     border-collapse: collapse;
-    width: 100%;
-  }
-  th, td {
-    border: 1px solid;
-    padding: 8px;
-    text-align: left;
-  }
-  th {
-    background-color: #f2f2f2;
-  }
+}
 
+.table th {
+    background-color: var(--main-color);
+    color: white;
+    text-align: left;
+    padding: 12px 15px;
+    position: sticky;
+    top: 0;
+}
+
+.table td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+    background-color: white;
+}
+
+.table tr:hover td {
+    background-color: #f8f9fa;
+}
+
+label {
+    margin-bottom: 0.5rem;
+}
+
+.btn-action-consistent {
+  min-width: 5.6rem;
+  padding: 0.35rem 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.badge-ongoing {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.badge-resolved {
+    background-color: #198754;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Mobile View */
+@media (max-width: 768px) {
+.table-container {
+    padding: 10px;
+    overflow-x: hidden;
+}
+
+.table thead {
+    display: none;
+}
+
+.table tbody tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+}
+
+.table tbody td:last-child {
+    border-bottom: none;
+}
+
+.table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--main-color);
+    margin-right: auto;
+    padding-right: 20px;
+    text-align: left;
+}
+
+.table tbody td[data-label="Action"] {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.table tbody td[data-label="Action"]::before {
+    display: none;
+}
+}
+
+@media (max-width: 576px) {
+.form-select {
+    width: 100%;
+    margin-bottom: 10px;
+}
+}
+
+/* Modal CSS */
+.report-title h1 {
+      font-weight: 700;
+      color: var(--main-color);
+      margin-bottom: 6px;
+      font-size: clamp(24px, 4vw, 32px);
+    }
+    .report-title p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .report-card {
+      border-radius: 0.8rem;
+      box-shadow: 0 6px 20px rgba(15,23,42,0.06);
+      background: white;
+      padding: 1.3rem;
+    }
+
+    .section-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin: 1.25rem 0 14px;
+    }
+
+    .kv-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+    }
+    .kv-label { color: #374151; font-weight: 600; }
+    .kv-value { color: #0f1724; font-weight: 600; }
+
+    .badge-severity {
+      background: red;
+      color: #fff;
+      padding: 0.45rem 0.75rem;
+      border-radius: 20rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: inline-block;
+    }
+    .badge-state {
+      background: rgb(52, 197, 245);
+      color: #fff;
+      padding: 0.3rem 0.7rem;
+      border-radius: 20rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .modal-custom {
+    	max-width: 31.25rem;
+    }
+    @media (max-width: 576px) {
+      .kv-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .kv-value { text-align: left; }
+      .save-wrap { justify-content: center; }
+    }

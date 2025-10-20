@@ -17,6 +17,8 @@ use App\Http\Controllers\SuperController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\HandbookController;
+use App\Http\Controllers\CounselingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MicrosoftLoginController;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
@@ -35,7 +37,6 @@ Route::get('/callback', [MicrosoftLoginController::class, 'handleProviderCallbac
 
 
 //Auth Routes
-Route::post('/register',[AuthController::class,'register']);
 Route::post('/add_user',[AuthController::class,'addUser']);
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/logout',[AuthController::class,'logout']);
@@ -58,6 +59,7 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
     Route::post('/create_violation', [SuperController::class, 'violation']);
     Route::post('/create_referals', [SuperController::class, 'referal']);
     Route::post('/create_rules', [SuperController::class, 'rules']);
+    Route::post('/sections', [HandbookController::class, 'store'])->name('sections.store');
 
     // Update
     Route::post('/update_penalty/{id}', [SuperController::class, 'updatePenalty']);
@@ -70,6 +72,19 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
 
     //GET
     Route::get('/get_user_info', [AuthController::class, 'getuser']);
+
+    //import csv
+    Route::post('/import_users_csv', [SuperController::class, 'importUsersCSV']);
+
+    //export csv
+    Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
+
+
+    //dynamic handbook routes soon to be migrated
+    Route::get('/sections/refresh', [HandbookController::class, 'refresh'])->name('sections.refresh');
+    Route::post('/sections/{id}', [HandbookController::class, 'update']);
+    Route::get('/sections/{id}/html', [HandbookController::class, 'sectionHtml']);
+    Route::delete('/sections/{id}', [HandbookController::class, 'destroy']);
 });
 
 // ==========================
@@ -88,6 +103,14 @@ Route::middleware(['permission:discipline', RedirectIfNotAuthenticated::class])-
     Route::post('/update_student_info/{id}', [AdminController::class, 'updateStudentInfo']);
     Route::post('/incident_rejected', [AdminController::class, 'UpdateRejected']);
     Route::post('/violation_records/{id}', [AdminController::class, 'archive']);
+
+    //report narrative
+    Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
+
+    Route::get('/get_violations', [DataController::class, 'getViolations']);
+    Route::get('/get_penalty', [DataController::class, 'getPenalties']);
+    Route::get('/get_referal', [DataController::class, 'getReferals']);
+    Route::get('/get_status', [DataController::class, 'getStatus']);
 });
 
 // ==========================
@@ -116,14 +139,34 @@ Route::middleware(['permission:student', RedirectIfNotAuthenticated::class])->gr
 
 });
 
+// ==========================
+// COUSELING ROUTES
+// ==========================
+Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->group(function () {
+    // Dashboard & Views
+    Route::get('/counseling_dashboard', [ViewController::class, 'counseling_dashboard'])->name('counseling_dashboard');
+    Route::get('/referral_intake', [ViewController::class, 'referral_intake'])->name('referral_intake');
+    Route::get('/session_management', [ViewController::class, 'session_management'])->name('session_management');
+    Route::get('/student_counseling', [ViewController::class, 'student_counseling'])->name('student_counseling');
 
-//get routes
+    
+
+    Route::post('/counseling_schedule', [CounselingController::class, 'storeCounselingSchedule']);
+    Route::post('/counseling/updatesession/{id}', [CounselingController::class, 'updateSession']);
+    Route::post('/counseling/reschedule/{id}', [CounselingController::class, 'rescheduleSession']);
+    Route::post('/counseling/unresolve/{id}', [CounselingController::class, 'unresolveSession']);
+
+    Route::get('/counseling_report/{id}', [CounselingController::class, 'fetchCounselingReport']);
+    Route::get('/counseling/getsession/{id}', [CounselingController::class, 'getSession']);
+    Route::get('/get_counselingstatus', [DataController::class, 'getcounselingstatus']);
+    Route::get('/get_session/{id}', [CounselingController::class, 'getSession']);
+
+});
 
 
-Route::get('/get_violations', [DataController::class, 'getViolations']);
-Route::get('/get_penalty', [DataController::class, 'getPenalties']);
-Route::get('/get_referal', [DataController::class, 'getReferals']);
-Route::get('/get_status', [DataController::class, 'getStatus']);
+// ==========================
+// SHARED ROLE ROUTES
+// ==========================
 
 Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipline'])->group(function () {
     Route::get('/get_rule/{violation_id}', [AdminController::class, 'getRule']);
@@ -133,27 +176,19 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
     Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
 });
 
-
-//import csv
-Route::post('/import_users_csv', [App\Http\Controllers\SuperController::class, 'importUsersCSV']);
-
-//export csv
-Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
-
-
-//report narrative
-Route::get('/report', [ReportController::class, 'showNarrative'])->name('report.narrative');
+//get datas routes
 
 
 
-//students
+
+
 
 //notif
 Route::post('/update_notification_status', [NotificationController::class, 'updateNotificationStatus']);
 
 //handbookview
 Route::get('/violation_handbook', [ViewController::class, 'violation_handbook'])->name('violation_handbook')
-->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty,super']);
+->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty,super,counselor']);
 
 
 Route::get('/violation_records/data', function (Request $request) {
