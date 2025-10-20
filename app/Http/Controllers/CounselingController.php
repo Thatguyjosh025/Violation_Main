@@ -29,7 +29,7 @@ class CounselingController extends Controller
         ]);
     }
 
-  public function storeCounselingSchedule(Request $request)
+   public function storeCounselingSchedule(Request $request)
     {
         $validated = $request->validate([
             'student_no'   => 'required|string',
@@ -45,7 +45,15 @@ class CounselingController extends Controller
         $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
         $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
 
-        // cant schedule time backwards type shi
+        // Prevent scheduling in the past date/time (includes same-day past hours)
+        if ($start->isBefore(Carbon::now())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot schedule a counseling session in the past.'
+            ]);
+        }
+
+        // cant schedule time backwards
         if ($end->lessThanOrEqualTo($start)) {
             return response()->json([
                 'success' => false,
@@ -56,7 +64,7 @@ class CounselingController extends Controller
         $startFormatted = $start->format('g:i A');
         $endFormatted = $end->format('g:i A');
 
-        // check for time conflicts like frfrfr
+        // check for time conflicts
         $conflict = DB::table('tb_counseling')
             ->where('start_date', $validated['start_date'])
             ->whereRaw('? < end_time AND ? > start_time', [
@@ -73,7 +81,7 @@ class CounselingController extends Controller
         }
 
         $counseling = Counseling::create([
-            'student_no'      => $validated['student_no'],  
+            'student_no'      => $validated['student_no'],
             'student_name'    => $validated['student_name'],
             'school_email'    => $validated['school_email'],
             'violation'       => $validated['violation'],
@@ -101,11 +109,13 @@ class CounselingController extends Controller
             'message' => 'Failed to create counseling record.'
         ], 500);
     }
+
     public function getSession($id)
     {
         $session = Counseling::findOrFail($id);
         return response()->json($session);
     }
+
     public function updateSession(Request $request, $id)
     {
         $session = counseling::findOrFail($id);
@@ -118,10 +128,8 @@ class CounselingController extends Controller
             'status' => 'required|integer',
         ]);
 
-        $resolvedStatusId = 5; // e.g. "Resolved" status
-        $endDate = ($validated['status'] == $resolvedStatusId)
-            ? Carbon::now()->toDateString()
-            : null;
+        $resolvedStatusId = 5;
+        $endDate = ($validated['status'] == $resolvedStatusId) ? Carbon::now()->toDateString() : null;
 
         $session->update([
             'session_notes' => $validated['session_notes'] ?? $session->session_notes,
@@ -151,7 +159,13 @@ class CounselingController extends Controller
         $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
         $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
 
-        // Prevent scheduling backward
+        if ($start->isBefore(Carbon::now())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot reschedule a counseling session to a past date/time.',
+            ]);
+        }
+
         if ($end->lessThanOrEqualTo($start)) {
             return response()->json([
                 'success' => false,
@@ -159,7 +173,6 @@ class CounselingController extends Controller
             ]);
         }
 
-        // Check conflicts
         $conflict = DB::table('tb_counseling')
             ->where('id', '!=', $id)
             ->where('start_date', $validated['start_date'])
@@ -187,5 +200,24 @@ class CounselingController extends Controller
             'success' => true,
             'message' => 'Session successfully rescheduled.',
         ]);
+    }
+
+    public function unresolveSession($id)
+    {
+        $session = counseling::find($id);
+
+        if (!$session) {
+            return response()->json(['message' => 'Session not found.'], 404);
+        }
+
+        if ($session->status != 5) {
+            return response()->json(['message' => 'Only resolved sessions can be restored.'], 400);
+        }
+
+        $session->status = 2;
+        $session->end_date = null;
+        $session->save();
+
+        return response()->json(['message' => 'Session successfully restored to active management.']);
     }
 }

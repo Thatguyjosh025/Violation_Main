@@ -3,7 +3,7 @@
 
 @php
     use App\Models\counseling;
-    $counselingsessions = counseling::get();
+    $counselingsessions = counseling::where('status', '!=', 5)->get();
 @endphp
 <!-- Counseling Section -->
             <div class="d-flex align-items-center">
@@ -160,7 +160,7 @@
 
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>

@@ -150,16 +150,16 @@ Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->
     Route::get('/student_counseling', [ViewController::class, 'student_counseling'])->name('student_counseling');
 
     
-    Route::get('/counseling_report/{id}', [CounselingController::class, 'fetchCounselingReport']);
 
     Route::post('/counseling_schedule', [CounselingController::class, 'storeCounselingSchedule']);
-
-    Route::get('/counseling/getsession/{id}', [CounselingController::class, 'getSession']);
-
     Route::post('/counseling/updatesession/{id}', [CounselingController::class, 'updateSession']);
-
     Route::post('/counseling/reschedule/{id}', [CounselingController::class, 'rescheduleSession']);
+    Route::post('/counseling/unresolve/{id}', [CounselingController::class, 'unresolveSession']);
 
+    Route::get('/counseling_report/{id}', [CounselingController::class, 'fetchCounselingReport']);
+    Route::get('/counseling/getsession/{id}', [CounselingController::class, 'getSession']);
+    Route::get('/get_counselingstatus', [DataController::class, 'getcounselingstatus']);
+    Route::get('/get_session/{id}', [CounselingController::class, 'getSession']);
 
 });
 
@@ -178,7 +178,7 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
 
 //get datas routes
 
-Route::get('/get_counselingstatus', [DataController::class, 'getcounselingstatus']);
+
 
 
 
