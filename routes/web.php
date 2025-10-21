@@ -158,8 +158,12 @@ Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->
 
     Route::get('/counseling_report/{id}', [CounselingController::class, 'fetchCounselingReport']);
     Route::get('/counseling/getsession/{id}', [CounselingController::class, 'getSession']);
-    Route::get('/get_counselingstatus', [DataController::class, 'getcounselingstatus']);
     Route::get('/get_session/{id}', [CounselingController::class, 'getSession']);
+
+    //data controllers
+    Route::get('/get_counselingstatus', [DataController::class, 'getcounselingstatus']);
+    Route::get('/get_priorityrisk', [DataController::class, 'getpriorityrisk']);
+    Route::get('/get_guidanceservice', [DataController::class, 'getguidanceservice']);
 
 });
 
