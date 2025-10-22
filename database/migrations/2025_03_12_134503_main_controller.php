@@ -98,7 +98,7 @@ return new class extends Migration
              'student_no' => 02000190782,
             //  'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),
-             'role' => 'counselor',
+             'role' => 'student',
              'status' => 'active'
             ]
         ]);
