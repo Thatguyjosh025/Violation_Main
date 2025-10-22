@@ -12,9 +12,9 @@
 </head>
 <body>
 
-@include('auth.login')
-@include('auth.register')
-@include('auth.forgot')
+@include('Auth.login')
+@include('Auth.register')
+@include('Auth.forgot')
 
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid"> 
