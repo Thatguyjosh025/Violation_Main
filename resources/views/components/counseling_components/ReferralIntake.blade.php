@@ -94,6 +94,21 @@
                     <input type="time" id="end_time" class="form-control rounded-pill px-3 py-2">
                     <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
                 </div>
+                <div class="field">
+                    <label>Priority Level</label>
+                    <select name="" id="priority_level_input" class="form-select">
+                        <!-- Load hereeee -->
+                    </select>
+                    <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
+                </div>
+                <div class="field">
+                    <label>Guidance Service</label>
+                    <select name="" id="guidance_service_input" class="form-select">
+                        <!-- Load hereeee -->
+                    </select>
+                    <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
+                </div>
+                
                 <button class="btn schedule">Set Schedule</button>
             </div>
         </div>
@@ -106,6 +121,9 @@
 
 <script>
 $(document).ready(function () {
+
+    let currentPriorityId = null;
+    let currentServiceId = null;
 
     var table = $('#IntakeTable').DataTable({
         responsive: true,
@@ -160,6 +178,46 @@ $(document).ready(function () {
         });
     });
 
+    $('#CounselingReport').on('show.bs.modal', function () {
+        $.ajax({
+            url: '/get_priorityrisk',
+            method: 'GET',
+            success: function (response) {
+                const dropdown = $('#priority_level_input');
+                dropdown.empty();
+                dropdown.append('<option disabled>Select priority level</option>');
+
+                response.priorityrisk_data.forEach(function (priority) {
+                    const selected = priority.id === currentPriorityId ? 'selected' : '';
+                    dropdown.append(`<option value="${priority.id}" ${selected}>${priority.priority_risk}</option>`);
+                });
+            },
+            error: function () {
+                console.error('Failed to fetch counseling statuses.');
+            }
+        });
+    });
+
+     $('#CounselingReport').on('show.bs.modal', function () {
+        $.ajax({
+            url: '/get_guidanceservice',
+            method: 'GET',
+            success: function (response) {
+                const dropdown = $('#guidance_service_input');
+                dropdown.empty();
+                dropdown.append('<option disabled>Select Guidance Service</option>');
+
+                response.guidanceservice_data.forEach(function (service) {
+                    const selected = service.id === currentServiceId ? 'selected' : '';
+                    dropdown.append(`<option value="${service.id}" ${selected}>${service.guidance_service}</option>`);
+                });
+            },
+            error: function () {
+                console.error('Failed to fetch counseling statuses.');
+            }
+        });
+    });
+
     // Approve 
     $(document).on('click', '.approve', function () {
         $('#modalBox').addClass('expanded');
@@ -199,6 +257,8 @@ $(document).ready(function () {
             school_email: $('#report_email_input').val(),
             violation: $('#report_violation_input').val(),
             severity: $('#report_severity_input').val(),
+            priority_level: $('#priority_level_input').val(),
+            guidance_service: $('#guidance_service_input').val(),
             start_date: startDate,
             start_time: startTime,
             end_time: endTime,

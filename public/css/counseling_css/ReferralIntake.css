@@ -406,7 +406,7 @@ label {
 
 .field label { 
     display: inline-block; 
-    width: 100px; 
+    /* width: 100px;  */
     font-weight: bold; 
 }
 

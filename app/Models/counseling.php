@@ -12,7 +12,12 @@ class counseling extends Model
     protected $fillable = [
         'student_no',
         'student_name',
+        'school_email',
+        'year_level',
+        'program',
         'violation',
+        'guidance_service',
+        'priority_risk',
         'status',
         'severity',
         'start_date',
@@ -21,13 +26,18 @@ class counseling extends Model
         'end_time',
         'session_notes',
         'emotional_state',
-        'behavior_observe',
         'plan_goals',
-        'school_email',
     ];
     public $timestamps = false;
     public function statusRelation()
     {
         return $this->belongsTo(sessionstatus::class, 'status', 'id');
+    }
+    public function guidanceServiceRelation()
+    {
+        return $this->belongsTo(guidanceservice::class, 'guidance_service', 'id');
+    }
+    public function priorityRiskRelation(){
+        return $this->belongsTo(priorityrisk::class, 'priority_risk', 'id');
     }
 }

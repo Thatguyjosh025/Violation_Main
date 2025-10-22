@@ -220,12 +220,27 @@ img {
     flex-grow: 1;
 }
 
-.profile-img {
+/* .profile-img {
     width: 10rem;
     height: 10rem;
     object-fit: cover;
     border-radius: 7px;
     flex-shrink: 0;
+} */
+.profile-avatar {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 7px;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    color: #2c698d; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 4rem;
+    font-family: 'Segoe UI', sans-serif;
+    text-transform: uppercase;
 }
 
 p.mb-0 {
