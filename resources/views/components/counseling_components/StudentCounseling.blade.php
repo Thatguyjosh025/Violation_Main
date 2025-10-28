@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{{ asset('./vendor/dataTables.dataTables.min.css') }}">
 @php
     use App\Models\counseling;
-    $resolvedsessions = counseling::where('status',  5)->get();
+    $resolvedsessions = counseling::whereIn('status', [4, 5])->get();
 @endphp
         <!-- Counseling Section -->
             <div class="d-flex align-items-center">
@@ -38,12 +38,12 @@
                             <td data-label="Start Date">{{ $session -> start_date }}</td>
                             <td data-label="End Date">{{ $session -> end_date }}</td>
                             <td data-label="Action">
-                                <button class="btn btn-sm btn-secondary btn-action-consistent view-btn" data-id="{{ $session->id }}">
-                                    <i class="bi bi-eye"></i> View
-                                </button>
-                                 <button class="btn btn-sm btn-warning unresolve-btn" data-id="{{ $session->id }}">
-                                    <i class="bi bi-arrow-counterclockwise"></i> Unresolve
-                                </button>
+                                    <button class="btn btn-sm btn-secondary btn-action-consistent view-btn" data-id="{{ $session->id }}">
+                                        <i class="bi bi-eye"></i> View
+                                    </button>
+                                    <!-- <button class="btn btn-sm btn-warning unresolve-btn" data-id="{{ $session->id }}">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Unresolve
+                                    </button> -->
                             </td>
                         </tr>
                         @endforeach

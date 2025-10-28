@@ -37,26 +37,26 @@ return new class extends Migration
             $table->string('program')->nullable();   
             $table->string('violation')->nullable();
 
+            $table->string('parent_uid')->nullable(); 
+            $table->string('parent_session_id')->nullable();
+
             $table->unsignedBigInteger('guidance_service');
             $table->unsignedBigInteger('priority_risk');
             $table->unsignedBigInteger('status');
-
             $table->string('severity')->nullable();
-
             $table->string('start_date');
             $table->string('end_date')->nullable();
             $table->string('start_time');
             $table->string('end_time');
 
-            $table->string(column: 'session_notes',length:550)->nullable(); //remarks
-            $table->string('emotional_state',length:550)->nullable();
-            $table->string('plan_goals',length:550)->nullable();
+            $table->string('session_notes', 550)->nullable();
+            $table->string('emotional_state', 550)->nullable();
+            $table->string('plan_goals', 550)->nullable();
 
             $table->foreign('school_email')->references('email')->on('tb_users');
             $table->foreign('status')->references('id')->on('tb_counselingstatus');
             $table->foreign('guidance_service')->references('id')->on('tb_guidanceservice');
             $table->foreign('priority_risk')->references('id')->on('tb_priorityrisk');
-
         });
 
         DB::table('tb_counselingstatus')->insert([

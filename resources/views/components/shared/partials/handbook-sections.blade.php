@@ -4,6 +4,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="sub-header mt-4">{{ $section->header }}</h5>
             <div>
+                 @if(Auth::user()->role === 'super')
                 <button class="btn btn-sm btn-outline-primary edit-section-btn"
                         data-id="{{ $section->id }}"
                         data-header="{{ $section->header }}"
@@ -14,6 +15,7 @@
                         data-id="{{ $section->id }}">
                     Delete
                 </button>
+                @endif
             </div>
         </div>
 

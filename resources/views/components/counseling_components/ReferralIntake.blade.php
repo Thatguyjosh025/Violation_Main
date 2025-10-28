@@ -179,44 +179,35 @@ $(document).ready(function () {
     });
 
     $('#CounselingReport').on('show.bs.modal', function () {
+        // Load priority levels
         $.ajax({
             url: '/get_priorityrisk',
             method: 'GET',
             success: function (response) {
                 const dropdown = $('#priority_level_input');
                 dropdown.empty();
-                dropdown.append('<option disabled>Select priority level</option>');
-
+                dropdown.append('<option disabled selected>Select priority level</option>');
                 response.priorityrisk_data.forEach(function (priority) {
-                    const selected = priority.id === currentPriorityId ? 'selected' : '';
-                    dropdown.append(`<option value="${priority.id}" ${selected}>${priority.priority_risk}</option>`);
+                    dropdown.append(`<option value="${priority.id}">${priority.priority_risk}</option>`);
                 });
-            },
-            error: function () {
-                console.error('Failed to fetch counseling statuses.');
             }
         });
-    });
 
-     $('#CounselingReport').on('show.bs.modal', function () {
+        // Load guidance services
         $.ajax({
             url: '/get_guidanceservice',
             method: 'GET',
             success: function (response) {
                 const dropdown = $('#guidance_service_input');
                 dropdown.empty();
-                dropdown.append('<option disabled>Select Guidance Service</option>');
-
+                dropdown.append('<option disabled selected>Select guidance service</option>');
                 response.guidanceservice_data.forEach(function (service) {
-                    const selected = service.id === currentServiceId ? 'selected' : '';
-                    dropdown.append(`<option value="${service.id}" ${selected}>${service.guidance_service}</option>`);
+                    dropdown.append(`<option value="${service.id}">${service.guidance_service}</option>`);
                 });
-            },
-            error: function () {
-                console.error('Failed to fetch counseling statuses.');
             }
         });
     });
+
 
     // Approve 
     $(document).on('click', '.approve', function () {

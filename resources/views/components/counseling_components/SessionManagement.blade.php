@@ -3,7 +3,7 @@
 
 @php
     use App\Models\counseling;
-    $counselingsessions = counseling::where('status', '!=', 5)->get();
+    $counselingsessions = counseling::whereNotIn('status', [4, 5])->get();
 @endphp
 <!-- Counseling Section -->
             <div class="d-flex align-items-center">
@@ -38,8 +38,8 @@
                             <td data-label="Status">
                                 <span class="badge bg-warning text-dark">{{ $currentsession -> statusRelation-> session_status }}</span>
                             </td>
-                            <td data-label="Start Time">{{ $currentsession -> start_time }}</td>
-                            <td data-label="End Time">{{ $currentsession -> end_time }}</td>
+                            <td data-label="Start Time">{{ \Carbon\Carbon::parse($currentsession->start_time)->format('g:i A') }}</td>
+                            <td data-label="End Time">{{ \Carbon\Carbon::parse($currentsession->end_time)->format('g:i A') }}</td>
                             <td data-label="Start Date">{{ $currentsession -> start_date }}</td>
                             <td data-label="End Date">{{ $currentsession -> end_date ?? 'N/A' }}</td>
                             <td data-label="Action">
@@ -53,9 +53,10 @@
                                             data-id="{{ $currentsession->id }}">
                                         <i class="bi bi-calendar-event"></i> Reschedule
                                     </button>
-                                    <!-- <button class="btn btn-sm btn-secondary btn-action-consistent">
-                                        <i class="bi bi-eye"></i> View
-                                    </button> -->
+                                    <button class="btn btn-sm btn-secondary btn-action-consistent follow-btn"
+                                            data-id="{{ $currentsession->id }}">
+                                        <i class="bi bi-arrow-repeat"></i> Follow-up
+                                    </button>
                                 </div>
                             </td>
                         </tr>    
@@ -94,28 +95,22 @@
                         <hr class="my-3">
 
 
-                        <div class="mb-4">
+                        <div class="mb-3">
                         <div class="section-title">Session Notes</div>
                         <textarea class="form-control" id="session_notes_input" placeholder="Write session notes..."></textarea>
                         </div>
 
-                        <div class="row gx-3">
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3">
                             <label class="form-label fw-semibold">Emotional State</label>
                             <input class="form-control" id="emotional_state_input" placeholder="e.g., Calm, Agitated">
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Behaviour Observation</label>
-                            <input class="form-control" id="Behavior_observe_input" placeholder="Short observation summary">
-                        </div>
-                        </div>
 
-                        <div class="mb-4">
+                        <div class="mb-3">
                         <label class="form-label fw-semibold section-title">Intervention Plans & Goals</label>
                         <textarea class="form-control" id="plans_goals_input" placeholder="Define interventions, steps, and goals"></textarea>
                         </div>
 
-                        <div class="mb-4">
+                        <div class="mb-3">
                         <label class="form-label fw-semibold">Status</label>
                         <select class="form-select" id="counselingstatus">
                         <!-- dropdown loader will appear in here -->
@@ -157,6 +152,31 @@
                 </div>
             </div>
 
+            <!-- Follow-up Modal -->
+            <div class="modal fade" id="followModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content p-3">
+                <h5>Create Follow-up Counseling Session</h5>
+                <form id="followForm">
+                    @csrf
+                    <div class="mb-3">
+                    <label class="form-label">Follow-up Date</label>
+                    <input type="date" id="follow_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                    <label class="form-label">Start Time</label>
+                    <input type="time" id="follow_start_time" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                    <label class="form-label">End Time</label>
+                    <input type="time" id="follow_end_time" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Create Follow-up</button>
+                </form>
+                </div>
+            </div>
+            </div>
+
 
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
@@ -169,6 +189,8 @@ $(document).ready(function () {
     let currentStatusId = null;
     let currentSessionId = null;
     let currentReschedId = null;
+    let currentFollowUpId = null;
+
 
      var table = $('#violationTable').DataTable({
         responsive: true,
@@ -224,6 +246,8 @@ $(document).ready(function () {
                 dropdown.append('<option disabled>Select status</option>');
 
                 response.counselingstatus_data.forEach(function (status) {
+                    if (status.id === 4) return; // Skip id 4
+
                     const selected = status.id === currentStatusId ? 'selected' : '';
                     dropdown.append(`<option value="${status.id}" ${selected}>${status.session_status}</option>`);
                 });
@@ -334,6 +358,48 @@ $(document).ready(function () {
             },
             error: function () {
                 Swal.fire('Error', 'Something went wrong while rescheduling.', 'error');
+            }
+        });
+    });
+
+    $(document).on('click', '.follow-btn', function () {
+        currentFollowUpId = $(this).data('id');
+        $('#followModal').modal('show');
+    });
+
+    $('#followForm').on('submit', function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: `/counseling/followup/${currentFollowUpId}`,
+            method: 'POST',
+            data: {
+                start_date: $('#follow_date').val(),
+                start_time: $('#follow_start_time').val(),
+                end_time: $('#follow_end_time').val(),
+                _token: '{{ csrf_token() }}'
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#followModal').modal('hide');
+                    $('#followForm')[0].reset();
+
+                    // Refresh the table to show the new follow-up session
+                    $('#violationTable tbody').load(location.href + " #violationTable tbody > *");
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Follow-up Created',
+                        text: response.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function () {
+                Swal.fire('Error', 'Something went wrong while creating follow-up.', 'error');
             }
         });
     });

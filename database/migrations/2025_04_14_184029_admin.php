@@ -50,7 +50,7 @@ return new class extends Migration
             $table->dateTime('Date_Created');
             $table->date('Update_at');
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_admitted')->default(false);
+            $table->boolean('is_admitted')->default(false)->nullable();
         });
         
         Schema::create('tb_incidentreport', function (Blueprint $table) {

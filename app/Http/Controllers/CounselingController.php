@@ -29,7 +29,7 @@ class CounselingController extends Controller
         ]);
     }
 
-   public function storeCounselingSchedule(Request $request)
+  public function storeCounselingSchedule(Request $request)
     {
         $validated = $request->validate([
             'student_no'   => 'required|string',
@@ -47,7 +47,7 @@ class CounselingController extends Controller
         $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
         $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
 
-        // Prevent scheduling in the past date/time (includes same-day past hours)
+        // Prevent scheduling in the past
         if ($start->isBefore(Carbon::now())) {
             return response()->json([
                 'success' => false,
@@ -55,7 +55,7 @@ class CounselingController extends Controller
             ]);
         }
 
-        // cant schedule time backwards
+        // Prevent backward scheduling
         if ($end->lessThanOrEqualTo($start)) {
             return response()->json([
                 'success' => false,
@@ -66,7 +66,7 @@ class CounselingController extends Controller
         $startFormatted = $start->format('g:i A');
         $endFormatted = $end->format('g:i A');
 
-        // check for time conflicts
+        // Check for schedule conflict
         $conflict = DB::table('tb_counseling')
             ->where('start_date', $validated['start_date'])
             ->whereRaw('? < end_time AND ? > start_time', [
@@ -82,32 +82,54 @@ class CounselingController extends Controller
             ]);
         }
 
+        // create a NEW parent UID for storeCounselingSchedule
+        $latestUid = Counseling::whereNotNull('parent_uid')
+            ->orderBy('id', 'desc')
+            ->value('parent_uid');
+
+        if ($latestUid) {
+            $number = (int) str_replace('SNS-', '', $latestUid);
+            $nextNumber = $number + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        $parent_uid = 'SNS-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $parent_session_id = null; // 🧩 FIX: Always null for new roots
+
+        // Create record
         $counseling = Counseling::create([
-            'student_no'      => $validated['student_no'],
-            'student_name'    => $validated['student_name'],
-            'school_email'    => $validated['school_email'],
-            'violation'       => $validated['violation'],
-            'status'          => 2,
-            'severity'        => $validated['severity'],
-            'priority_risk'   => $validated['priority_level'],
-            'year_level'      => null,
-            'program'         => null,
-            'guidance_service'=> $validated['guidance_service'],
-            'start_date'      => $validated['start_date'],
-            'end_date'        => null,
-            'start_time'      => $validated['start_time'],
-            'end_time'        => $validated['end_time'],
-            'session_notes'   => null,
-            'emotional_state' => null,
-            'behavior_observe'=> null,
-            'plan_goals'      => null,
+            'student_no'       => $validated['student_no'],
+            'student_name'     => $validated['student_name'],
+            'school_email'     => $validated['school_email'],
+            'violation'        => $validated['violation'],
+            'status'           => 2,
+            'severity'         => $validated['severity'],
+            'priority_risk'    => $validated['priority_level'],
+            'year_level'       => null,
+            'program'          => null,
+            'guidance_service' => $validated['guidance_service'],
+            'start_date'       => $validated['start_date'],
+            'end_date'         => null,
+            'start_time'       => $validated['start_time'],
+            'end_time'         => $validated['end_time'],
+            'session_notes'    => null,
+            'emotional_state'  => null,
+            'plan_goals'       => null,
+            'parent_uid'       => $parent_uid,         
+            'parent_session_id'=> $parent_session_id,  
         ]);
 
         if ($counseling) {
             postviolation::where('student_no', $validated['student_no'])
                 ->update(['is_admitted' => true]);
 
-            return response()->json(['success' => true]);
+            return response()->json([
+                'success' => true,
+                'message' => "Counseling session scheduled successfully.",
+                'parent_uid' => $parent_uid,
+                'parent_session_id' => $parent_session_id
+            ]);
         }
 
         return response()->json([
@@ -115,6 +137,7 @@ class CounselingController extends Controller
             'message' => 'Failed to create counseling record.'
         ], 500);
     }
+
 
     public function getSession($id)
     {
@@ -124,27 +147,32 @@ class CounselingController extends Controller
 
     public function updateSession(Request $request, $id)
     {
-        $session = counseling::findOrFail($id);
+        $session = Counseling::findOrFail($id);
 
         $validated = $request->validate([
-            'session_notes' => 'nullable|string',
-            'emotional_state' => 'nullable|string',
-            'behavior_observe' => 'nullable|string',
-            'plan_goals' => 'nullable|string',
-            'status' => 'required|integer',
+            'session_notes'     => 'nullable|string',
+            'emotional_state'   => 'nullable|string',
+            'behavior_observe'  => 'nullable|string',
+            'plan_goals'        => 'nullable|string',
+            'status'            => 'required|integer',
         ]);
 
         $resolvedStatusId = 5;
         $endDate = ($validated['status'] == $resolvedStatusId) ? Carbon::now()->toDateString() : null;
 
         $session->update([
-            'session_notes' => $validated['session_notes'] ?? $session->session_notes,
-            'emotional_state' => $validated['emotional_state'] ?? $session->emotional_state,
-            'behavior_observe' => $validated['behavior_observe'] ?? $session->behavior_observe,
-            'plan_goals' => $validated['plan_goals'] ?? $session->plan_goals,
-            'status' => $validated['status'],
-            'end_date' => $endDate,
+            'session_notes'     => $validated['session_notes'] ?? $session->session_notes,
+            'emotional_state'   => $validated['emotional_state'] ?? $session->emotional_state,
+            'behavior_observe'  => $validated['behavior_observe'] ?? $session->behavior_observe,
+            'plan_goals'        => $validated['plan_goals'] ?? $session->plan_goals,
+            'status'            => $validated['status'],
+            'end_date'          => $endDate,
         ]);
+
+        // If marked as resolved, mark all in the family as resolved
+        if ($validated['status'] == $resolvedStatusId) {
+            $this->markFamilyResolved($session);
+        }
 
         return response()->json([
             'success' => true,
@@ -152,6 +180,8 @@ class CounselingController extends Controller
             'end_date' => $endDate,
         ]);
     }
+
+
     public function rescheduleSession(Request $request, $id)
     {
         $session = counseling::findOrFail($id);
@@ -208,22 +238,117 @@ class CounselingController extends Controller
         ]);
     }
 
-    public function unresolveSession($id)
+    public function storeFollowUp(Request $request, $parentId)
     {
-        $session = counseling::find($id);
+        $validated = $request->validate([
+            'start_date' => 'required|date',
+            'start_time' => 'required',
+            'end_time'   => 'required',
+        ]);
 
-        if (!$session) {
-            return response()->json(['message' => 'Session not found.'], 404);
+        $parent = Counseling::findOrFail($parentId);
+
+        // Mark all previous as resolved
+        $this->markAllParentsResolved($parent);
+
+        // Find the original root session
+        $root = $parent;
+        while ($root->parent_session_id) {
+            $root = Counseling::where('parent_uid', $root->parent_session_id)->first();
+            if (!$root) break;
         }
 
-        if ($session->status != 5) {
-            return response()->json(['message' => 'Only resolved sessions can be restored.'], 400);
+        // Create follow-up always tied to the same root UID
+        $followUp = Counseling::create([
+            'student_no'        => $parent->student_no,
+            'student_name'      => $parent->student_name,
+            'school_email'      => $parent->school_email,
+            'violation'         => $parent->violation,
+            'severity'          => $parent->severity,
+            'priority_risk'     => $parent->priority_risk,
+            'guidance_service'  => $parent->guidance_service,
+            'status'            => 2,
+            'start_date'        => $validated['start_date'],
+            'start_time'        => $validated['start_time'],
+            'end_time'          => $validated['end_time'],
+            'parent_session_id' => $root->parent_uid, // Always same root UID
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All previous sessions marked as resolved and follow-up created successfully.',
+        ]);
+    }
+
+
+    // Remove the comment when needed
+    // public function unresolveSession($id)
+    // {
+    //     $session = counseling::find($id);
+
+    //     if (!$session) {
+    //         return response()->json(['message' => 'Session not found.'], 404);
+    //     }
+
+    //     if ($session->status != 5) {
+    //         return response()->json(['message' => 'Only resolved sessions can be restored.'], 400);
+    //     }
+
+    //     $session->status = 2;
+    //     $session->end_date = null;
+    //     $session->save();
+
+    //     return response()->json(['message' => 'Session successfully restored to active management.']);
+    // }
+
+
+
+    // Helper functions below caution!
+    private function markAllParentsResolved($session)
+    {
+        while ($session) {
+            if ($session->status != 4) { 
+                $session->update([
+                    'status' => 4,
+                    'end_date' => Carbon::now()->toDateString(),
+                ]);
+            }
+
+            // Move upward by using UID reference instead of relationship
+            if ($session->parent_session_id) {
+                $session = Counseling::where('parent_uid', $session->parent_session_id)->first();
+            } else {
+                $session = null;
+            }
+        }
+    }
+
+    private function markFamilyResolved($session)
+    {
+        $resolvedStatusId = 5;
+
+        // Determine the root UID 
+        $rootUid = $session->parent_uid ?? $session->parent_session_id;
+
+        // If this is the parent itself its parent_session_id is null,
+        // so use its parent_uid SNS-001
+        if (is_null($session->parent_session_id)) {
+            $rootUid = $session->parent_uid;
         }
 
-        $session->status = 2;
-        $session->end_date = null;
-        $session->save();
+        // Find all sessions in this family
+        $familySessions = Counseling::where('parent_uid', $rootUid)
+            ->orWhere('parent_session_id', $rootUid)
+            ->get();
 
-        return response()->json(['message' => 'Session successfully restored to active management.']);
+        // Mark everyone as resolved
+        foreach ($familySessions as $record) {
+            if ($record->status != $resolvedStatusId) {
+                $record->update([
+                    'status' => $resolvedStatusId,
+                    'end_date' => $record->end_date ?? Carbon::now()->toDateString(),
+                ]);
+            }
+        }
     }
 }

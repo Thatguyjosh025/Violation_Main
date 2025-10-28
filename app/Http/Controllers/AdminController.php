@@ -132,7 +132,7 @@ class AdminController extends Controller
                 'Date_Created' => Carbon::now('Asia/Manila'),
                 'Update_at' => Carbon::now('Asia/Manila'),
                 'is_active' => true,
-                'is_admitted' => false
+                'is_admitted' => ($request->counseling_required === 'No') ? true : false,
             ]);
 
             // Delete incident and notify faculty
@@ -177,7 +177,7 @@ class AdminController extends Controller
                 'Date_Created' => Carbon::now('Asia/Manila'),
                 'Update_at' => Carbon::now('Asia/Manila'),
                 'is_active' => true,
-                'is_admitted' => false
+                'is_admitted' => ($request->counseling_required === 'No') ? true : false,
             ]);
         }
 
