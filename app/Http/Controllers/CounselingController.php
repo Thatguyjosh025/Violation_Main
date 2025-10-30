@@ -29,7 +29,7 @@ class CounselingController extends Controller
         ]);
     }
 
-  public function storeCounselingSchedule(Request $request)
+    public function storeCounselingSchedule(Request $request)
     {
         $validated = $request->validate([
             'student_no'   => 'required|string',
@@ -122,7 +122,7 @@ class CounselingController extends Controller
 
         if ($counseling) {
             postviolation::where('student_no', $validated['student_no'])
-                ->update(['is_admitted' => true]);
+                ->update(['is_admitted' => false]);
 
             return response()->json([
                 'success' => true,
@@ -150,6 +150,8 @@ class CounselingController extends Controller
         $session = Counseling::findOrFail($id);
 
         $validated = $request->validate([
+            'year_level'        => 'nullable|string',
+            'program'           => 'nullable|string',
             'session_notes'     => 'nullable|string',
             'emotional_state'   => 'nullable|string',
             'behavior_observe'  => 'nullable|string',
@@ -161,6 +163,8 @@ class CounselingController extends Controller
         $endDate = ($validated['status'] == $resolvedStatusId) ? Carbon::now()->toDateString() : null;
 
         $session->update([
+            'year_level'        => $validated['year_level'] ?? $session->year_level,
+            'program'           => $validated['program'] ?? $session->program,
             'session_notes'     => $validated['session_notes'] ?? $session->session_notes,
             'emotional_state'   => $validated['emotional_state'] ?? $session->emotional_state,
             'behavior_observe'  => $validated['behavior_observe'] ?? $session->behavior_observe,
@@ -276,7 +280,7 @@ class CounselingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'All previous sessions marked as resolved and follow-up created successfully.',
+            'message' => 'Follow-up created successfully.',
         ]);
     }
 

@@ -664,6 +664,7 @@ $(document).on('click', '.btn-edit-post', function(){
          $('#edit_faculty_name').val(response.data.faculty_name);
          $('#edit_counseling_required').val(response.data.counseling_required);
          $('#edit_Remarks').val(response.data.Remarks);
+         $('#edit_notes').val(response.data.notes);
          $('#Date_Created').text(response.data.Date_Created);
   
          loadViolationDropdown('/get_violations', '#edit_violation_type', response.data.violation_type);

@@ -96,8 +96,18 @@
 
 
                         <div class="mb-3">
-                        <div class="section-title">Session Notes</div>
-                        <textarea class="form-control" id="session_notes_input" placeholder="Write session notes..."></textarea>
+                            <div class="section-title">Year level / Grade</div>
+                            <input class="form-control" id="year_level_input" placeholder="1st Year or Grade 11"></input>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="section-title">Program</div>
+                            <input class="form-control" id="program_input" placeholder="Bachelor of Science in Information Technology"></input>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="section-title">Session Notes</div>
+                            <textarea class="form-control" id="session_notes_input" placeholder="Write session notes..."></textarea>
                         </div>
 
                         <div class="mb-3">
@@ -221,6 +231,8 @@ $(document).ready(function () {
                 $('#editModal .kv-value').eq(5).text(data.start_date || 'N/A');
                 $('#editModal .kv-value').eq(6).text(data.end_date || 'N/A');
 
+                $('#year_level_input').val(data.year_level || '');
+                $('#program_input').val(data.program || '');
                 $('#session_notes_input').val(data.session_notes || '');
                 $('#emotional_state_input').val(data.emotional_state || '');
                 $('#Behavior_observe_input').val(data.behavior_observe || '');
@@ -268,6 +280,8 @@ $(document).ready(function () {
         }
 
         const payload = {
+            year_level: $('#year_level_input').val(),
+            program: $('#program_input').val(),
             session_notes: $('#session_notes_input').val(),
             emotional_state: $('#emotional_state_input').val(),
             behavior_observe: $('#Behavior_observe_input').val(),

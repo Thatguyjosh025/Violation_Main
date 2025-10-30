@@ -3,7 +3,7 @@
 
 @php
     use App\Models\postviolation;
-    $counselingperson = postviolation::where('is_admitted', false)->get();
+    $counselingperson = postviolation::where('is_admitted', true)->get();
 @endphp
 
 <div class="d-flex align-items-center">
@@ -99,14 +99,14 @@
                     <select name="" id="priority_level_input" class="form-select">
                         <!-- Load hereeee -->
                     </select>
-                    <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
+                    <div class="error-msg text-danger small mt-1" id="error_priority_level"></div>
                 </div>
                 <div class="field">
                     <label>Guidance Service</label>
                     <select name="" id="guidance_service_input" class="form-select">
                         <!-- Load hereeee -->
                     </select>
-                    <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
+                    <div class="error-msg text-danger small mt-1" id="error_guidance_service"></div>
                 </div>
                 
                 <button class="btn schedule">Set Schedule</button>
@@ -227,11 +227,17 @@ $(document).ready(function () {
         const startDate = $('#start_date').val();
         const startTime = $('#start_time').val();
         const endTime = $('#end_time').val();
+        const prioritylevel = $('#priority_level_input').val();
+        const guidanceservice = $('#guidance_service_input').val();
+
         let hasError = false;
 
         if (!startDate) { $('#error_start_date').text('Start date is required.'); hasError = true; }
         if (!startTime) { $('#error_start_time').text('Start time is required.'); hasError = true; }
         if (!endTime) { $('#error_end_time').text('End time is required.'); hasError = true; }
+        if (!prioritylevel) { $('#error_priority_level').text('The Priority level field is required.'); hasError = true; }
+        if (!guidanceservice) { $('#error_guidance_service').text('The Guidance service field is required.'); hasError = true; }
+
 
         const start = new Date(`${startDate}T${startTime}`);
         const end = new Date(`${startDate}T${endTime}`);
@@ -307,7 +313,7 @@ $(document).ready(function () {
     });
 
     // Clear errors on input
-    $('#start_date, #start_time, #end_time').on('input change', function () {
+    $('#start_date, #start_time, #end_time,#priority_level_input,#guidance_service_input').on('input change', function () {
         $(this).next('.error-msg').text('');
     });
 

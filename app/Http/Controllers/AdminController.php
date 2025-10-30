@@ -132,7 +132,7 @@ class AdminController extends Controller
                 'Date_Created' => Carbon::now('Asia/Manila'),
                 'Update_at' => Carbon::now('Asia/Manila'),
                 'is_active' => true,
-                'is_admitted' => ($request->counseling_required === 'No') ? true : false,
+                'is_admitted' => ($request->counseling_required === 'Yes') ? true : false,
             ]);
 
             // Delete incident and notify faculty
@@ -177,7 +177,7 @@ class AdminController extends Controller
                 'Date_Created' => Carbon::now('Asia/Manila'),
                 'Update_at' => Carbon::now('Asia/Manila'),
                 'is_active' => true,
-                'is_admitted' => ($request->counseling_required === 'No') ? true : false,
+                'is_admitted' => ($request->counseling_required === 'Yes') ? true : false,
             ]);
         }
 
@@ -245,66 +245,67 @@ class AdminController extends Controller
                 'appeal' => $student->appeal,
                 'upload_evidence' => $student->upload_evidence,
                 'appeal_evidence' => $student->appeal_evidence,
+                'notes' => $student->Notes,
                 'Date_Created' => Carbon::parse($student->Date_Created)->format('Y-m-d'),
             ]
         ]);
     }
 
     public function updateStudentInfo(Request $request, $id)
-{
-    $student = postviolation::with('status')->find($id);
+    {
+        $student = postviolation::with('status')->find($id);
 
-    if (!$student) {
-        return response()->json(['status' => 500, 'message' => 'Student not found']);
-    }
+        if (!$student) {
+            return response()->json(['status' => 500, 'message' => 'Student not found']);
+        }
 
-    $oldStatus = $student->status ? $student->status->status_text : null;
+        $oldStatus = $student->status ? $student->status->status_text : null;
 
-    $student->update([
-        'student_no' => $request->update_student_no,
-        'student_name' => $request->update_name,
-        // 'course' => $request->update_course, <------ DELETE THIS MF
-        'school_email' => $request->update_school_email,
-        'violation_type' => $request->update_violation_type,
-        'penalty_type' => $request->update_penalty_type,
-        'severity_Name' => $request->update_severity,
-        'status_name' => $request->update_status, // this is the new status ID
-        'rule_Name' => $request->update_rule_name,
-        'description_Name' => $request->update_description,
-        'faculty_involvement' => $request->update_faculty_involvement,
-        'faculty_name' => $request->update_faculty_name,
-        'counseling_required' => $request->update_counseling_required,
-        'referal_type' => $request->update_referral_type,
-        'Remarks' => $request->update_remarks,
-        'Notes' => $request->update_notes,
-        'Update_at' => Carbon::now('Asia/Manila')
-    ]);
-
-    $newStatusText = statuses::find($request->update_status)->status ?? 'Unknown';
-
-    if ($newStatusText === 'Resolved') {
-        $student->is_active = false;
-        $student->save();
-    }
-
-    if ($oldStatus != $newStatusText) {
-        $url = ($newStatusText === 'Resolved') ? '/violation_history' : '/violation_tracking';
-
-        $notif = notifications::create([
-            'title' => 'Violation Status Update',
-            'message' => 'Your violation has been escalated to ' . $newStatusText,
-            'role' => 'student',
+        $student->update([
             'student_no' => $request->update_student_no,
+            'student_name' => $request->update_name,
+            // 'course' => $request->update_course, <------ DELETE THIS MF
             'school_email' => $request->update_school_email,
-            'type' => 'approve',
-            'url' => $url,
-            'date_created' => Carbon::now()->format('Y-m-d'),
-            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+            'violation_type' => $request->update_violation_type,
+            'penalty_type' => $request->update_penalty_type,
+            'severity_Name' => $request->update_severity,
+            'status_name' => $request->update_status, // this is the new status ID
+            'rule_Name' => $request->update_rule_name,
+            'description_Name' => $request->update_description,
+            'faculty_involvement' => $request->update_faculty_involvement,
+            'faculty_name' => $request->update_faculty_name,
+            'counseling_required' => $request->update_counseling_required,
+            'referal_type' => $request->update_referral_type,
+            'Remarks' => $request->update_remarks,
+            'Notes' => $request->update_notes,
+            'Update_at' => Carbon::now('Asia/Manila')
         ]);
-    }
 
-    return response()->json(['status' => 200, 'message' => 'Student information updated successfully']);
-}
+        $newStatusText = statuses::find($request->update_status)->status ?? 'Unknown';
+
+        if ($newStatusText === 'Resolved') {
+            $student->is_active = false;
+            $student->save();
+        }
+
+        if ($oldStatus != $newStatusText) {
+            $url = ($newStatusText === 'Resolved') ? '/violation_history' : '/violation_tracking';
+
+            $notif = notifications::create([
+                'title' => 'Violation Status Update',
+                'message' => 'Your violation has been escalated to ' . $newStatusText,
+                'role' => 'student',
+                'student_no' => $request->update_student_no,
+                'school_email' => $request->update_school_email,
+                'type' => 'approve',
+                'url' => $url,
+                'date_created' => Carbon::now()->format('Y-m-d'),
+                'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+            ]);
+        }
+
+        return response()->json(['status' => 200, 'message' => 'Student information updated successfully']);
+    }
 
 
 // View incident report info
