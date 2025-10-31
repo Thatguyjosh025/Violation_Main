@@ -44,42 +44,9 @@ class CounselingController extends Controller
             'end_time'     => 'required',
         ]);
 
-        $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
-        $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
-
-        // Prevent scheduling in the past
-        if ($start->isBefore(Carbon::now())) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You cannot schedule a counseling session in the past.'
-            ]);
-        }
-
-        // Prevent backward scheduling
-        if ($end->lessThanOrEqualTo($start)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'End time must be after start time on the same day.'
-            ]);
-        }
-
-        $startFormatted = $start->format('g:i A');
-        $endFormatted = $end->format('g:i A');
-
-        // Check for schedule conflict
-        $conflict = DB::table('tb_counseling')
-            ->where('start_date', $validated['start_date'])
-            ->whereRaw('? < end_time AND ? > start_time', [
-                $start->format('H:i:s'),
-                $end->format('H:i:s')
-            ])
-            ->exists();
-
-        if ($conflict) {
-            return response()->json([
-                'success' => false,
-                'message' => "The time slot from {$startFormatted} to {$endFormatted} is already occupied. Please choose a different time."
-            ]);
+        $validationResult = $this->validateScheduleTime($validated);
+        if (!$validationResult['success']) {
+            return response()->json($validationResult);
         }
 
         // create a NEW parent UID for storeCounselingSchedule
@@ -196,37 +163,9 @@ class CounselingController extends Controller
             'end_time'   => 'required',
         ]);
 
-        $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
-        $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
-
-        if ($start->isBefore(Carbon::now())) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You cannot reschedule a counseling session to a past date/time.',
-            ]);
-        }
-
-        if ($end->lessThanOrEqualTo($start)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'End time must be after start time.',
-            ]);
-        }
-
-        $conflict = DB::table('tb_counseling')
-            ->where('id', '!=', $id)
-            ->where('start_date', $validated['start_date'])
-            ->whereRaw('? < end_time AND ? > start_time', [
-                $start->format('H:i:s'),
-                $end->format('H:i:s'),
-            ])
-            ->exists();
-
-        if ($conflict) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This time slot is already occupied. Please choose a different time.',
-            ]);
+        $validationResult = $this->validateScheduleTime($validated);
+        if (!$validationResult['success']) {
+            return response()->json($validationResult);
         }
 
         $session->update([
@@ -249,6 +188,11 @@ class CounselingController extends Controller
             'start_time' => 'required',
             'end_time'   => 'required',
         ]);
+
+        $validationResult = $this->validateScheduleTime($validated);
+        if (!$validationResult['success']) {
+            return response()->json($validationResult);
+        }
 
         $parent = Counseling::findOrFail($parentId);
 
@@ -354,5 +298,55 @@ class CounselingController extends Controller
                 ]);
             }
         }
+    }
+
+    private function validateScheduleTime($validated)
+    {
+        $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
+        $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
+
+        // Prevent scheduling in the past
+        if ($start->isBefore(Carbon::now())) {
+            return [
+                'success' => false,
+                'message' => 'You cannot schedule a counseling session in the past.'
+            ];
+        }
+
+        // Prevent backward scheduling
+        if ($end->lessThanOrEqualTo($start)) {
+            return [
+                'success' => false,
+                'message' => 'End time must be after start time on the same day.'
+            ];
+        }
+
+        $startFormatted = $start->format('g:i A');
+        $endFormatted = $end->format('g:i A');
+
+        // Check for schedule conflict
+        $conflict = DB::table('tb_counseling')
+            ->where('start_date', $validated['start_date'])
+            ->whereNotIn('status', [4, 5])
+            ->whereDate('start_date', '>=', Carbon::today('Asia/Manila')) 
+            ->whereRaw('? < end_time AND ? > start_time', [
+                $start->format('H:i:s'),
+                $end->format('H:i:s')
+            ])
+        ->exists();
+
+        if ($conflict) {
+            return [
+                'success' => false,
+                'message' => "The time slot from {$startFormatted} to {$endFormatted} is already occupied. Please choose a different time."
+            ];
+        }
+
+        // Passed validation
+        return [
+            'success' => true,
+            'start' => $start,
+            'end' => $end
+        ];
     }
 }

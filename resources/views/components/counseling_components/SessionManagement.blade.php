@@ -145,16 +145,19 @@
                     <form id="reschedForm">
                         @csrf
                         <div class="mb-3">
-                        <label class="form-label">New Start Date</label>
-                        <input type="date" id="resched_date" class="form-control" required>
+                            <label class="form-label">New Start Date</label>
+                            <input type="date" id="resched_date" class="form-control">
+                            <div class="new-error-msg text-danger small mt-1" id="error_new_start_date"></div>
                         </div>
                         <div class="mb-3">
-                        <label class="form-label">New Start Time</label>
-                        <input type="time" id="resched_start_time" class="form-control" required>
+                            <label class="form-label">New Start Time</label>
+                            <input type="time" id="resched_start_time" class="form-control">
+                            <div class="new-error-msg text-danger small mt-1" id="error_new_start_time"></div>
                         </div>
                         <div class="mb-3">
-                        <label class="form-label">New End Time</label>
-                        <input type="time" id="resched_end_time" class="form-control" required>
+                            <label class="form-label">New End Time</label>
+                            <input type="time" id="resched_end_time" class="form-control">
+                            <div class="new-error-msg text-danger small mt-1" id="error_new_end_time"></div>
                         </div>
                         <button type="submit" class="btn btn-primary">Confirm Reschedule</button>
                     </form>
@@ -164,27 +167,27 @@
 
             <!-- Follow-up Modal -->
             <div class="modal fade" id="followModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content p-3">
-                <h5>Create Follow-up Counseling Session</h5>
-                <form id="followForm">
-                    @csrf
-                    <div class="mb-3">
-                    <label class="form-label">Follow-up Date</label>
-                    <input type="date" id="follow_date" class="form-control" required>
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content p-3">
+                    <h5>Create Follow-up Counseling Session</h5>
+                    <form id="followForm">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label">Follow-up Date</label>
+                            <input type="date" id="follow_date" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" id="follow_start_time" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End Time</label>
+                            <input type="time" id="follow_end_time" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-success">Create Follow-up</button>
+                    </form>
                     </div>
-                    <div class="mb-3">
-                    <label class="form-label">Start Time</label>
-                    <input type="time" id="follow_start_time" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                    <label class="form-label">End Time</label>
-                    <input type="time" id="follow_end_time" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-success">Create Follow-up</button>
-                </form>
                 </div>
-            </div>
             </div>
 
 
@@ -211,6 +214,7 @@ $(document).ready(function () {
         language: { emptyTable: "No scheduled counseling at the moment." }
     });
 
+    // Edit button handler
     $(document).on('click', '.edit-btn', function () {
         const sessionId = $(this).data('id');
         currentSessionId = sessionId;
@@ -246,6 +250,7 @@ $(document).ready(function () {
             }
         });
     });
+    //end edit button handler
 
     // Populate counseling status dropdown when modal is opened
     $('#editModal').on('show.bs.modal', function () {
@@ -270,7 +275,7 @@ $(document).ready(function () {
         });
     });
 
-    // submits the form
+    // submits the form handler
     $('#sessionForm').on('submit', function (e) {
         e.preventDefault();
 
@@ -334,10 +339,11 @@ $(document).ready(function () {
             }
         });
     });
+    //end submits the form handler
 
 
     // Reschedule handler
-     $(document).on('click', '.resched-btn', function () {
+    $(document).on('click', '.resched-btn', function () {
         currentReschedId = $(this).data('id');
         $('#reschedModal').modal('show');
     });
@@ -345,13 +351,31 @@ $(document).ready(function () {
     $('#reschedForm').on('submit', function (e) {
         e.preventDefault();
 
+        // Clear previous error messages
+        $('#error_new_start_date, #error_new_start_time, #error_new_end_time').text('');
+
+        const newstartDate = $('#resched_date').val();
+        const newstartTime = $('#resched_start_time').val();
+        const newendTime = $('#resched_end_time').val();
+
+        let hasError = false;
+
+        if (!newstartDate) {$('#error_new_start_date').text('Start date is required.'); hasError = true;}
+        if (!newstartTime) {$('#error_new_start_time').text('Start time is required.'); hasError = true;}
+        if (!newendTime) {$('#error_new_end_time').text('End time is required.'); hasError = true;}
+
+        if (hasError) {
+            return;
+        }
+
+        // Continue only if all fields are valid
         $.ajax({
             url: `/counseling/reschedule/${currentReschedId}`,
             method: 'POST',
             data: {
-                start_date: $('#resched_date').val(),
-                start_time: $('#resched_start_time').val(),
-                end_time: $('#resched_end_time').val(),
+                start_date: newstartDate,
+                start_time: newstartTime,
+                end_time: newendTime,
                 _token: '{{ csrf_token() }}'
             },
             success: function (response) {
@@ -375,7 +399,9 @@ $(document).ready(function () {
             }
         });
     });
+    //end reschedule
 
+    // Follow-up handler
     $(document).on('click', '.follow-btn', function () {
         currentFollowUpId = $(this).data('id');
         $('#followModal').modal('show');
@@ -417,6 +443,23 @@ $(document).ready(function () {
             }
         });
     });
+    //end follow up
+
+    $('#reschedModal').on('hidden.bs.modal', function () {
+        $('#reschedForm')[0].reset();
+    });
+
+    $('#followModal').on('hidden.bs.modal', function () {
+        $('#followForm')[0].reset();
+    });
+
+     // Clear errors on input
+    $('#resched_date, #resched_start_time, #resched_end_time').on('input change', function () {
+        $(this).next('.new-error-msg').text('');
+    });
+
+
+
 });
 
 </script>
