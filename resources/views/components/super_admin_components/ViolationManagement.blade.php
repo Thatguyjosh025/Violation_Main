@@ -98,7 +98,8 @@ $(document).ready(function () {
         searching: true,
         ordering: true,
         info: true,
-        responsive: true
+        responsive: false,
+        autowidth: false
     });
 
     // Show modal for adding a violation

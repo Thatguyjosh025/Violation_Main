@@ -25,6 +25,7 @@ class StudentController extends Controller
             ->get();
 
         // 5 mins violation demo expiration check
+        // put a fucking validation here to ignore all the data with RESOLVE status because it process everything it sees fucking annoying
         foreach ($violations as $violation) {
             $createdDate = Carbon::parse($violation->Date_Created,'Asia/Manila'); // Note: always set the timezone in asia this is fucking sucks
             $now = Carbon::now('Asia/Manila');

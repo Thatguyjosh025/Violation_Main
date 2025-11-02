@@ -195,23 +195,111 @@ Route::get('/violation_handbook', [ViewController::class, 'violation_handbook'])
 ->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty,super,counselor']);
 
 
+// this shit is unstable for now but it does the job like fr since it does not merge the uploaded suspected it needs to also stored in array first
 Route::get('/violation_records/data', function (Request $request) {
+    // --------------------------------------------------------
+    //  AUTO-MERGE LOGIC FOR 3 MINOR VIOLATIONS
+    // --------------------------------------------------------
+    $studentsWithMinors = postviolation::select('student_no')
+        ->where('severity_Name', 'Minor')
+        ->where('is_active', true)
+        ->groupBy('student_no')
+        ->havingRaw('COUNT(*) >= 3')
+        ->get();
+
+    foreach ($studentsWithMinors as $student) {
+        $minorViolations = postviolation::where('student_no', $student->student_no)
+            ->where('severity_Name', 'Minor')
+            ->where('is_active', true)
+            ->orderBy('Date_Created', 'asc')
+            ->take(3)
+            ->get();
+
+        if ($minorViolations->count() >= 3) {
+            $first = $minorViolations->first();
+
+            // Combine all 3 minor violation names for transparency
+            $violationNames = $minorViolations->pluck('rule_Name')->implode(', ');
+
+            // Combine all descriptions (if available)
+            $violationDescriptions = $minorViolations->pluck('description_Name')->implode('; ');
+
+            // Scan for faculty involvement, counseling, and name
+            $facultyInvolvement = $minorViolations->pluck('faculty_involvement')->filter()->first() ?? null;
+            $counselingRequired = $minorViolations->contains('counseling_required', 'Yes') ? 'Yes' : 'No';
+            $facultyName = $minorViolations->pluck('faculty_name')->filter()->first() ?? null;
+
+            // Also grab upload and appeal evidence from the latest or any existing
+            $uploadEvidence = $minorViolations->pluck('upload_evidence')->filter()->first() ?? null;
+            $appealEvidence = $minorViolations->pluck('appeal_evidence')->filter()->first() ?? null;
+
+            // Prevent duplicate merges (only once per day)
+            $alreadyMerged = postviolation::where('student_no', $student->student_no)
+                ->where('severity_Name', 'Major')
+                ->where('rule_Name', 'Automatic Major Violation (3 Minor Offenses)')
+                ->whereDate('Date_Created', Carbon::today())
+                ->exists();
+
+            if (!$alreadyMerged) {
+                // Create auto Major Violation with full transparency
+                postviolation::create([
+                    'student_no' => $student->student_no,
+                    'student_name' => $first->student_name,
+                    'school_email' => $first->school_email,
+
+                    'violation_type' => $first->violation_type,
+                    'penalty_type' => $first->penalty_type,
+                    'status_name' => $first->status_name,
+                    'referal_type' => $first->referal_type,
+
+                    'severity_Name' => 'Major',
+                    'rule_Name' => 'Automatic Merge (3 Minor Offenses)',
+
+                    // Add all minor details here for transparency
+                    'description_Name' => "Auto-merged from 3 Minor Violations: {$violationNames}",
+                    'Remarks' => "This violation record is a result of merging three minor violations.",
+
+                    'faculty_involvement' => $facultyInvolvement,
+                    'counseling_required' => $counselingRequired,
+                    'faculty_name' => $facultyName,
+
+                    'upload_evidence' => $uploadEvidence,
+                    'appeal_evidence' => $appealEvidence,
+
+                    'appeal' => '',
+                    'Date_Created' => Carbon::now('Asia/Manila'),
+                    'Update_at' => Carbon::now('Asia/Manila'),
+                    'is_active' => true,
+                    'is_admitted' => true,
+                ]);
+
+                // Mark the 3 minor violations as resolved
+                postviolation::whereIn('id', $minorViolations->pluck('id'))
+                    ->update([
+                        'is_active' => false,
+                        'status_name' => 8, // ✅ Status 8 = Resolved
+                        'Update_at' => Carbon::now('Asia/Manila'),
+                    ]);
+            }
+        }
+    }
+
+    // --------------------------------------------------------
+    // DATATABLE QUERY LOGIC
+    // --------------------------------------------------------
     $query = postviolation::with(['violation', 'status']);
 
-    // Apply status filter if requested and not empty
     if ($request->has('status') && $request->status !== '') {
         $query->whereHas('status', function($q) use ($request) {
             $q->where('status', $request->status);
         });
 
-        // If the status is "Resolved", show records with is_active = false
         if ($request->status === 'Resolved') {
             $query->where('is_active', false);
         } else {
             $query->where('is_active', true);
         }
     } else {
-        // If no status filter is applied, show only active records
         $query->where('is_active', true);
     }
 
@@ -221,22 +309,17 @@ Route::get('/violation_records/data', function (Request $request) {
         ->addColumn('actions', function ($data) {
             $viewBtn = '<button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>';
             $editBtn = '<button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>';
-
             return $viewBtn . ' ' . $editBtn;
         })
-        ->editColumn('Date_Created', function($data) {
-            return Carbon::parse($data->Date_Created)->format('Y-m-d');
-        })
+        ->editColumn('Date_Created', fn($data) => Carbon::parse($data->Date_Created)->format('Y-m-d'))
         ->rawColumns(['actions'])
         ->filterColumn('violation', function($query, $keyword) {
-            $query->whereHas('violation', function($q) use ($keyword) {
-                $q->where('violations', 'like', "%{$keyword}%");
-            });
+            $query->whereHas('violation', fn($q) => $q->where('violations', 'like', "%{$keyword}%"));
         })
         ->filterColumn('status', function($query, $keyword) {
-            $query->whereHas('status', function($q) use ($keyword) {
-                $q->where('status', 'like', "%{$keyword}%");
-            });
+            $query->whereHas('status', fn($q) => $q->where('status', 'like', "%{$keyword}%"));
         })
         ->make(true);
-})->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])->name('violation_records.data');
+})
+->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline'])
+->name('violation_records.data');
