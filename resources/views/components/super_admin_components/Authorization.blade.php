@@ -54,7 +54,7 @@
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">First Name</th>
+                        <th data-label="firstname" scope="col">First Name</th>
                         <th scope="col">Last Name</th>
                         <th scope="col">Email</th>
                         <th scope="col">Student No.</th>
@@ -66,14 +66,14 @@
                 <tbody id="authbody">
                     @foreach ($userdata as $data)
                         <tr>
-                            <th scope="row">{{ $data->id }}</th>
-                            <td>{{ $data->firstname }}</td>
-                            <td>{{ $data->lastname }}</td>
-                            <td>{{ $data->email }}</td>
-                            <td>{{ $data->student_no }}</td>
-                            <td>{{ $data->role }}</td>
-                            <td>{{ $data->status }}</td>
-                            <td> 
+                            <th scope="row" data-label="ID">{{ $data->id }}</th>
+                            <td data-label="First Name">{{ $data->firstname }}</td>
+                            <td data-label="Last Name">{{ $data->lastname }}</td>
+                            <td data-label="Email">{{ $data->email }}</td>
+                            <td data-label="Student No.">{{ $data->student_no }}</td>
+                            <td data-label="Role">{{ $data->role }}</td>
+                            <td data-label="Status">{{ $data->status }}</td>
+                            <td data-label="Actions">
                                 <button class="btn btn-primary btn-edit" value="{{ $data->id }}">Edit</button>
                             </td>
                         </tr>

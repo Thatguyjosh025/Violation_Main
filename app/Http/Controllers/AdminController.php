@@ -202,7 +202,8 @@ class AdminController extends Controller
                 'school_email' => $create->school_email,
                 'violation_name' => $create->violation->violations,
                 'status_name' => $create->status->status,
-                'Date_Created' => $create->Date_Created->format('Y-m-d')
+                'Date_Created' => $create->Date_Created->format('Y-m-d'),
+                'is_admitted' => $create->is_admitted,
             ],
             'message' => 'test',
             'related_id' => $create->id

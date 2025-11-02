@@ -30,6 +30,7 @@ class postviolation extends Model
         'appeal',
         'Date_Created',
         'Time_Created',
+        'is_admitted',
         'Update_at'
     ];
 
