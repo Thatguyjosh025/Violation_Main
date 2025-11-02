@@ -22,32 +22,30 @@ $auditdata = audits::get();
                     <!-- Table -->
                     <div class="table-responsive">
                         <table id="auditTable" class="table table-striped table-bordered align-middle w-100">
-                        <thead class="table-light">
-                            <tr>
-                            <th scope="col">ID</th>
-                            <th>change_at</th>
-                            <th>change_by</th>
-                            <th>change_by_email</th>
-                            <th>event_type</th>
-                            <th>field_name</th>
-                            <th>old_value</th>
-                            <th>new_value</th>
-                            </tr>
-                        </thead>
-                        <tbody id="auditbody">
-                            @foreach ($auditdata as $data)
-                            <tr>
-                                <th scope="row">{{ $data->id }}</th>
-                                <td>{{ $data -> changed_at }}</td>
-                                <td>{{ $data -> changed_by }}</td>
-                                <td>{{ $data -> changed_by_email }}</td>
-                                <td>{{ $data -> event_type }}</td>
-                                <td>{{ $data -> field_name }}</td>
-                                <td>{{ $data -> old_value }}</td>
-                                <td>{{ $data -> new_value }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th>change_at</th>
+                                    <th>change_by</th>
+                                    <th>event_type</th>
+                                    <th>field_name</th>
+                                    <th>old_value</th>
+                                    <th>new_value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditbody">
+                                @foreach ($auditdata as $data)
+                                <tr>
+                                    <th scope="row" data-label="ID">{{ $data->id }}</th>
+                                    <td data-label="change_at">{{ $data->changed_at }}</td>
+                                    <td data-label="change_by">{{ $data->changed_by }}</td>
+                                    <td data-label="event_type">{{ $data->event_type }}</td>
+                                    <td data-label="field_name">{{ $data->field_name }}</td>
+                                    <td data-label="old_value">{{ $data->old_value }}</td>
+                                    <td data-label="new_value">{{ $data->new_value }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
                         </table>
                     </div>
                 </div>
