@@ -27,11 +27,16 @@ class StudentController extends Controller
         // 5 mins violation demo expiration check
         // put a fucking validation here to ignore all the data with RESOLVE status because it process everything it sees fucking annoying
         foreach ($violations as $violation) {
-            $createdDate = Carbon::parse($violation->Date_Created,'Asia/Manila'); // Note: always set the timezone in asia this is fucking sucks
+            
+            if ($violation->status_name == 8) {
+                continue;
+            }
+
+            $createdDate = Carbon::parse($violation->Date_Created, 'Asia/Manila');
             $now = Carbon::now('Asia/Manila');
             $minutesSinceCreated = $createdDate->diffInMinutes($now);
 
-            if ($minutesSinceCreated > 10 && $violation->appeal === 'N/A') {
+            if ($minutesSinceCreated > 1 && $violation->appeal === 'N/A') {
                 $violation->appeal = 'No Objection';
                 $violation->status_name = 3;
                 $violation->is_active = true;
@@ -45,7 +50,7 @@ class StudentController extends Controller
                     'school_email' => $school_email,
                     'type' => 'incident',
                     'url' => '/violation_tracking',
-                    'date_created' => Carbon::now()->format('Y-m-d'),
+                    'date_created' => Carbon::now('Asia/Manila')->format('Y-m-d'),
                     'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
                 ]);
             }

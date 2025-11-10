@@ -131,7 +131,8 @@ $(document).ready(function () {
         let violation = $(this).data('violation');
         $('#offense').text(violation.type || 'N/A').attr('href', '/violation_handbook#' + violation.section_Id);
         $('#ruleLink').text(violation.rule_Name);
-        $('#detailsDescription').text(violation.description_Name);
+        //$('#detailsDescription').text(violation.description_Name);
+        $('#detailsDescription').html(violation.description_Name.replace(/\n/g, '<br>'));
         $('#severity').text(violation.severity_Name);
         $('#penalty').text(violation.penalties || 'N/A');
         $('#actionTaken').text(violation.referals || 'N/A');

@@ -242,6 +242,11 @@ Route::get('/violation_records/data', function (Request $request) {
 
             if (!$alreadyMerged) {
                 // Create auto Major Violation with full transparency
+
+                // Combine minor violation names into bullet form
+                $violationList = $minorViolations->pluck('rule_Name')->toArray();
+                $bulletList = "- " . implode("\n- ", $violationList);
+
                 postviolation::create([
                     'student_no' => $student->student_no,
                     'student_name' => $first->student_name,
@@ -252,13 +257,11 @@ Route::get('/violation_records/data', function (Request $request) {
                     'status_name' => $first->status_name,
                     'referal_type' => $first->referal_type,
 
-                    'severity_Name' => 'Major',
+                    'severity_Name' => 'Major A',
                     'rule_Name' => 'Automatic Merge (3 Minor Offenses)',
+                    'description_Name' => "Auto-merged from 3 Minor Violations:\n{$bulletList}",
 
-                    // Add all minor details here for transparency
-                    'description_Name' => "Auto-merged from 3 Minor Violations: {$violationNames}",
                     'Remarks' => "This violation record is a result of merging three minor violations.",
-
                     'faculty_involvement' => $facultyInvolvement,
                     'counseling_required' => $counselingRequired,
                     'faculty_name' => $facultyName,
@@ -266,7 +269,7 @@ Route::get('/violation_records/data', function (Request $request) {
                     'upload_evidence' => $uploadEvidence,
                     'appeal_evidence' => $appealEvidence,
 
-                    'appeal' => '',
+                    'appeal' => 'N/A',
                     'Date_Created' => Carbon::now('Asia/Manila'),
                     'Update_at' => Carbon::now('Asia/Manila'),
                     'is_active' => true,

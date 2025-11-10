@@ -191,10 +191,6 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <!-- <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
-                    <label for="course" class="form-label" style="font-size: 1rem; font-weight: 500;">Course:</label>
-                    <p id="viewcourse" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
-                  </div> -->
                   <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
                     <label for="schoolEmail" class="form-label" style="font-size: 1rem; font-weight: 500;">School Email:</label>
                     <p id="viewschool_email" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
@@ -246,7 +242,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="descriptionName" class="form-label" style="font-size: 1rem; font-weight: 500;">Description:</label>
-                    <textarea id="viewdescription_Name" class="form-control" style="resize: none;" readonly disabled></textarea>
+                    <p id="viewdescription_Name" class="form-label" style="resize: none;" readonly disabled></p>
                 </div>
               </div>
               <div class="row">
@@ -457,7 +453,7 @@ $(document).on('click', '.btn-view-post', function () {
                 $('#viewschool_email').text(response.data.school_email);
                 $('#viewseverity_Name').text(response.data.severity_Name);
                 $('#viewrule_Name').text(response.data.rule_Name);
-                $('#viewdescription_Name').text(response.data.description_Name);
+                $('#viewdescription_Name').html(response.data.description_Name.replace(/\n/g, '<br>'));
                 $('#viewfaculty_involvement').text(response.data.faculty_involvement);
                 $('#viewfaculty_name').text(response.data.faculty_name);
                 $('#viewcounseling_required').text(response.data.counseling_required);

@@ -17,7 +17,8 @@ class AdminController extends Controller
 {
     //
 
-    public function getRule($violation_id) {
+    public function getRule($violation_id) 
+    {
         $rule = rules::where('violation_id', $violation_id)
             ->with('severity')
             ->first();
@@ -38,21 +39,22 @@ class AdminController extends Controller
         ]);
     }
 
-    public function getStudentViolations($name, $studentNo){
-    $violations = postviolation::where('student_name', $name)
-        ->where('student_no', $studentNo)
-        ->with('violation')
-        ->get()
-        ->map(function ($violation) {
-            return [
-                'type' => optional($violation->violation)->violations,
-                'date' => $violation->Date_Created,
-                'violatedrule' => $violation->rule_Name,
-            ];
-        });
+    public function getStudentViolations($name, $studentNo)
+    {
+        $violations = postviolation::where('student_name', $name)
+            ->where('student_no', $studentNo)
+            ->with('violation')
+            ->get()
+            ->map(function ($violation) {
+                return [
+                    'type' => optional($violation->violation)->violations,
+                    'date' => $violation->Date_Created,
+                    'violatedrule' => $violation->rule_Name,
+                ];
+            });
 
-    return response()->json($violations);
-}
+        return response()->json($violations);
+    }
 
     //submit violation
     public function postviolation(Request $request)
@@ -309,80 +311,82 @@ class AdminController extends Controller
     }
 
 
-// View incident report info
-public function getIncidentInfo(Request $request)
-{
-    $incident = incident::with('violation')->find($request->query('id'));
+    // View incident report info
+    public function getIncidentInfo(Request $request)
+    {
+        $incident = incident::with('violation')->find($request->query('id'));
 
-    if (!$incident) {
-        return response()->json(['status' => 500, 'message' => 'Incident not found']);
-    }
-
-    // Convert upload_evidence to array if stored as JSON
-    $files = [];
-    if (!empty($incident->upload_evidence)) {
-        if (is_string($incident->upload_evidence)) {
-            $decoded = json_decode($incident->upload_evidence, true);
-            $files = is_array($decoded) ? $decoded : [$incident->upload_evidence];
-        } elseif (is_array($incident->upload_evidence)) {
-            $files = $incident->upload_evidence;
+        if (!$incident) {
+            return response()->json(['status' => 500, 'message' => 'Incident not found']);
         }
+
+        // Convert upload_evidence to array if stored as JSON
+        $files = [];
+        if (!empty($incident->upload_evidence)) {
+            if (is_string($incident->upload_evidence)) {
+                $decoded = json_decode($incident->upload_evidence, true);
+                $files = is_array($decoded) ? $decoded : [$incident->upload_evidence];
+            } elseif (is_array($incident->upload_evidence)) {
+                $files = $incident->upload_evidence;
+            }
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => [
+                'id' => $incident->id,
+                'student_name' => $incident->student_name,
+                'student_no' => $incident->student_no,
+                'school_email' => $incident->school_email,
+                'violation_type' => $incident->violation_type,
+                'violation_name' => $incident->violation->violations,
+                'penalty_name' => $incident->penalties,
+                'rule_name' => $incident->rule_name,
+                'description' => $incident->description,
+                'severity' => $incident->severity,
+                'faculty_name' => $incident->faculty_name,
+                'remarks' => $incident->remarks,
+                'upload_evidence' => $files,
+                'Date_Created' => $incident->Date_Created,
+            ]
+        ]);
     }
 
-    return response()->json([
-        'status' => 200,
-        'data' => [
-            'id' => $incident->id,
-            'student_name' => $incident->student_name,
-            'student_no' => $incident->student_no,
-            'school_email' => $incident->school_email,
-            'violation_type' => $incident->violation_type,
-            'violation_name' => $incident->violation->violations,
-            'penalty_name' => $incident->penalties,
-            'rule_name' => $incident->rule_name,
-            'description' => $incident->description,
-            'severity' => $incident->severity,
-            'faculty_name' => $incident->faculty_name,
-            'remarks' => $incident->remarks,
-            'upload_evidence' => $files,
-            'Date_Created' => $incident->Date_Created,
-        ]
-    ]);
-}
+    public function UpdateRejected(Request $request)
+    {
+        $incident = incident::findOrFail($request->id);
+        $incident->is_visible = 'reject'; 
+        $incident->save();
 
-public function UpdateRejected(Request $request){
-    $incident = incident::findOrFail($request->id);
-    $incident->is_visible = 'reject'; 
-    $incident->save();
+        $facultyId = $incident->faculty_id;
 
-    $facultyId = $incident->faculty_id;
+        $notif = notifications::create([
+            'title' => 'Incident Rejected',
+            'message' => 'Your Incident Report has been rejected',
+            'role' => 'faculty',
+            'student_no' => $facultyId,
+            'school_email' => $incident -> school_email,
+            'type' => 'approve',
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+        ]);
 
-    $notif = notifications::create([
-        'title' => 'Incident Rejected',
-        'message' => 'Your Incident Report has been rejected',
-        'role' => 'faculty',
-        'student_no' => $facultyId,
-        'school_email' => $incident -> school_email,
-        'type' => 'approve',
-        'date_created' => Carbon::now()->format('Y-m-d'),
-        'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
-    ]);
+        return response()->json(['message' => 'Incident rejected successfully.']);
+    }
 
-    return response()->json(['message' => 'Incident rejected successfully.']);
-}
+    //student search
+    public function student_search(Request $request)
+    {
+        $query = $request->get('query');
 
-//student search
-public function student_search(Request $request)
-{
-    $query = $request->get('query');
+        $students = users::where('role', 'student')
+            ->where(function($q) use ($query) {
+                $q->where('firstname', 'LIKE', "%{$query}%")
+                ->orWhere('lastname', 'LIKE', "%{$query}%")
+                ->orWhere('student_no', 'LIKE', "%{$query}%");
+            })->get();
 
-    $students = users::where('role', 'student')
-        ->where(function($q) use ($query) {
-            $q->where('firstname', 'LIKE', "%{$query}%")
-              ->orWhere('lastname', 'LIKE', "%{$query}%")
-              ->orWhere('student_no', 'LIKE', "%{$query}%");
-        })->get();
-
-    return response()->json($students);
-}
+        return response()->json($students);
+    }
+    
 }
