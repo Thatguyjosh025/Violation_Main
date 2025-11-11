@@ -204,7 +204,7 @@
           <section class="ViolationDetails">
             <div class="container" style="background-color: #fcfcfc; padding: 1rem; border-radius: 0.3rem;">
               <p class="SectionLabel" style="font-size: 1.3rem; font-weight: 500; margin-bottom: 0.5rem;">Violation Details</p>
-              <div class="row">
+              <div class="row" id="violationTypePenaltySection">
                 <div class="col-md-6">
                   <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
                     <label for="violationType" class="form-label" style="font-size: 1rem; font-weight: 500;">Violation Type:</label>
@@ -276,7 +276,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <label for="remarks" class="form-label" style="font-size: 1rem; font-weight: 500;">Remarks</label>
-                  <textarea id="viewRemarks" class="form-control" style="resize: none;" readonly disabled></textarea>
+                  <p id="viewRemarks" class="form-label" style="resize: none;" readonly disabled></p>
                 </div>
                 <div class="col-md-6">
                   <label for="remarks" class="form-label" style="font-size: 1rem; font-weight: 500;">Appeal Description</label>
@@ -461,6 +461,12 @@ $(document).on('click', '.btn-view-post', function () {
                 $('#viewappeal').text(response.data.appeal);
                 $('#viewDate_Created').text(response.data.Date_Created);
 
+                // Detect merged violation and hide section
+              if (response.data.description_Name && response.data.description_Name.startsWith("Auto-merged from")) {
+                  $('#violationTypePenaltySection').hide();
+              } else {
+                  $('#violationTypePenaltySection').show();
+              }
                 // Handle uploaded evidence
                 $('#viewFileList').empty(); 
                   if (response.data.upload_evidence) {

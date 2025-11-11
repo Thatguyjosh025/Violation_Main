@@ -280,7 +280,9 @@ Route::get('/violation_records/data', function (Request $request) {
                 postviolation::whereIn('id', $minorViolations->pluck('id'))
                     ->update([
                         'is_active' => false,
-                        'status_name' => 8, // ✅ Status 8 = Resolved
+                        'status_name' => 8,
+                        'description_Name' => '[NOTE] This violation was part of an automatic merge that resulted in a Major Violation.',
+                        'Remarks' => "This violation record is a part of an automatic merge",
                         'Update_at' => Carbon::now('Asia/Manila'),
                     ]);
             }
