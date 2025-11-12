@@ -94,6 +94,7 @@ $(document).ready(function () {
 
     // -----------------------------
     // Load Violations
+    // in here we can if the 3 minors should not exist we could hide it by using is_active === false
     // -----------------------------
     $.ajax({
         url: '/get_violations_records',

@@ -104,8 +104,7 @@
                 <!-- Narrative Report Section -->
                     <div class="container mt-5">
                         <div class="card p-4 shadow-sm">
-                            <h4 class="mb-3">Narrative Report Summary</h4>
-
+                        <h4 class="mb-3">Narrative Report Summary</h4>
                             <div id="narrativeSection">
                                 @php
                                     $severities = DB::table('tb_severity')->pluck('severity');
@@ -116,32 +115,54 @@
 
                                         if ($violations->isEmpty()) {
                                             $narratives[$severity] = "No violations have been recorded under $severity severity.";
-                                            continue;
+                                            continue;   
                                         }
 
-                                        $grouped = $violations->groupBy('rule_Name');
-                                        $violationCounts = collect($grouped)->map(function ($group) {
-                                            return count($group);
+                                        // Group by violation type name for narrative summary
+                                        $grouped = $violations->groupBy(function ($item) {
+                                            return optional($item->violation)->violations ?? 'Unknown';
                                         });
+                                        $violationCounts = collect($grouped)->map(fn($group) => count($group));
 
                                         if ($violationCounts->isEmpty()) {
                                             $narratives[$severity] = "Violations under $severity severity exist, but no rule names are available to summarize.";
                                             continue;
                                         }
 
+                                        // Count by status ID
+                                        $confirmedCount = $violations->where('status_name', 3)->count();
+                                        $underReviewCount = $violations->where('status_name', 2)->count();
+                                        $resolvedCount = $violations->where('status_name', 8)->count();
+
+                                        // Compose main text
                                         $totalCount = $violationCounts->sum();
                                         $topViolation = $violationCounts->sortDesc()->keys()->first();
                                         $violationList = $violationCounts->keys()->implode(', ');
 
-                                        $narratives[$severity] = "$severity reflects $totalCount recorded cases, involving violations such as $violationList. Among these, $topViolation appears most frequently, indicating a pattern that warrants attention.";
+                                        $narrativeText = "$severity reflects $totalCount recorded cases, involving violations such as $violationList. Among these, $topViolation appears most frequently, indicating a pattern that warrants attention.";
+
+                                        // Add sub-status counts if present
+                                        $statusLines = [];
+                                        if ($confirmedCount > 0) $statusLines[] = "- Confirmed: $confirmedCount";
+                                        if ($underReviewCount > 0) $statusLines[] = "- Under Review: $underReviewCount";
+                                        if ($resolvedCount > 0) $statusLines[] = "- Resolved: $resolvedCount";
+
+                                        if (!empty($statusLines)) {
+                                            $narrativeText .= "<br><span style='margin-left: 25px; font-size: 0.95em; color: #555; white-space: pre-line;'>" . implode('<br>', $statusLines) . "</span>";
+                                        }
+
+                                        $narratives[$severity] = $narrativeText;
                                     }
                                 @endphp
 
                                 @foreach ($narratives as $severity => $text)
-                                    <p><strong>{{ $severity }}:</strong> {{ $text }}</p>
+                                    <p><strong>{{ $severity }}:</strong> {!! $text !!}</p>
                                 @endforeach
 
-                                <p>These findings highlight the importance of targeted interventions, especially where specific violations dominate. Continued monitoring and responsive measures will be essential in curbing these trends.</p>
+                                <p>
+                                    These findings highlight the importance of targeted interventions, especially where specific violations dominate.
+                                    Continued monitoring and responsive measures will be essential in curbing these trends.
+                                </p>
                             </div>
 
                             <button onclick="printSection('narrativeSection')" class="btn btn-success mt-3">

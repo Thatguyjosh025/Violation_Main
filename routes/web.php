@@ -273,7 +273,7 @@ Route::get('/violation_records/data', function (Request $request) {
                     'Date_Created' => Carbon::now('Asia/Manila'),
                     'Update_at' => Carbon::now('Asia/Manila'),
                     'is_active' => true,
-                    'is_admitted' => true,
+                    'is_admitted' => false,
                 ]);
 
                 // Mark the 3 minor violations as resolved
