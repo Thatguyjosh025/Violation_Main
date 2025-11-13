@@ -26,8 +26,8 @@
             <div class="container mt-4 w-100">
                 
                 <div class="exportBtn d-flex justify-content-end">
-                    <button id="printTable" class="btn btn-primary">
-                        <i class="bi bi-printer"></i> Print Table
+                    <button onclick="printSection('narrativeSection')" id="printTable" class="btn btn-primary">
+                        <i class="bi bi-printer"></i> Print Narrative Report
                     </button>
                 </div>
 
@@ -130,8 +130,8 @@
                                         }
 
                                         // Count by status ID
-                                        $confirmedCount = $violations->where('status_name', 3)->count();
                                         $underReviewCount = $violations->where('status_name', 2)->count();
+                                        $confirmedCount = $violations->where('status_name', 3)->count();
                                         $resolvedCount = $violations->where('status_name', 8)->count();
 
                                         // Compose main text
@@ -141,15 +141,14 @@
 
                                         $narrativeText = "$severity reflects $totalCount recorded cases, involving violations such as $violationList. Among these, $topViolation appears most frequently, indicating a pattern that warrants attention.";
 
-                                        // Add sub-status counts if present
+                                        // Always show all status counts
                                         $statusLines = [];
-                                        if ($confirmedCount > 0) $statusLines[] = "- Confirmed: $confirmedCount";
-                                        if ($underReviewCount > 0) $statusLines[] = "- Under Review: $underReviewCount";
-                                        if ($resolvedCount > 0) $statusLines[] = "- Resolved: $resolvedCount";
+                                        $statusLines[] = "- Under Review: $underReviewCount";
+                                        $statusLines[] = "- Confirmed: $confirmedCount";
+                                        $statusLines[] = "- Resolved: $resolvedCount";
 
-                                        if (!empty($statusLines)) {
-                                            $narrativeText .= "<br><span style='margin-left: 25px; font-size: 0.95em; color: #555; white-space: pre-line;'>" . implode('<br>', $statusLines) . "</span>";
-                                        }
+                                        // Append to narrative
+                                        $narrativeText .= "<div style='margin-left: 25px; font-size: 0.95em; color: #555; white-space: pre-line;'>" . implode('<br>', $statusLines) . "</div>";
 
                                         $narratives[$severity] = $narrativeText;
                                     }
@@ -164,10 +163,6 @@
                                     Continued monitoring and responsive measures will be essential in curbing these trends.
                                 </p>
                             </div>
-
-                            <button onclick="printSection('narrativeSection')" class="btn btn-success mt-3">
-                                <i class="bi bi-printer"></i> Print Narrative
-                            </button>
                         </div>
                     </div>
                 <!-- End of Narrative Report Section -->

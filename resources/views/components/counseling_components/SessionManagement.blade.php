@@ -42,11 +42,9 @@
                             <td data-label="End Time">{{ \Carbon\Carbon::parse($currentsession->end_time)->format('g:i A') }}</td>
                             <td data-label="Start Date">{{ $currentsession -> start_date }}</td>
                             <td data-label="End Date">{{ $currentsession -> end_date ?? 'N/A' }}</td>
-                            <td data-label="Action">
+                            <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-sm btn-primary me-1 btn-action-consistent edit-btn"
-                                            data-id="{{ $currentsession->id }}"
-                                            >
+                                    <button class="btn btn-sm btn-primary me-1 btn-action-consistent edit-btn" data-id="{{ $currentsession->id }}">
                                         <i class="bi bi-pencil-square"></i> Edit
                                     </button>
                                     <button class="btn btn-sm btn-warning me-1 btn-action-consistent resched-btn"

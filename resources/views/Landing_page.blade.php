@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <title>Central</title>
+    <link rel="icon" href="{{ asset('./Photos/Central-Icon.png') }}">
 
     <link rel="stylesheet" href="{{ asset('./css/landing-page.css') }}">
     <link rel="stylesheet"href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">

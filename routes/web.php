@@ -171,7 +171,6 @@ Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->
 // ==========================
 // SHARED ROLE ROUTES
 // ==========================
-
 Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipline'])->group(function () {
     Route::get('/get_rule/{violation_id}', [AdminController::class, 'getRule']);
     Route::get('/get_info', [AdminController::class, 'getStudentInfo']);
@@ -179,12 +178,6 @@ Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipl
     Route::get('/get_incident_info', [AdminController::class, 'getIncidentInfo']);
     Route::get('/student_search', [AdminController::class, 'student_search'])->name('student_search');
 });
-
-//get datas routes
-
-
-
-
 
 
 //notif

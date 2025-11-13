@@ -40,12 +40,12 @@
                 <tbody id="rulebody">
                     @foreach ($ruleinfo as $rule)
                         <tr>
-                            <th>{{ $rule->rule_id }}</th>
-                            <td>{{ $rule->rule_name }}</td>
+                            <th data-label="ID">{{ $rule->rule_id }}</th>
+                            <td data-label="Rule Name">{{ $rule->rule_name }}</td>
                             <td>{{ $rule->description }}</td>
-                            <td>{{ $rule->violation->violations }}</td>
-                            <td>{{ $rule->severity->severity }}</td>
-                            <td>
+                            <td data-label="Violation">{{ $rule->violation->violations }}</td>
+                            <td data-label="Severity">{{ $rule->severity->severity }}</td>
+                            <td data-label="Actions">
                                 <button class="btn btn-primary btn-sm edit-btn-rule"
                                     data-id="{{ $rule->rule_id }}"
                                     data-name="{{ $rule->rule_name }}"

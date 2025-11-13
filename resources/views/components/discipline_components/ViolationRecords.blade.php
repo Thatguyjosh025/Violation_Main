@@ -59,7 +59,7 @@
 <script>
    $(document).ready(function() {
     let table = $('#violationrecordstable').DataTable({
-        responsive: true, 
+        responsive: true,
         processing: true,
         serverSide: true,
         ajax: {
@@ -75,12 +75,22 @@
             { data: 'student_no', name: 'student_no' },
             { data: 'student_name', name: 'student_name' },
             { data: 'school_email', name: 'school_email' },
-            { data: 'violation', name: 'violation'},
-            { data: 'status', name: 'status'},
+            { data: 'violation', name: 'violation' },
+            { data: 'status', name: 'status' },
             { data: 'Date_Created', name: 'Date_Created' },
             { data: 'Update_at', name: 'Update_at' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
-        ]
+        ],
+        createdRow: function(row, data, dataIndex) {
+            $('td', row).eq(0).attr('data-label', 'Student No.');
+            $('td', row).eq(1).attr('data-label', 'Name');
+            $('td', row).eq(2).attr('data-label', 'Email');
+            $('td', row).eq(3).attr('data-label', 'Violation');
+            $('td', row).eq(4).attr('data-label', 'Status');
+            $('td', row).eq(5).attr('data-label', 'Created On');
+            $('td', row).eq(6).attr('data-label', 'Modified On');
+            $('td', row).eq(7).attr('data-label', 'Actions');
+        }
     });
 
     // Filter table when dropdown changes

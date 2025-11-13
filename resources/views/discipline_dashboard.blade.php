@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="{{ asset('./vendor/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Disciplinary Officer Dashboard</title>
+    <title>Central</title>
+    <link rel="icon" href="{{ asset('./Photos/Central-Icon.png') }}">
 </head>
 <body>
 

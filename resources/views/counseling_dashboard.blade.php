@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guidance Counselor Dashboard</title>
+    <title>Central</title>
+    <link rel="icon" href="{{ asset('./Photos/Central-Icon.png') }}">
     <link rel="stylesheet" href="{{ asset('./vendor/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -26,8 +26,9 @@ $referalsdata = referals::get();
                 <thead class="table-light">
                     <tr>
                         <th scope="col">Referral ID</th>
+                        <th scope="col">Referral UID</th>
                         <th scope="col">Referral</th>
-                        <th scope="col">is_visible</th>
+                        <th scope="col">Visibility</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
@@ -35,9 +36,10 @@ $referalsdata = referals::get();
                     @foreach ($referalsdata as $data)
                     <tr>
                         <th scope="row">{{ $data->referal_id }}</th>
-                        <td>{{ $data->referals }}</td>
-                        <td>{{ $data->is_visible }}</td>
-                        <td>
+                        <td data-label="Referral UID">{{ $data->referal_uid }}</th>
+                        <td data-label="Referrals">{{ $data->referals }}</td>
+                        <td data-label="Visibility">{{ $data->is_visible }}</td>
+                        <td data-label="Actions">
                             <button class="btn btn-primary btn-sm edit-btn">Edit</button>
                         </td>
                     </tr>
