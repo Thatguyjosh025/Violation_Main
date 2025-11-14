@@ -194,11 +194,11 @@
                         $('#edituser #edit-role').val(response.data.role);
                         $('#edituser #status').val(response.data.status);
 
-                        if (response.data.role === 'student') {
-                            $('#studentNoContainer').hide();
-                        } else {
-                            $('#studentNoContainer').show();
-                        }
+                        // if (response.data.role === 'student' ) {
+                        //     $('#studentNoContainer').hide();
+                        // } else {
+                        //     $('#studentNoContainer').show();
+                        // }
 
                         $('#edituser').modal('show');
                     } else {
@@ -261,11 +261,23 @@
                 _token: $('meta[name="csrf-token"]').attr('content')
             };
 
+            // 🔹 Show loader before sending request
+            Swal.fire({
+                title: 'Updating user...',
+                text: 'Please wait while we process your request.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             $.ajax({
                 url: '/update_user',
                 type: "POST",
                 data: formData,
-               success: function(response) {
+                success: function(response) {
+                    Swal.close(); // 🔹 Hide loader
+
                     if (response.status === 200) {
                         Swal.fire({
                             title: "Update successful!",
@@ -289,18 +301,21 @@
                     }
                 },
                 error: function(xhr) {
+                    Swal.close(); // 🔹 Hide loader on error
+
                     var response = xhr.responseJSON.errors;
                     for (var field in response) {
                         var input = $('#edituser [name="' + field + '"]');
                         input.removeClass("is-invalid");
                         input.next('.invalid-feedback').remove();
-
-                        // if (field === 'student_no' && response[field][0] === 'The student no has already been taken') {
-                        //     input.addClass("is-invalid").after('<div class="invalid-feedback">This ID number is already in use. Please use a different one.</div>');
-                        // } else {
-                        //     input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
-                        // }
+                        // input.addClass("is-invalid").after('<div class="invalid-feedback">' + response[field][0] + '</div>');
                     }
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Update Failed",
+                        text: "An error occurred while updating. Please check your input or try again later."
+                    });
                 }
             });
         }

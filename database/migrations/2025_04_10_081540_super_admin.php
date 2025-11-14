@@ -81,14 +81,14 @@ return new class extends Migration
 
         DB::table('tb_violation')->insert([
             ['violation_uid' => 'VO001','violations' => 'Bullying'],
-            // ['violation_uid' => 'VO002','violations' => 'Discourtesy or Disrespect'],
+            ['violation_uid' => 'VO002','violations' => 'No uniform'],
 
             
         ]);
 
         DB::table('tb_penalties')->insert([
             ['penalties_uid' => 'PE001','penalties' => 'Verbal / Oral Warning'],
-            // ['penalties_uid' => 'PE002','penalties' => 'Written Warning'],
+            ['penalties_uid' => 'PE002','penalties' => 'Written Warning'],
             // ['penalties_uid' => 'PE003','penalties' => 'Counseling Session'],
         ]);
         
@@ -102,7 +102,7 @@ return new class extends Migration
         
         DB::table('tb_referals')->insert([
             ['referal_uid' => 'RE001','referals' => 'Verbal Reprimand'],
-            // ['referal_uid' => 'RE002','referals' => 'Written Reprimand'],
+            ['referal_uid' => 'RE002','referals' => 'Written Reprimand'],
             // ['referal_uid' => 'RE003','referals' => 'Counseling Session'],
         ]);
 
@@ -124,20 +124,14 @@ return new class extends Migration
                 'severity_id' => 4, 
                 'rule_name' => 'Anti-Bullying',
                 'description' => 'STI is committed to providing a healthy learning environment where students support and respect each other. Thus, within the school, it is made clear that bullying will not be tolerated'
+            ],
+            [
+                'rule_uid' => 'RL002',
+                'violation_id' => 2,
+                'severity_id' => 1, 
+                'rule_name' => 'No proper attire',
+                'description' => 'Students are required to wear the proper school uniform as part of the institution dress code policy. Failure to comply with this rule may result in disciplinary action.'
             ]
-            // [
-            //     'violation_id' => 2,
-            //     'severity_id' => 4,
-            //     'rule_name' => 'Anti-Sexual Harassment Policy',
-            //     'description' => 'STI is committed to creating and maintaining an environment where all members of the STI community are free to study without fear of harassment of a sexual nature.'
-            // ],
-            // [
-            //     'violation_id' => 3,
-            //     'severity_id' => 1,
-            //     'rule_name' => 'Use of School Facilities',
-            //     'description' => 'In any incident of destruction, damaging, tampering, or losing of school property, the school reserves the right to charge to the concerned student/s the cost of damage, including labor or repair.'
-            // ],
-            
         ]);
 
     }

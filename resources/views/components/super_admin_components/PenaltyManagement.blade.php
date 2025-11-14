@@ -33,11 +33,11 @@ $penaltydata = penalties::get();
                 <tbody id="penaltybody">
                     @foreach ($penaltydata as $data)
                     <tr>
-                        <th scope="row">{{ $data->penalties_id }}</th>
-                        <td>{{ $data->penalties_uid }}</td>
-                        <td>{{ $data->penalties }}</td>
-                        <td>{{ $data->is_visible }}</td>
-                        <td>
+                        <th scope="row" data-label="Penalty ID">{{ $data->penalties_id }}</th>
+                        <td data-label="Penalty UID">{{ $data->penalties_uid }}</td>
+                        <td data-label="Penalty">{{ $data->penalties }}</td>
+                        <td data-label="Visibility">{{ $data->is_visible }}</td>
+                        <td data-label="Action">
                             <button class="btn btn-primary btn-sm edit-btn">Edit</button>
                         </td>
                     </tr>

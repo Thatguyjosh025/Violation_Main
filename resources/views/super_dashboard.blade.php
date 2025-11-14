@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Super Admin</title>
+    <title>Central</title>
+    <link rel="icon" href="{{ asset('./Photos/Central-Icon.png') }}">
 
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -16,7 +17,7 @@
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <h1 class="mb-0 sidebar-title" style="color: #004581;">Central</h1>
-        <button class="close-btn" id="closeSidebar"><i class="bi bi-list"></i></button>
+        <button class="close-btn" id="closeSidebar"><i class="bi bi -list"></i></button>
     </div>
 
     <nav class="nav flex-column mt-3 flex-grow-1">
@@ -31,9 +32,6 @@
         <!-- Link to Rule Management -->
         <a class="nav-link" href="{{ route('rule_management') }}"><i class="bi bi-journal-text"></i> <span>Rule Management</span></a>
         <a class="nav-link" href="{{ route('audit_management') }}"><i class="bi bi-journal-text"></i> <span>Audit Logs</span></a>
-
-        <!-- Link to Reports and Analytics -->
-        <a class="nav-link" href="#"><i class="bi bi-clipboard-data-fill"></i> <span>Reports and Analytics</span></a>
 
         <!-- Link to Student Handbook -->
         <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>

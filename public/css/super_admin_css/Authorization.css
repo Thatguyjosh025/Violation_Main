@@ -10,11 +10,7 @@ body {
     overflow-x: hidden;
 }
 
-body, html {
-    overflow-x: hidden;
-    max-width: 100%;
-  }  
-
+/* Start of SideBar CSS */
 .sidebar {
     width: 15.6rem;
     height: 100%;
@@ -28,10 +24,6 @@ body, html {
     z-index: 1000;
 }
 
-.sidebar {
-    transition: width 0.3s ease-in-out;
-}
-
 .sidebar .nav-link {
     color: #333;
     margin: 0.6rem 0;
@@ -39,14 +31,12 @@ body, html {
     align-items: center;
     white-space: nowrap;
     transition: all 0.3s;
-    padding: 0.6rem 0.6rem;
 }
 
 .sidebar .nav-link i {
     min-width: 2.5rem;
     text-align: center;
     font-size: 1.2rem;
-    margin-right: 0.3rem;
 }
 
 .sidebar .nav-link.active {
@@ -82,8 +72,6 @@ body, html {
 
 .sidebar.collapsed {
     width: 4.4rem;
-    overflow: hidden;
-    white-space: nowrap;
 }
 
 .sidebar.collapsed ~ .dashboard-content {
@@ -121,7 +109,7 @@ body, html {
     cursor: pointer;
 }
 
-/* Logout */
+/* Centered logout button */
 .logout-container {
     margin-top: auto;
     display: flex;
@@ -157,6 +145,56 @@ body, html {
     display: none;
 }
 
+/* Logo */
+img.sidebar-logo.full-logo{
+    margin-right: 0;
+}
+
+button#closeSidebar {
+    margin-right: 5px;
+}
+
+.sidebar-logo {
+    height: 70px;
+    transition: all 0.3s ease;
+}
+
+.full-logo {
+    display: block;
+}
+
+.icon-logo {
+    display: none;
+}
+
+.sidebar.collapsed .full-logo {
+    display: none;
+}
+
+.sidebar.collapsed .icon-logo {
+    display: block !important;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 1rem;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+}
+
+img.sidebar-logo.full-logo {
+    width: 12rem;
+    object-fit: cover;
+}
+
+img.sidebar-logo.icon-logo.d-none {
+    margin-right: 2rem;
+    height: 3rem;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -188,112 +226,143 @@ body, html {
         display: block !important;
     }
 }
-/* End of SideBar CSS */
+/* End of Side Bar CSS */
 
+/* Table Container Styles */
 .table-container {
-    max-width: 100%;
-    margin: auto;
-    background: white;
-    padding: 0.6rem;
-    border-radius: 0.6rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  thead {
+    background-color: #f1f5f9;
+  }
+  
+  thead th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+  }
 
-input[type="date"]:focus {
-    border-color: #2c698d;
-    box-shadow: 0 0 0 0.2rem rgba(44, 105, 141, 0.25);
-}
-.search-bar {
-    max-width: 15.6rem;
-}
-.btn {
-    background: #2c698d;
-    color: #d6eaf8;
-    border: #2c698d;
-}
-.btn:hover {
-    background: #d6eaf8;
+  label {
+    margin-bottom: 0.5rem;
+  }
+  
+  tbody td {
+    font-size: 0.9rem;
+  }
+  
+  tbody tr:hover {
+    background-color: #f1f7fd;
+  }
+  
+  td:nth-child(1) {
+    font-weight: 600;
     color: #2c698d;
-}
-.table thead {
-    background: #d6eaf8;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-bottom: 2px solid #2c698d;
-}
-.table thead th:first-child {
-    border-top-left-radius: 0.7rem;
-    border-bottom-left-radius: 0.7rem;
-}
-.table thead th:last-child {
-    border-top-right-radius: 0.7rem;
-    border-bottom-right-radius: 0.7rem;
-}
-/* .table-mobile-wrap td,
-.table-mobile-wrap th {
-    white-space: normal !important;
-    word-break: break-word;
-} */
-.table-container {
-    overflow-x: hidden;
-    word-wrap: break-word;
-}
-span.flex-grow-1 {
-    color: #333;
-}
-::before {
-    color: #333;
-}
-
-
-@media (max-width: 768px) {
-    .table {
-        border: 0;
-    }
-
-    .table thead {
-        display: none;
-    }
-
-
-    .table tr {
-        margin-bottom: 1rem;
-        display: block;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background: white;
-        padding: 1rem;
-    }
-
-    .table td {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-bottom: 1px solid #eee;
-    }
-
-    .table td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        text-align: left;
-        color: #004581;
-    }
-
-    .table td:last-child {
-        border-bottom: none;
-    }
-    
-}
-button.btn.btn-action.w-auto:hover {
+  }
+  
+  td:nth-child(4) {
+    font-weight: 500;
+  }
+  
+  .btn-action {
+    background-color: #2c698d;
+    color: white;
+    border: none;
+    transition: 0.3s ease;
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.375rem;
+  }
+  
+  button.btn.btn-action.w-auto:hover {
     background-color: var(--second-color);
     color: white;
+  }
+  
+  .btn-save {
+    background-color: #198754;
+    color: white;
+    padding: 0.5rem 2rem;
+    border-radius: 0.375rem;
+    border: none;
+  }
+  
+  .btn-save:hover {
+    background-color: #146c43;
+    color: white;
+  }
+  
+  /* Modal Styling */
+  .modal-content {
+    border-radius: 1rem;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .modal-header h5,
+  .modal-title {
+    font-weight: 600;
+  }
+  
+  .modal-body label {
+    font-weight: 500;
+  }
+  
+  input[type="date"] {
+    border-radius: 50rem;
+    padding: 0.5rem 1rem;
+  }
+  
+/* RESPONSIVE STACKED TABLE STYLE */
+@media (max-width: 768px) {
+table, thead, tbody, th, td, tr {
+    display: block;
+}
+
+thead {
+    display: none;
+}
+
+tr {
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    background: #ffffff;
+}
+
+td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+    border: none;
+    border-bottom: 1px solid #eee;
+}
+
+td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 1rem;
+    width: 45%;
+    padding-right: 1rem;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    color: #555;
+}
 }
 .container.mt-4 {
     max-width: 1750px;
 }
-td.dt-type-numeric.sorting_1 {
-    width: 22rem;
-}
-
-  
-  

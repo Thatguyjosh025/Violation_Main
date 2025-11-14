@@ -24,21 +24,21 @@ $violationdata = violation::get();
                 <table class="table table-hover mb-0" id="violationTable">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col">Violation ID</th>
-                            <th scope="col">Violation UID</th>
-                            <th scope="col">Violation</th>
-                            <th scope="col">is_visible</th>
-                            <th scope="col">Action</th>
+                            <th>Violation ID</th>
+                            <th>Violation UID</th>
+                            <th>Violation</th>
+                            <th>Visibility</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="violationbody">
                     @foreach ($violationdata as $data)
                         <tr>
-                            <th scope="row">{{ $data->violation_id }}</th>
-                            <th scope="row">{{ $data->violation_uid }}</th>
-                            <td contenteditable="false">{{ $data->violations }}</td>
-                            <th scope="row">{{ $data->is_visible }}</th>
-                            <td>
+                            <th>{{ $data->violation_id }}</th>
+                            <td data-label="Violation UID">{{ $data->violation_uid }}</th>
+                            <td data-label="Violation">{{ $data->violations }}</td>
+                            <td data-label="Visibility">{{ $data->is_visible }}</th>
+                            <td data-label="Actions">
                                 <button class="btn btn-primary btn-sm edit-btn">Edit</button>
                             </td>
                         </tr>
@@ -98,7 +98,8 @@ $(document).ready(function () {
         searching: true,
         ordering: true,
         info: true,
-        responsive: true
+        responsive: false,
+        autowidth: false
     });
 
     // Show modal for adding a violation

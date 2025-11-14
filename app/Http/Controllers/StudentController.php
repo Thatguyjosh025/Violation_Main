@@ -21,16 +21,22 @@ class StudentController extends Controller
         $school_email = $user->email;
     
         $violations = postviolation::with(['violation', 'penalty', 'referal', 'status'])
-            ->where('student_no', $student_number)
-            ->get();
+        ->where('student_no', $student_number)
+        ->paginate(9);
 
         // 5 mins violation demo expiration check
-        foreach ($violations as $violation) {
-            $createdDate = Carbon::parse($violation->Date_Created,'Asia/Manila'); // Note: always set the timezone in asia this is fucking sucks
+        // put a fucking validation here to ignore all the data with RESOLVE status because it process everything it sees fucking annoying
+        foreach ($violations->items() as $violation) {
+            
+            if ($violation->status_name == 8) {
+                continue;
+            }
+
+            $createdDate = Carbon::parse($violation->Date_Created, 'Asia/Manila');
             $now = Carbon::now('Asia/Manila');
             $minutesSinceCreated = $createdDate->diffInMinutes($now);
 
-            if ($minutesSinceCreated > 10 && $violation->appeal === 'N/A') {
+            if ($minutesSinceCreated > 1 && $violation->appeal === 'N/A') {
                 $violation->appeal = 'No Objection';
                 $violation->status_name = 3;
                 $violation->is_active = true;
@@ -44,7 +50,7 @@ class StudentController extends Controller
                     'school_email' => $school_email,
                     'type' => 'incident',
                     'url' => '/violation_tracking',
-                    'date_created' => Carbon::now()->format('Y-m-d'),
+                    'date_created' => Carbon::now('Asia/Manila')->format('Y-m-d'),
                     'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
                 ]);
             }
@@ -94,14 +100,20 @@ class StudentController extends Controller
         // }
 
 
-        $mappedViolations = $violations->map(function ($violation) {
+        $mappedViolations = collect($violations->items())->map(function ($violation) {
             $sectionId = '';
-            if ($violation->violation->violations === 'Bullying') {
-                $sectionId = 'antibullyingsection';
-            } elseif ($violation->violation->violations === 'Discourtesy or Disrespect') {
-                $sectionId = 'antisexualsection';
-            } elseif ($violation->violation->violations === 'Improper Use of School Facilities/Equipment'){
-                $sectionId = 'improperuseoffacilities';
+            if ($violation->severity_Name === 'Minor') {
+                $sectionId = 'Minor-offense';
+            } elseif ($violation->severity_Name === 'Major A') {
+                $sectionId = 'Major-A-offense';
+            } elseif ($violation->severity_Name === 'Major B'){
+                $sectionId = 'Major-B-offense';
+            }
+            elseif ($violation->severity_Name === 'Major C'){
+                $sectionId = 'Major-C-offense';
+            }
+            elseif ($violation->severity_Name === 'Major D'){
+                $sectionId = 'Major-D-offense';
             }
             else{
                 $sectionId = 'frontpage';
@@ -122,12 +134,16 @@ class StudentController extends Controller
                 'Remarks' => $violation->Remarks,
                 'upload_evidence' => $violation->upload_evidence,
                 'appeal' => $violation->appeal,
-                
             ];
         });
-
     
-        return response()->json($mappedViolations);
+        return response()->json([
+            'data' => $mappedViolations,
+            'current_page' => $violations->currentPage(),
+            'last_page' => $violations->lastPage(),
+            'per_page' => $violations->perPage(),
+            'total' => $violations->total()
+        ]);
     }
 
   public function updateAppealReason(Request $request)

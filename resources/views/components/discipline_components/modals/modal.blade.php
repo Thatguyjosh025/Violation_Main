@@ -191,10 +191,6 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <!-- <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
-                    <label for="course" class="form-label" style="font-size: 1rem; font-weight: 500;">Course:</label>
-                    <p id="viewcourse" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
-                  </div> -->
                   <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
                     <label for="schoolEmail" class="form-label" style="font-size: 1rem; font-weight: 500;">School Email:</label>
                     <p id="viewschool_email" style="margin-bottom: 0.5rem; font-weight: 300;"></p>
@@ -208,7 +204,7 @@
           <section class="ViolationDetails">
             <div class="container" style="background-color: #fcfcfc; padding: 1rem; border-radius: 0.3rem;">
               <p class="SectionLabel" style="font-size: 1.3rem; font-weight: 500; margin-bottom: 0.5rem;">Violation Details</p>
-              <div class="row">
+              <div class="row" id="violationTypePenaltySection">
                 <div class="col-md-6">
                   <div class="d-flex align-items-center gap-2" style="margin-top: 0.5rem;">
                     <label for="violationType" class="form-label" style="font-size: 1rem; font-weight: 500;">Violation Type:</label>
@@ -246,7 +242,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="descriptionName" class="form-label" style="font-size: 1rem; font-weight: 500;">Description:</label>
-                    <textarea id="viewdescription_Name" class="form-control" style="resize: none;" readonly disabled></textarea>
+                    <p id="viewdescription_Name" class="form-label" style="resize: none;" readonly disabled></p>
                 </div>
               </div>
               <div class="row">
@@ -280,7 +276,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <label for="remarks" class="form-label" style="font-size: 1rem; font-weight: 500;">Remarks</label>
-                  <textarea id="viewRemarks" class="form-control" style="resize: none;" readonly disabled></textarea>
+                  <p id="viewRemarks" class="form-label" style="resize: none;" readonly disabled></p>
                 </div>
                 <div class="col-md-6">
                   <label for="remarks" class="form-label" style="font-size: 1rem; font-weight: 500;">Appeal Description</label>
@@ -457,7 +453,7 @@ $(document).on('click', '.btn-view-post', function () {
                 $('#viewschool_email').text(response.data.school_email);
                 $('#viewseverity_Name').text(response.data.severity_Name);
                 $('#viewrule_Name').text(response.data.rule_Name);
-                $('#viewdescription_Name').text(response.data.description_Name);
+                $('#viewdescription_Name').html(response.data.description_Name.replace(/\n/g, '<br>'));
                 $('#viewfaculty_involvement').text(response.data.faculty_involvement);
                 $('#viewfaculty_name').text(response.data.faculty_name);
                 $('#viewcounseling_required').text(response.data.counseling_required);
@@ -465,6 +461,12 @@ $(document).on('click', '.btn-view-post', function () {
                 $('#viewappeal').text(response.data.appeal);
                 $('#viewDate_Created').text(response.data.Date_Created);
 
+                // Detect merged violation and hide section
+              if (response.data.description_Name && response.data.description_Name.startsWith("Auto-merged from")) {
+                  $('#violationTypePenaltySection').hide();
+              } else {
+                  $('#violationTypePenaltySection').show();
+              }
                 // Handle uploaded evidence
                 $('#viewFileList').empty(); 
                   if (response.data.upload_evidence) {
@@ -664,6 +666,7 @@ $(document).on('click', '.btn-edit-post', function(){
          $('#edit_faculty_name').val(response.data.faculty_name);
          $('#edit_counseling_required').val(response.data.counseling_required);
          $('#edit_Remarks').val(response.data.Remarks);
+         $('#edit_notes').val(response.data.notes);
          $('#Date_Created').text(response.data.Date_Created);
   
          loadViolationDropdown('/get_violations', '#edit_violation_type', response.data.violation_type);

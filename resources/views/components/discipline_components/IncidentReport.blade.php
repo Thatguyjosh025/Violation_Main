@@ -7,7 +7,9 @@ use App\Models\penalties;
 
 $ref = referals::get();
 $pen = penalties::get();
-$reports = incident::paginate(8);
+
+$activeReports = incident::where('is_visible', 'show')->paginate(9, ['*'], 'active_page');
+$rejectedReports = incident::where('is_visible', 'reject')->paginate(9, ['*'], 'reject_page');
 @endphp
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -32,7 +34,6 @@ $reports = incident::paginate(8);
                     <div class="tab-pane fade show active" id="active-incidents" role="tabpanel"  data-bs-toggle="tab">
                         <div id="active-container">
                             <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
-                                @php $activeReports = $reports->where('is_visible', 'show'); @endphp
                                 @if ($activeReports->isEmpty())
                                     <div class="alignment-show" style="justify-content: center; width: 100%;">
                                         <div class="col-12 text-center mt-5" style="justify-content: center;">
@@ -62,7 +63,7 @@ $reports = incident::paginate(8);
                                 @endif
                             </div>
                             <div id="active-paginate-area" class="d-flex justify-content-center mt-4">
-                                {{ $reports->links('pagination::bootstrap-5') }}
+                                {{ $activeReports->links('pagination::bootstrap-5') }}
                             </div>
                         </div>
                     </div>
@@ -71,7 +72,6 @@ $reports = incident::paginate(8);
                     <div class="tab-pane fade" id="rejected" role="tabpanel">
                         <div id="reject-container">
                             <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
-                                @php $rejectedReports = $reports->where('is_visible', 'reject'); @endphp
                                 @if ($rejectedReports->isEmpty())
                                     <div class="alignment-reject" style="justify-content: center; width: 100%;">
                                         <div class="col-12 text-center mt-5" style="justify-content: center;">
@@ -100,7 +100,7 @@ $reports = incident::paginate(8);
                                 @endif
                             </div>
                             <div id="reject-paginate-area" class="d-flex justify-content-center mt-4">
-                                {{ $reports->links('pagination::bootstrap-5') }}
+                                {{  $rejectedReports->links('pagination::bootstrap-5') }}
                             </div>
                         </div>
                     </div>

@@ -27,6 +27,8 @@ class counseling extends Model
         'session_notes',
         'emotional_state',
         'plan_goals',
+        'parent_session_id',
+        'parent_uid'
     ];
     public $timestamps = false;
     public function statusRelation()
@@ -39,5 +41,14 @@ class counseling extends Model
     }
     public function priorityRiskRelation(){
         return $this->belongsTo(priorityrisk::class, 'priority_risk', 'id');
+    }
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_session_id', 'parent_uid');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_session_id', 'parent_uid');
     }
 }

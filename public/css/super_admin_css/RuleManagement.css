@@ -251,6 +251,7 @@ body, html {
     .sidebar {
         transform: translateX(-100%);
         width: 250px;
+        transition: all 0.3s;
     }
 
     .sidebar.show {
@@ -362,58 +363,84 @@ textarea {
 }
 
 /* Responsive table styles */
-@media (max-width: 768px) {
-    .table thead {
-        display: none;
-    }
-    
-    .table tr {
-        display: block;
-        margin-bottom: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background: white;
-        padding: 1rem;
-    }
-    
-    .table td {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .table td:last-child {
-        border-bottom: none;
-    }
-    
-    .table td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        color: var(--main-blue);
-        margin-right: auto;
-        padding-right: 1rem;
-    }
-    
-    .table td[data-label] {
-        text-align: right;
-    }
-    
-    .action-buttons {
-        justify-content: flex-end;
-    }
-    
-    .action-btn {
-        width: auto;
-        padding: 0 8px;
-    }
-    
-    .header-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
+@media (min-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+}
+
+/* =============================
+   MOBILE VIEW (below 768px)
+   ============================= */
+@media (max-width: 767px) {
+  /* Make table scroll horizontally */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #dee2e6;
+  }
+  
+
+  /* Hide table headers visually but keep them for accessibility */
+  .table thead {
+    display: none;
+  }
+
+  /* Make each row a card */
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: 100%;
+    padding: 7px;
+  }
+
+  .table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    padding: 4px;
+  }
+
+  .table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  /* Label each cell with the header name */
+  .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: 600;
+    text-align: left;
+    color: #000000;
+  }
+
+  .table td:last-child {
+    border-bottom: none;
+  }
+
+  /* Adjust button sizes inside table */
+  .table button,
+  .table .btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  th.dt-type-numeric.sorting_1 {
+    display: flex;
+}
 }
 .container.py-4 {
     max-width: 1750px;

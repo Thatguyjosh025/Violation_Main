@@ -19,7 +19,6 @@
                 <a class="nav-link" href="{{ url('faculty_dashboard') }}"><i class="bi bi-columns-gap"></i> <span>Dashboard</span></a>
                 <a class="nav-link" href="{{ url('faculty_violation') }}"><i class="bi bi-person-exclamation"></i> <span>Incident Report</span></a>
                 <a class="nav-link" href="{{ url('faculty_incident') }}"><i class="bi bi-file-earmark-bar-graph-fill"></i><span>Incident Records</span></a>
-                <a class="nav-link" href="#"><i class="bi bi-clipboard-data-fill"></i> <span>Reports and Analytics</span></a>
                 <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>  
             </nav>
 
