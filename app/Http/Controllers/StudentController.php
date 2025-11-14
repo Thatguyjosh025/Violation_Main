@@ -102,12 +102,18 @@ class StudentController extends Controller
 
         $mappedViolations = collect($violations->items())->map(function ($violation) {
             $sectionId = '';
-            if ($violation->violation->violations === 'Bullying') {
-                $sectionId = 'antibullyingsection';
-            } elseif ($violation->violation->violations === 'Discourtesy or Disrespect') {
-                $sectionId = 'antisexualsection';
-            } elseif ($violation->violation->violations === 'Improper Use of School Facilities/Equipment'){
-                $sectionId = 'improperuseoffacilities';
+            if ($violation->severity_Name === 'Minor') {
+                $sectionId = 'Minor-offense';
+            } elseif ($violation->severity_Name === 'Major A') {
+                $sectionId = 'Major-A-offense';
+            } elseif ($violation->severity_Name === 'Major B'){
+                $sectionId = 'Major-B-offense';
+            }
+            elseif ($violation->severity_Name === 'Major C'){
+                $sectionId = 'Major-C-offense';
+            }
+            elseif ($violation->severity_Name === 'Major D'){
+                $sectionId = 'Major-D-offense';
             }
             else{
                 $sectionId = 'frontpage';

@@ -29,11 +29,11 @@ $ruleinfos = rules::get();
             </div>
 
             <div class="modal-body">
-                <p class="text text-dark"><strong>Offense/s:</strong> <a href="#" id="offense"></a></p>
+                <p class="text text-dark"><strong>Offense/s:</strong> <span id="offense"></span></p>
                 <p class="text text-dark"><strong>Rule:</strong> <span id="ruleLink"></span></p>
                 <p class="text text-dark" id="detailsDescription"></p>
                 <hr>
-                <p class="text text-dark"><strong>Severity:</strong> <span id="severity"></span></p>
+                <p class="text text-dark"><strong>Severity:</strong> <a href="#" id="severity"></a></p>
                 <p class="text text-dark"><strong>Penalty:</strong> <span id="penalty"></span></p>
                 <p class="text text-dark"><strong>Action Taken:</strong> <span id="actionTaken"></span></p>
                 <p class="text text-dark"><strong>Status:</strong> <span id="status"></span></p>
@@ -163,10 +163,10 @@ $(document).ready(function () {
     $(document).on('click', '.view-btn', function () {
         let violation = $(this).data('violation');
 
-        $('#offense').text(violation.type || 'N/A').attr('href', '/violation_handbook#' + violation.section_Id);
+        $('#offense').text(violation.type || 'N/A')
         $('#ruleLink').text(violation.rule_Name);
         $('#detailsDescription').html(violation.description_Name.replace(/\n/g, '<br>'));
-        $('#severity').text(violation.severity_Name);
+        $('#severity').text(violation.severity_Name).attr('href', '/violation_handbook#' + violation.section_Id);
         $('#penalty').text(violation.penalties || 'N/A');
         $('#actionTaken').text(violation.referals || 'N/A');
         $('#message').text(violation.Remarks);

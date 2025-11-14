@@ -311,7 +311,7 @@
                                 <h4 class="fw-bold mt-4">Offenses</h4>
                                 <p class="text-muted">Offenses are behaviors or visible actions exhibited by students that go against the school and institutional rules and regulations.</p>
                             
-                                <h5 class="sub-header">Minor Offenses</h5>
+                                <h5 class="sub-header" id="Minor-offense">Minor Offenses</h5>
                                 <p>These are behaviors or actions that deviate or stray from the rules of the school or from student decorum and have minimal implications or consequences to the individual, other persons, the school, or the institution.</p>
                                 <p>The sanctions imposed for the commission of these offenses are:</p>
                                 <table class="mb-3">
@@ -355,7 +355,7 @@
                                     <li>Bringing of pets in the school premises</li>
                                 </ol>
 
-                                <h5 class="sub-header">Major Offenses - Category A</h5>
+                                <h5 class="sub-header" id="Major-A-offense">Major Offenses - Category A</h5>
                                 <p>These are behaviors or actions that deviate or stray from the rules of the school and/or from student decorum and have greater implications or consequences to the individual, other persons, and the school.</p>
                                 <p>The sanctions imposed for the commission of these offenses are:</p>
                                 <table class="mb-3">
@@ -393,7 +393,7 @@
                                         <li>Leaking of examination questions or answer keys to another student/s in any form</li>
                                     </ul>
                                 </ol>
-                                <h5 class="sub-header">Major Offenses - Category B</h5>
+                                <h5 class="sub-header" id="Major-B-offense">Major Offenses - Category B</h5>
                                 <p>These are behaviors or actions that lead to damage or destruction of property or image or both of an individual, a group, the school, or the institution.</p>
                                 <p>The sanctions imposed for the commission of these offenses are:</p>
                                 <table class="mb-3">
@@ -420,7 +420,7 @@
                                     <li>Use of profane language that expresses grave insult toward any member of the STI community</li>
                                 </ol>
 
-                                <h5 class="sub-header">Major Offenses - Category C</h5>
+                                <h5 class="sub-header" id="Major-C-offense">Major Offenses - Category C</h5>
                                 <p>These are behaviors or actions that lead to any of the following:</p>
                                 <ul class="bulletin-list">
                                     <li>significant injury to the individual or other persons</li>
@@ -465,7 +465,7 @@
                                     <li>Use of fire protective or firefighting equipment of the school other than for firefighting except in other emergencies where their use is justified.</li>
                                 </ol>
 
-                                <h5 class="sub-header">Major Offenses - Category D</h5>
+                                <h5 class="sub-header" id="Major-D-offense">Major Offenses - Category D</h5>
                                 <p>These are behaviors or actions that are in direct violation of the Philippine Laws. 
                                     <br>The sanction imposed for the commission of these offenses is either Exclusion/Expulsion.</p>
                                 <p>Offenses under this category include but are not limited to the following:</p>
