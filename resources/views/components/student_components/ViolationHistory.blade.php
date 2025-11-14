@@ -24,7 +24,7 @@
                     @foreach ($filteredHistory as $history) 
                         <!-- Violation Card Template -->
                         <div class="col mt">
-                            <div class="card p-3" style="background: #2c698d; color: white;">
+                            <div class="card p-3" style="background: #2c698d; color: white; margin-bottom: 0.8rem;">
                                 <h5>{{ $history->violation->violations }}</h5>
                                 <p>Status: {{ $history->status->status }}</p>
                                 <p>Date: {{ $history->Date_Created }}</p>
@@ -47,19 +47,18 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p><strong>Offense/s:</strong> Improper Uniform</p>
-                            <p><strong>Details:</strong> <a href="#">Student Uniform</a></p>
-                            <p>Certain programs, courses, or activities require a different set of uniforms. Only STI issued or endorsed uniforms are allowed.</p>
+                            <p><strong>Offense/s: </strong><span id="offense"></span></p>
+                            <p><strong>Details: </strong><span id="detailsDescription"></span></p>
                             <hr>
-                            <p><strong>Severity:</strong> Minor Offense</p>
-                            <p><strong>Penalty:</strong> Verbal/Oral Warning</p>
-                            <p><strong>Action Taken:</strong> Consulted DO/GA</p>
+                            <p><strong>Severity: </strong><span id="severity"></span></p>
+                            <!-- <p><strong>Penalty: </strong><span id="penalty"></span></p>
+                            <p><strong>Action Taken: </strong><span id="actionTaken"></span></p> -->
                             <hr>
-                            <p><strong>Message:</strong></p>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor.</p>
+                            <p><strong>Message: </strong><span id="message"></span></p>
+                            <p></p>
                             <hr>
-                            <p><strong>Apppeal</strong></p>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor.</p>
+                            <p><strong>Apppeal: </strong><span id="appealview"></span></p>
+                            <p></p>
                         </div>
                     </div>
                 </div>
@@ -76,7 +75,8 @@ $(document).ready(function() {
             let cardsContainer = $('#violation-cards');
             cardsContainer.empty();
 
-            const resolvedViolations = data.filter(v => v.status === 'Resolved');
+            const resolvedViolations = data.data.filter(v => v.status === 'Resolved');
+
 
             if (resolvedViolations.length === 0) {
                 cardsContainer.append(`
@@ -84,7 +84,6 @@ $(document).ready(function() {
                         <div class="col-12 text-center mt-5" style="justify-content: center;">
                             <p>No violation history found.</p>
                         </div>
-                    </div>
                 `);
             } else {
                 resolvedViolations.forEach(function(violation) {
@@ -95,7 +94,7 @@ $(document).ready(function() {
                                 <p><small>Status: ${violation.status}</small></p>
                                 <p><small>Date: ${violation.date}</small></p>
                                 <div class="d-grid gap-2 d-md-flex">
-                                    <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#appealModal"
+                                    <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#violationModal"
                                             data-violation='${JSON.stringify(violation)}'>View</button>
                                 </div>
                             </div>
@@ -108,6 +107,19 @@ $(document).ready(function() {
         error: function(xhr, status, error) {
             console.error('Error fetching violations:', error);
         }
+    });
+
+      $(document).on('click', '.view-btn', function () {
+        let violation = $(this).data('violation');
+
+        $('#detailsDescription').html(violation.description_Name?.replace(/\n/g, '<br>') || 'N/A');
+        $('#severity').text(violation.severity_Name || 'N/A');
+        $('#offense').text(violation.violation?.violations || 'N/A');
+        $('#penalty').text(violation.penalties|| 'N/A');
+        $('#actionTaken').text(violation.referals|| 'N/A');
+        $('#message').text(violation.Remarks || 'N/A');
+        $('#status').text(violation.status || 'N/A');
+        $('#appealview').text(violation.appeal || 'N/A');
     });
 });
 </script>

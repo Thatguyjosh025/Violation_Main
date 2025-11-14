@@ -17,7 +17,7 @@
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <h1 class="mb-0 sidebar-title" style="color: #004581;">Central</h1>
-        <button class="close-btn" id="closeSidebar"><i class="bi bi-list"></i></button>
+        <button class="close-btn" id="closeSidebar"><i class="bi bi -list"></i></button>
     </div>
 
     <nav class="nav flex-column mt-3 flex-grow-1">

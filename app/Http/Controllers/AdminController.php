@@ -384,7 +384,9 @@ class AdminController extends Controller
                 $q->where('firstname', 'LIKE', "%{$query}%")
                 ->orWhere('lastname', 'LIKE', "%{$query}%")
                 ->orWhere('student_no', 'LIKE', "%{$query}%");
-            })->get();
+            })
+            ->limit(3)  // 🔥 only fetch first 3
+            ->get();
 
         return response()->json($students);
     }

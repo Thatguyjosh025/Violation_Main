@@ -21,12 +21,12 @@ class StudentController extends Controller
         $school_email = $user->email;
     
         $violations = postviolation::with(['violation', 'penalty', 'referal', 'status'])
-            ->where('student_no', $student_number)
-            ->get();
+        ->where('student_no', $student_number)
+        ->paginate(9);
 
         // 5 mins violation demo expiration check
         // put a fucking validation here to ignore all the data with RESOLVE status because it process everything it sees fucking annoying
-        foreach ($violations as $violation) {
+        foreach ($violations->items() as $violation) {
             
             if ($violation->status_name == 8) {
                 continue;
@@ -100,7 +100,7 @@ class StudentController extends Controller
         // }
 
 
-        $mappedViolations = $violations->map(function ($violation) {
+        $mappedViolations = collect($violations->items())->map(function ($violation) {
             $sectionId = '';
             if ($violation->violation->violations === 'Bullying') {
                 $sectionId = 'antibullyingsection';
@@ -128,12 +128,16 @@ class StudentController extends Controller
                 'Remarks' => $violation->Remarks,
                 'upload_evidence' => $violation->upload_evidence,
                 'appeal' => $violation->appeal,
-                
             ];
         });
-
     
-        return response()->json($mappedViolations);
+        return response()->json([
+            'data' => $mappedViolations,
+            'current_page' => $violations->currentPage(),
+            'last_page' => $violations->lastPage(),
+            'per_page' => $violations->perPage(),
+            'total' => $violations->total()
+        ]);
     }
 
   public function updateAppealReason(Request $request)

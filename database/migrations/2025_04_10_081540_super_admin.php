@@ -88,7 +88,7 @@ return new class extends Migration
 
         DB::table('tb_penalties')->insert([
             ['penalties_uid' => 'PE001','penalties' => 'Verbal / Oral Warning'],
-            // ['penalties_uid' => 'PE002','penalties' => 'Written Warning'],
+            ['penalties_uid' => 'PE002','penalties' => 'Written Warning'],
             // ['penalties_uid' => 'PE003','penalties' => 'Counseling Session'],
         ]);
         
@@ -102,7 +102,7 @@ return new class extends Migration
         
         DB::table('tb_referals')->insert([
             ['referal_uid' => 'RE001','referals' => 'Verbal Reprimand'],
-            // ['referal_uid' => 'RE002','referals' => 'Written Reprimand'],
+            ['referal_uid' => 'RE002','referals' => 'Written Reprimand'],
             // ['referal_uid' => 'RE003','referals' => 'Counseling Session'],
         ]);
 

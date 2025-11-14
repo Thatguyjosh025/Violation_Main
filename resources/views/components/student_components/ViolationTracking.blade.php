@@ -16,6 +16,7 @@ $ruleinfos = rules::get();
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3" id="violation-cards">
         <!-- Violation cards will be loaded here via AJAX -->
     </div>
+    <div id="pagination-container" class="mt-3 d-flex justify-content-center"></div>
 </div>
 
 <!-- Modal Section -->
@@ -67,7 +68,6 @@ $ruleinfos = rules::get();
                                     <small class="text-muted">Click to select files or drag them here</small>
                                 </label>
 
-                                <!-- Hidden input for file selection -->
                                 <input type="file" id="uploadAppealEvidence" name="upload_appeal_evidence[]" multiple style="display:none;">
 
                                 <div style="max-height: 150px; overflow-y: auto;">
@@ -92,37 +92,69 @@ $ruleinfos = rules::get();
 <script>
 $(document).ready(function () {
 
+    let selectedFiles = [];
+
     // -----------------------------
-    // Load Violations
-    // in here we can if the 3 minors should not exist we could hide it by using is_active === false
+    // Load Violations (First Page)
     // -----------------------------
-    $.ajax({
-        url: '/get_violations_records',
-        method: 'GET',
-        success: function (data) {
-            let cardsContainer = $('#violation-cards');
-            cardsContainer.empty();
-            const unresolvedViolations = data.filter(v => v.status !== 'Resolved');
-            if (unresolvedViolations.length === 0) {
-                cardsContainer.append(`<div class="col-12 text-center mt-5"><p>No active violations found.</p></div>`);
-            } else {
-                unresolvedViolations.forEach(function (violation) {
-                    cardsContainer.append(`
-                        <div class="col">
-                            <div class="card p-3">
-                                <h5>${violation.type}</h5>
-                                <p><small>Status: ${violation.status}</small></p>
-                                <p><small>Date: ${violation.date}</small></p>
-                                <button class="btn btn-light view-btn" data-bs-toggle="modal" data-bs-target="#appealModal"
-                                        data-violation='${JSON.stringify(violation)}'>View</button>
-                            </div>
-                        </div>`);
-                });
+    loadViolations();
+
+    function loadViolations(page = 1) {
+        $.ajax({
+            url: '/get_violations_records?page=' + page,
+            method: 'GET',
+            success: function (data) {
+                renderViolations(data);
+                buildPagination(data);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching violations:', error);
             }
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching violations:', error);
+        });
+    }
+
+    function renderViolations(data) {
+        let cardsContainer = $('#violation-cards');
+        cardsContainer.empty();
+
+        const violations = data.data;
+
+        if (violations.length === 0) {
+              $('#activeViolationCards').append(`
+                <div id="no-violations-msg" class="d-flex justify-content-center align-items-center" 
+                     style="width: 100%;">
+                    <p class="text-center mb-0">No active violations found.</p>
+                </div>
+            `);
+        } else {
+            $('#no-violations-msg').remove();
+            violations.forEach(function (violation) {
+                cardsContainer.append(`
+                    <div class="col">
+                        <div class="card p-3">
+                            <h5>${violation.type}</h5>
+                            <p><small>Status: ${violation.status}</small></p>
+                            <p><small>Date: ${violation.date}</small></p>
+                            <button class="btn btn-light view-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#appealModal"
+                                    data-violation='${JSON.stringify(violation)}'>
+                                    View
+                            </button>
+                        </div>
+                    </div>
+                `);
+            });
         }
+    }
+
+    // -----------------------------
+    // Pagination Click
+    // -----------------------------
+    $(document).on('click', '.page-btn', function(e) {
+        e.preventDefault();
+        let page = $(this).data('page');
+        loadViolations(page);
     });
 
     // -----------------------------
@@ -130,9 +162,9 @@ $(document).ready(function () {
     // -----------------------------
     $(document).on('click', '.view-btn', function () {
         let violation = $(this).data('violation');
+
         $('#offense').text(violation.type || 'N/A').attr('href', '/violation_handbook#' + violation.section_Id);
         $('#ruleLink').text(violation.rule_Name);
-        //$('#detailsDescription').text(violation.description_Name);
         $('#detailsDescription').html(violation.description_Name.replace(/\n/g, '<br>'));
         $('#severity').text(violation.severity_Name);
         $('#penalty').text(violation.penalties || 'N/A');
@@ -172,6 +204,10 @@ $(document).ready(function () {
         $('#submitAppeal').show();
         $('#uploadSection').hide();
         $('input[name="appeal"]').prop('checked', false);
+
+        selectedFiles = [];
+        $('#fileList').empty();
+        $('#uploadAppealEvidence').val('');
     });
 
     // -----------------------------
@@ -192,99 +228,58 @@ $(document).ready(function () {
     });
 
     // -----------------------------
-    // Drag & Drop Upload (Fixed)
+    // Drag & Drop Upload
     // -----------------------------
     let dropArea = document.getElementById("dropArea");
     let fileInput = document.getElementById("uploadAppealEvidence");
     let fileList = document.getElementById("fileList");
-    let selectedFiles = [];
 
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, e => {
-            e.preventDefault();
-            e.stopPropagation();
-        }, false);
+    ['dragenter','dragover','dragleave','drop'].forEach(e => {
+        dropArea.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); }, false);
     });
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, () => dropArea.classList.add('bg-light'), false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, () => dropArea.classList.remove('bg-light'), false);
-    });
+    ['dragenter','dragover'].forEach(e => { dropArea.addEventListener(e, () => dropArea.classList.add('bg-light'), false); });
+    ['dragleave','drop'].forEach(e => { dropArea.addEventListener(e, () => dropArea.classList.remove('bg-light'), false); });
 
     dropArea.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
     dropArea.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', e => handleFiles(e.target.files));
 
-   function handleFiles(files) {
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    function handleFiles(files) {
+        const maxSize = 2 * 1024 * 1024; // 2MB
 
-    // --- Check for duplicate filenames before adding ---
-    if (files.length > 1) {
-        let duplicates = Array.from(files).filter(file => 
-            selectedFiles.find(f => f.name === file.name)
-        );
-        if (duplicates.length > 0) {
-            Swal.fire({ icon: "warning", text: `Multiple files have already been selected.` });
-            return;
-        }
-    } else if (files.length === 1) {
-        let file = files[0];
-        let existingIndex = selectedFiles.findIndex(f => f.name === file.name);
-        if (existingIndex !== -1) {
-            // Replace old file and notify user
-            selectedFiles[existingIndex] = file;
-            Swal.fire({ icon: "info", text: `${file.name} has already been selected.` });
-
-            // Remove old entry from list
-            [...fileList.children].forEach(li => {
-                if (li.firstChild.textContent.includes(file.name)) {
+        Array.from(files).forEach(file => {
+            if (file.size > maxSize) {
+                Swal.fire({ icon: "error", text: `${file.name} exceeds 2MB limit.` });
+                return;
+            }
+            if (!selectedFiles.some(f => f.name === file.name)) {
+                selectedFiles.push(file);
+                let li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+                let removeBtn = document.createElement("button");
+                removeBtn.className = "btn btn-sm btn-danger";
+                removeBtn.textContent = "x";
+                removeBtn.onclick = () => {
+                    selectedFiles = selectedFiles.filter(f => f !== file);
                     li.remove();
-                }
-            });
-        }
+                    syncInput();
+                };
+                li.appendChild(removeBtn);
+                fileList.appendChild(li);
+            }
+        });
+        syncInput();
     }
-
-    // --- Handle valid files ---
-    Array.from(files).forEach(file => {
-        if (file.size > maxSize) {
-            Swal.fire({ icon: "error", text: `${file.name} exceeds 2MB limit.` });
-            return;
-        }
-
-        // Only add if not already added
-        if (!selectedFiles.some(f => f.name === file.name)) {
-            selectedFiles.push(file);
-            let li = document.createElement("li");
-            li.className = "list-group-item d-flex justify-content-between align-items-center";
-            li.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
-            let removeBtn = document.createElement("button");
-            removeBtn.className = "btn btn-sm btn-danger";
-            removeBtn.textContent = "x";
-            removeBtn.onclick = () => {
-                selectedFiles = selectedFiles.filter(f => f !== file);
-                li.remove();
-                syncInput();
-            };
-            li.appendChild(removeBtn);
-            fileList.appendChild(li);
-        }
-    });
-
-    syncInput();
-}
 
     function syncInput() {
         let dt = new DataTransfer();
         selectedFiles.forEach(f => dt.items.add(f));
         fileInput.files = dt.files;
-        console.log("Files synced:", fileInput.files.length);
     }
 
     // -----------------------------
-    // Submit Appeal 
+    // Submit Appeal
     // -----------------------------
     $(document).on('click', '#submitAppeal', function () {
         let appealReason = $('#appealReason').val();
@@ -297,12 +292,7 @@ $(document).ready(function () {
         formData.append('studentName', studentName);
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
-        let fileInput = document.getElementById('uploadAppealEvidence');
-        for (let i = 0; i < fileInput.files.length; i++) {
-            formData.append('upload_appeal_evidence[]', fileInput.files[i]);
-        }
-
-        console.log("Submitting", fileInput.files.length, "files");
+        Array.from(fileInput.files).forEach(f => formData.append('upload_appeal_evidence[]', f));
 
         $.ajax({
             url: '/update_appeal_reason',
@@ -315,16 +305,45 @@ $(document).ready(function () {
                     $('#appealform').trigger('reset');
                     $('#appealSection').hide();
                     $('#appealModal').modal('hide');
-                    Swal.fire({ icon: "success", text: "Appeal submitted successfully!", timer: 5000 });
+                    Swal.fire({ icon: "success", text: "Appeal submitted successfully!", timer: 3000 });
                 } else {
                     Swal.fire({ icon: "error", text: response.message });
                 }
             },
-            error: function (xhr, status, error) {
-                console.error('Error updating appeal reason:', error);
+            error: function () {
                 Swal.fire({ icon: "error", text: "Submission failed." });
             }
         });
     });
+
+    // -----------------------------
+    // Build Pagination (show only 3 pages at a time)
+    // -----------------------------
+    function buildPagination(data) {
+        let container = $('#pagination-container');
+        container.empty();
+
+        if (data.last_page <= 1) return;
+
+        let html = `<nav><ul class="pagination">`;
+
+        if (data.current_page > 1) {
+            html += `<li class="page-item"><a class="page-link page-btn" data-page="${data.current_page - 1}">Previous</a></li>`;
+        }
+
+        let start = Math.max(1, data.current_page - 1);
+        let end = Math.min(data.last_page, start + 2);
+
+        for (let i = start; i <= end; i++) {
+            html += `<li class="page-item ${i === data.current_page ? 'active' : ''}"><a class="page-link page-btn" data-page="${i}">${i}</a></li>`;
+        }
+
+        if (data.current_page < data.last_page) {
+            html += `<li class="page-item"><a class="page-link page-btn" data-page="${data.current_page + 1}">Next</a></li>`;
+        }
+
+        html += `</ul></nav>`;
+        container.html(html);
+    }
 });
 </script>

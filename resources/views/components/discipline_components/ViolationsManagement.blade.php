@@ -467,44 +467,64 @@ $(document).ready(function(){
     // -----------------------------
     // Student search
     // -----------------------------
-    $('#search-student').on('keypress', function(e) {
+    let typingTimer;
+    const typingDelay = 100; // debounce (ms)
+    $('#search-student').on('keyup', function () {
+        clearTimeout(typingTimer);
+
         const query = $(this).val().trim();
-        if (e.which === 13 && query) {
-            e.preventDefault();
-            $.ajax({
-                url: "/student_search",
-                method: 'GET',
-                data: { query: query },
-                success: function(response) {
-                    if (response.length === 0) {
-                        $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
-                    } else {
-                        let html = '';
-                        response.forEach(function(data) {
-                            html += `
-                                <div class="student-item">
-                                    <div class="d-flex align-items-center">
-                                        <img src="/Photos/avatar.png" alt="Student">
-                                        <div class="ms-2">
-                                            <p class="mb-0 fw-bold">Student No.</p>
-                                            <small>${data.student_no}</small>
-                                            <p>${data.firstname} ${data.lastname}</p>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-outline-primary btn-sm view-btn"
-                                        data-id="${data.id}"
-                                        data-name="${data.firstname} ${data.lastname}"
-                                        data-email="${data.email}"
-                                        data-student_no="${data.student_no}"
-                                        data-course="${data.course_and_section}">View</button>
-                                </div>`;
-                        });
-                        $('.student-list').html(html);
-                    }
-                }
-            });
+
+        // If empty, reset UI
+        if (query.length === 0) {
+            $('.student-list').html('<p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>');
+            return;
         }
-    });
+
+        // Wait before triggering search (debounce)
+
+            typingTimer = setTimeout(function () {
+
+                $.ajax({
+                    url: "/student_search",
+                    method: 'GET',
+                    data: { query: query },
+                    success: function(response) {
+
+                        // LIMIT TO FIRST 3 MATCHES
+                        const results = response.slice(0, 3);
+
+                        if (results.length === 0) {
+                            $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
+                        } else {
+                            let html = '';
+                            results.forEach(function(data) {
+                                html += `
+                                    <div class="student-item">
+                                        <div class="d-flex align-items-center">
+                                            <img src="/Photos/avatar.png" alt="Student">
+                                            <div class="ms-2">
+                                                <p class="mb-0 fw-bold">Student No.</p>
+                                                <small>${data.student_no}</small>
+                                                <p>${data.firstname} ${data.lastname}</p>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-outline-primary btn-sm view-btn"
+                                            data-id="${data.id}"
+                                            data-name="${data.firstname} ${data.lastname}"
+                                            data-email="${data.email}"
+                                            data-student_no="${data.student_no}"
+                                            data-course="${data.course_and_section}">
+                                            View
+                                        </button>
+                                    </div>`;
+                            });
+                            $('.student-list').html(html);
+                        }
+                    }
+                });
+
+            }, typingDelay);
+        });
 
 });
 

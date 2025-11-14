@@ -26,28 +26,10 @@
                 <button type="button" class="btn btn-sm btn-success" id="importCSVBtn">Import CSV</button>
             </div>
 
-            <!-- This Button is for consulting whether to remove or keep since all the accounts comes from microsoft 
-                and Super Admin will be ENV Credentials -->            
-                <!-- <button class="btn btn-action w-auto" type="button" data-bs-toggle="modal" data-bs-target="#adduser">
-                    + Add
-                </button> -->
-            <!-- END BUTTON CONCERN -->
-
-
 
         </div>
 
         <div class="table-container mt-3">
-        <!-- Controls (Dropdown & Search Input) -->
-        <div class="d-flex gap-2 mb-2">
-        <!-- <select class="form-select" id="entriesPerPage" style="width: 5rem;">
-                <option value="1">1</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-            </select>
-            <input type="text" class="form-control" id="searchInput" placeholder="Search" style="max-width: 300px;"> -->
-        </div>
-
         <!-- Table -->
         <div class="table-responsive-sm overflow-hidden">
             <table class="table table-hover table-mobile-wrap" id="authTable">
@@ -74,7 +56,9 @@
                             <td data-label="Role">{{ $data->role }}</td>
                             <td data-label="Status">{{ $data->status }}</td>
                             <td data-label="Actions">
-                                <button class="btn btn-primary btn-edit" value="{{ $data->id }}">Edit</button>
+                                @if($data->role !== 'super')
+                                    <button class="btn btn-primary btn-edit" value="{{ $data->id }}">Edit</button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -85,19 +69,9 @@
     </div>
 
     <!-- Modal for add user -->
-    <div class="modal fade" id="adduser" tabindex="-1" aria-hidden="true">
+    <!-- <div class="modal fade" id="adduser" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-
-                <!-- This Button is for consulting whether to remove or keep since all the accounts comes from microsoft 
-                 and Super Admin will be ENV Credentials -->
-
-                    <!-- <div class="modal-header">
-                        <h5 class="modal-title" id="registerModalLabel">Add user</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div> -->
-
-                <!-- END BUTTON CONCERN -->
                  
                 <div class="modal-body">
                     <form id="userForm" action="{{ url('add_user') }}" method="POST">
@@ -109,8 +83,6 @@
                         <div class="mb-3">
                             <label for="lastname" class="form-label">Last Name:</label>
                             <input type="text" class="form-control" id="lastname" name="lastname">
-                        </div>
-                        <div class="mb-3">
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
@@ -156,7 +128,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Modal for edit -->
     <div class="modal fade" id="edituser" tabindex="-1" aria-hidden="true">
@@ -170,22 +142,21 @@
                     <form id="editForm" action="{{ url('update_user') }}" method="POST">
                         @csrf
                         <input type="hidden" id="userid">
-                        <div class="mb-3">
+                        <div class="mb-3" style="display: none;">
                             <label for="firstname" class="form-label">First Name:</label>
                             <input type="text" class="form-control" id="firstname" name="firstname">
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3" style="display: none;">
                             <label for="lastname" class="form-label">Last Name:</label>
                             <input type="text" class="form-control" id="lastname" name="lastname">
                         </div>
-                        <div class="mb-3">
-                        </div>
+    
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
                             <input type="email" class="form-control" id="email" name="email">
                         </div>
 
-                        <div class="mb-3" id="studentNoContainer">
+                        <div class="mb-3" id="studentNoContainer" style="display: none;">
                             <label for="student_no" class="form-label">ID Number:</label>
                             <input type="text" class="form-control" id="student_no" name="student_no" min="8" maxlength="8" required>
                         </div>
