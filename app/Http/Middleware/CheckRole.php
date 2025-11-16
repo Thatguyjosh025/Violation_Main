@@ -25,6 +25,7 @@ class CheckRole
             }
         }
 
-        return redirect('/');
+        return response()->view('errors.403', [], 403);
+
     }
 }

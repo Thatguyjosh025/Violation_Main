@@ -20,8 +20,10 @@
                 <div class="row">
                     <div class="col-lg-8">
                         <div class="card card-custom mt-3 p-4">
-                            <div class="d-flex flex-column flex-md-row align-items-center gap-3">
-                                <img src="{{ asset('./Photos/avatar.png') }}" class="profile-img" alt="Profile Picture">
+                            <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                                <div class="profile-img" id="profilePlaceholder">
+                                    <span class="profile-text" >No student selected</span>
+                                </div>
                                 <div class="studentinfo w-100">
                                     <label for="student_no" class="fw-bold">Student No:</label>
                                     <p id="displaystudentno">-</p>
@@ -75,6 +77,13 @@
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+function getInitials(first, last) {
+    const f = first ? first.charAt(0).toUpperCase() : '';
+    const l = last ? last.charAt(0).toUpperCase() : '';
+    return f + l;
+}
+
 $(document).ready(function(){
 
     let dropArea = document.getElementById("dropArea");
@@ -230,6 +239,20 @@ $(document).ready(function(){
         var email = $(this).data("email");
         var studentNo = $(this).data("student_no");
         var course = $(this).data("course");
+
+        const first = $(this).data('first');
+        const last = $(this).data('last');
+
+        const initials = getInitials(first, last);
+
+        $('.profile-img').hide(); // hide default png
+        $('.profile-avatar-big').remove(); // remove previous if any
+
+        $('.d-flex.flex-column.flex-md-row').prepend(`
+            <div class="profile-avatar-big">
+                ${initials}
+            </div>
+        `);
 
         $('#displaystudentno').text(studentNo);
         $('#displaystudentname').text(studentName);
@@ -468,44 +491,42 @@ $(document).ready(function(){
     // Student search
     // -----------------------------
     let typingTimer;
-    const typingDelay = 100; // debounce (ms)
+    const typingDelay = 0; // debounce (ms)
     $('#search-student').on('keyup', function () {
         clearTimeout(typingTimer);
 
         const query = $(this).val().trim();
 
-        // If empty, reset UI
-        if (query.length === 0) {
+        // If search bar is empty → show placeholder and stop
+        if (query === '') {
             $('.student-list').html('<p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>');
             return;
         }
 
-        // Wait before triggering search (debounce)
+        typingTimer = setTimeout(function () {
 
-            typingTimer = setTimeout(function () {
+            $.ajax({
+                url: "/student_search",
+                method: 'GET',
+                data: { query: query },
+                success: function(response) {
 
-                $.ajax({
-                    url: "/student_search",
-                    method: 'GET',
-                    data: { query: query },
-                    success: function(response) {
+                    const results = response.slice(0, 3); // Show only first 3
 
-                        // LIMIT TO FIRST 3 MATCHES
-                        const results = response.slice(0, 3);
-
-                        if (results.length === 0) {
-                            $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
-                        } else {
-                            let html = '';
+                    if (results.length === 0) {
+                        $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
+                    } else {
+                        let html = '';
                             results.forEach(function(data) {
                                 html += `
-                                    <div class="student-item">
+                                    <div class="student-item d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
-                                            <img src="/Photos/avatar.png" alt="Student">
+                                            <div class="initial-icon">
+                                                ${getInitials(data.firstname, data.lastname)}
+                                            </div>
                                             <div class="ms-2">
-                                                <p class="mb-0 fw-bold">Student No.</p>
+                                                <p class="mb-0 fw-bold">${data.firstname} ${data.lastname}</p>
                                                 <small>${data.student_no}</small>
-                                                <p>${data.firstname} ${data.lastname}</p>
                                             </div>
                                         </div>
                                         <button class="btn btn-outline-primary btn-sm view-btn"
@@ -513,18 +534,20 @@ $(document).ready(function(){
                                             data-name="${data.firstname} ${data.lastname}"
                                             data-email="${data.email}"
                                             data-student_no="${data.student_no}"
+                                            data-first="${data.firstname}"
+                                            data-last="${data.lastname}"
                                             data-course="${data.course_and_section}">
                                             View
                                         </button>
                                     </div>`;
                             });
-                            $('.student-list').html(html);
-                        }
+                        $('.student-list').html(html);
                     }
-                });
+                }
+            });
 
-            }, typingDelay);
-        });
+        }, 0);
+    });
 
 });
 

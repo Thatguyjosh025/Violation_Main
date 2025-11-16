@@ -226,6 +226,13 @@ body {
     object-fit: cover;
     border-radius: 0.6rem;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Box style */
+    border: 1px solid #000;
+    background: #f7f7f7;
 }
 
 @media (max-width: 768px) {
@@ -451,3 +458,28 @@ select.form-select {
     border-bottom: 2px solid #ccc;
     outline: none;
 }
+.initial-icon {
+    width: 45px;
+    height: 45px;
+    background: #4a6cf7;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+.profile-avatar-big {
+    width: 13rem;
+    height: 10rem;
+    background: #4a6cf7;
+    color: white;
+    border-radius: 7px;
+    font-size: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+

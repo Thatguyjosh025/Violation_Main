@@ -379,13 +379,14 @@ class AdminController extends Controller
     {
         $query = $request->get('query');
 
-        $students = users::where('role', 'student')
+        $students = users::select('id', 'firstname', 'lastname', 'email', 'student_no')
+            ->where('role', 'student')
             ->where(function($q) use ($query) {
                 $q->where('firstname', 'LIKE', "%{$query}%")
                 ->orWhere('lastname', 'LIKE', "%{$query}%")
                 ->orWhere('student_no', 'LIKE', "%{$query}%");
             })
-            ->limit(3)  // 🔥 only fetch first 3
+            ->limit(3)
             ->get();
 
         return response()->json($students);

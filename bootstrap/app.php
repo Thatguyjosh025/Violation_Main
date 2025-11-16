@@ -14,7 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         //
         $middleware->alias([
-            'permission' => CheckRole::class
+            'permission' => CheckRole::class,
+            'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
         ]);
 
         //bypass csrf for import csv
