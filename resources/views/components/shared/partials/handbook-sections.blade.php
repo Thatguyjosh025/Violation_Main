@@ -3,8 +3,8 @@
     <div class="handbook-entry" id="section-{{ $section->id }}">
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="sub-header mt-4">{{ $section->header }}</h5>
-            @if(Auth::user()->role === 'super')
-                <div>
+            @if(Auth::user()->role === 'head')
+                <div class="button-container-actions">
                     <button class="btn btn-sm btn-outline-primary edit-section-btn"
                             data-id="{{ $section->id }}"
                             data-header="{{ $section->header }}"

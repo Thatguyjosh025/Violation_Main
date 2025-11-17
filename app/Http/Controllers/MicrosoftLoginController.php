@@ -130,6 +130,7 @@ class MicrosoftLoginController extends Controller
         'student'    => redirect()->route('student_dashboard'),
         'faculty'    => redirect()->route('faculty_dashboard'),
         'counselor'  => redirect()->route('counseling_dashboard'),
+        'head'  => redirect()->route('academic-head_dashboard'),
         default      => redirect()->route('home'),
     };
 }

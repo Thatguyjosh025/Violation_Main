@@ -50,40 +50,45 @@
         
             <!-- Minor & Major & Good Moral Cards -->
             <div class="row g-3">
-              <div class="col-md-4">
-                <div class="card p-3 text-center shadow h-100" style="background-color: #f5c423; color: white; border-radius: 7px;">
+             <div class="col-md-4">
+                <div class="card p-3 text-center shadow" style="background-color: #f5c423; color: white; border-radius: 7px;">
                   <h5 class="fw-bold">Minor Offense</h5>
-                  <h1 class="fw-bold">{{ countstudentMinor() }}</h1>
+                  <h1 class="fw-bold">{{ countStudentMinor() }}</h1>
                   <p class="mb-1">Recent Violation</p>
                   <div class="bg-white p-2 rounded shadow-sm">
                     <p class="mb-0">Improper Uniform</p>
-                    <a href="#" class="text-primary">View</a>
                   </div>
                 </div>
               </div>
+
               <div class="col-md-4">
-                <div class="card p-3 text-center shadow h-100" style="background-color: #F44336; border-radius: 7px; color: white;">
+                <div class="card p-3 text-center shadow" style="background-color: #F44336; border-radius: 7px; color: white;">
                   <h5 class="fw-bold">Major Offense</h5>
-                  <h1 class="fw-bold">{{ countstudentMajor() }}</h1>
+                  <h1 class="fw-bold">{{ countStudentMajor() }}</h1>
                   <p class="mb-1">Recent Violation</p>
                   <div class="bg-white p-2 rounded shadow-sm text-dark">
                     <p class="mb-0">Gambling</p>
-                    <a href="#" class="text-primary">View</a>
                   </div>
                 </div>
               </div>
+
               <div class="col-md-4">
-                <div class="card good-moral-score p-3 shadow-sm text-center h-100">
-                  <h5>Good Moral Score</h5>
-                  <div class="progress-circle mx-auto">
-                    <canvas id="moralScoreChart"></canvas>
-                    <div class="progress-text fs-2">97</div>
+                  <div class="card p-3 text-center shadow" style="background-color: white; border-radius: 7px; color: #2c698d;">
+                    <h5 class="fw-bold mb-3 text-center">Guidance Counseling</h5>
+                    <!-- CLICKABLE INNER BOX -->
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#CounselingReport" class="text-decoration-none">
+                      <div class="RequiredCounselingBox rounded d-flex justify-content-between align-items-start" style="padding: 16px 8px 16px 10px;">
+                        <div class="text-start">
+                          <p class="b-1">Follow-up Needed</p>
+                          <small>11/16/2025</small>
+                        </div>
+                        <i class="bi bi-person-fill-exclamation fs-3"></i>
+                      </div>
+                    </a>
                   </div>
-                  <p class="text-primary fw-bold mt-1">Excellent behavior</p>
                 </div>
-              </div>
+
             </div>
-        
           </div>
       
           <div class="col-lg-5 d-flex flex-column gap-3">

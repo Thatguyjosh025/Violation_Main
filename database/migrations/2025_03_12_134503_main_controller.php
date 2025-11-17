@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string(column: 'student_no')->unique()->nullable();
             // $table->string('course_and_section')->nullable();
             $table->string('password')->nullable();
-            $table->enum('role',['student','counselor','discipline','faculty','registar','super'])->nullable();
+            $table->enum('role',['student','counselor','discipline','faculty','head','super'])->nullable();
             $table->enum('status',['active','inactive']);
         });
 
@@ -87,6 +87,18 @@ return new class extends Migration
             //  'course_and_section' => 'Faculty',
              'password' => bcrypt('123456789'),
              'role' => 'counselor',
+             'status' => 'active'
+            ]
+        ]);
+        
+        DB::table('tb_users')->insert([
+            ['firstname' => 'Ricson',
+             'lastname' => 'Ricardo',
+             'email' => 'academichead@alabang.sti.edu.ph',
+             'student_no' => 'ALA0151F',
+            //'course_and_section' => 'Faculty',
+             'password' => bcrypt('123456789'),
+             'role' => 'head',
              'status' => 'active'
             ]
         ]);

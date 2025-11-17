@@ -145,6 +145,57 @@ body {
     display: none;
 }
 
+/* Logo */
+img.sidebar-logo.full-logo{
+    margin-right: 0;
+}
+
+button#closeSidebar {
+    margin-right: 5px;
+}
+
+.sidebar-logo {
+    height: 70px;
+    transition: all 0.3s ease;
+}
+
+.full-logo {
+    display: block;
+}
+
+.icon-logo {
+    display: none;
+}
+
+.sidebar.collapsed .full-logo {
+    display: none;
+}
+
+.sidebar.collapsed .icon-logo {
+    display: block !important;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 1rem;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+}
+
+img.sidebar-logo.full-logo {
+    width: 12rem;
+    object-fit: cover;
+}
+
+img.sidebar-logo.icon-logo.d-none {
+    margin-right: 2rem;
+    height: 3rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -174,12 +225,15 @@ body {
     .close-btn {
         display: block !important;
     }
+    .d-flex.align-items-center.mt-4.flex-md-nowrap.flex-wrap {
+    display: flex;
+    justify-content: center;
+}
 }
 /* End of Side Bar CSS */
 
 /* Dashboard CSS */
 img {
-    width: 12rem;
     height: 12rem;
     object-fit: cover;
     margin-right: 2rem;
@@ -207,8 +261,36 @@ img {
     align-items: stretch;
 }
 
-.card.card-custom.shadow-sm.h-100 {
+.d-flex.align-items-center.flex-md-nowrap.flex-wrap {
+    margin-top: 2rem;
+}
+
+.card.card-custom.shadow-sm {
     padding-left: 16px;
+}
+
+.card.p-3.text-center.shadow {
+    height: 19.1rem;
+}
+
+h1.fw-bold {
+    font-size: 4rem;
+    margin: 0.8rem 0 1.4rem 0;
+}
+
+@media (max-width: 1152px) {
+    h1.fw-bold {
+        margin: 0.8rem 0 0 0;
+    }
+}
+
+@media (max-width: 992px) {
+    h1.fw-bold {
+        margin: 0.8rem 0 1.4rem 0;
+    }
+    .col-lg-7.d-flex.flex-column.gap-3 {
+    margin-bottom: 1rem;
+}
 }
 
 .dashboard-container .col-md-4, .dashboard-container .col-lg-5 {
@@ -220,35 +302,30 @@ img {
     flex-grow: 1;
 }
 
-/* .profile-img {
+.profile-img {
     width: 10rem;
     height: 10rem;
     object-fit: cover;
     border-radius: 7px;
     flex-shrink: 0;
-} */
-.profile-avatar {
-    width: 10rem;
-    height: 10rem;
-    border-radius: 7px;
-    flex-shrink: 0;
-    background-color: #ffffff;
-    color: #2c698d; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 4rem;
-    font-family: 'Segoe UI', sans-serif;
-    text-transform: uppercase;
 }
 
 p.mb-0 {
     color: black;
+    font-size: 17px;
+    font-weight: 400;
 }
 
 h4 {
     margin: 0;
+}
+
+.bg-white.p-2.rounded.shadow-sm {
+    height: 4rem;
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @media (max-width: 576px) {
@@ -262,6 +339,12 @@ h4 {
         margin-left: 1rem;
     }
 }
+
+@media (max-width: 600px) {
+        .d-flex.align-items-center.flex-md-nowrap.flex-wrap {
+            margin-top: 1rem;
+        }
+    }
 
 /* Calendar CSS */
 .calendar-container {
@@ -328,43 +411,72 @@ h4 {
 }
 /* End of Calendar CSS */
 
-/* Good Moral CSS */
-.progress-circle {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    margin: auto;
-}
-.progress-circle canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-.progress-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-.card.good-moral-score.p-3 {
-    background-color: white;
-    color: var(--main-color);
+/* Modal CSS */
+#modalBox {
+    border-radius: 6px;
+    width: 500px;
     padding: 20px;
-    border-radius: 7px;
+    transition: all 0.4s ease;
+    max-height: 350px; /* initial height */
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 6px;
+    width: 500px;
+    overflow: hidden;
+    padding: 20px;
+    transition: all 0.4s ease;
+    max-height: 100%;
+}
+
+.modal-header {
+    color: var(--main-color);
+    margin-bottom: 15px;
+    padding: 0.5rem 0.5rem 1rem 0.5rem;
     display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
-.row.g-3 {
-    margin-bottom: 2.8rem;
+.close {
+    cursor: pointer;
+    font-size: 20px;
 }
 
-@media (max-width: 993px) {
-    .row.g-3 {
-        margin-bottom: 1rem;
-    }
+.field { 
+    margin: 10px 0; 
+}
+
+.field label { 
+    display: inline-block; 
+    width: 100px; 
+    font-weight: bold; 
+}
+
+.session-label {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #000000;
+    opacity: 50%;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.session-label::before,
+.session-label::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ccc;
+}
+
+.session-label:not(:empty)::before {
+    margin-right: .75em;
+}
+
+.session-label:not(:empty)::after {
+    margin-left: .75em;
 }
 
 /* Notification CSS */
@@ -375,7 +487,7 @@ h4 {
 }
 
 .card.shadow-sm {
-    padding: 16px 0 16px 7px;
+    padding: 16px 0 15px 7px;
 }
 
 .notification-card img {
@@ -406,7 +518,56 @@ h4 {
 
 .card h6 {
     font-size: 1rem;
+    padding-left: 10px;
 }
-h6.mb-3.sticky-top.bg-white {
-    padding-left: 1rem;
+
+.RequiredCounselingBox {
+    background-color: #f1f1f1;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: #2c698d;
+}
+
+p.b-1 {
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+small {
+    font-size: 13px;
+    color: #333;
+}
+
+.RequiredCounselingBox:hover {
+    background-color: #f6fcff;
+}
+
+.RequiredCounselingBox p {
+    margin: 0;
+}
+
+.RequiredCounselingBox small {
+    opacity: 0.9;
+}
+
+.RequiredCounselingBox small {
+    display: block;
+    margin-top: 2px;
+}
+.profile-avatar {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 7px;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    color: #2c698d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 4rem;
+    font-family: 'Segoe UI', sans-serif;
+    text-transform: uppercase;
 }

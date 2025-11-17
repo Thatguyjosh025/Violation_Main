@@ -16,7 +16,7 @@
             </div>
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea name="description" id="description" rows="4" class="form-control" required></textarea>
+                <textarea name="description" id="description" rows="4" class="form-control" style="max-height: 15rem; min-height: 15rem;" required></textarea>
             </div>
             <div id="form-feedback" class="mt-2"></div>
             <button type="submit" class="btn btn-primary">Create Section</button>
@@ -44,7 +44,7 @@
             </div>
             <div class="mb-3">
                 <label for="edit-description" class="form-label">Description</label>
-                <textarea class="form-control" name="description" id="edit-description" rows="5" required></textarea>
+                <textarea class="form-control" name="description" id="edit-description" rows="5" style="max-height: 15rem; min-height: 15rem;" required></textarea>
             </div>
             <div id="edit-feedback" class="mt-2"></div>
             </div>

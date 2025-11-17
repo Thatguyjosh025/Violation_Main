@@ -48,24 +48,7 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
     // Dashboard & Views
     Route::get('/super_dashboard', [ViewController::class, 'authorization'])->name('super_dashboard');
     Route::get('/authorization', [ViewController::class, 'authorization'])->name('authorization');
-    Route::get('/rule_management', [ViewController::class, 'rule_management'])->name('rule_management');
-    Route::get('/violation_management', [ViewController::class, 'violation_management'])->name('violation_management');
-    Route::get('/penalty_management', [ViewController::class, 'penalty_management'])->name('penalty_management');
-    Route::get('/referal_management', [ViewController::class, 'referal_management'])->name('referal_management');
     Route::get('/audit_management', [ViewController::class, 'audit_management'])->name('audit_management');
-
-    // Create
-    Route::post('/create_penalties', [SuperController::class, 'penalties']);
-    Route::post('/create_violation', [SuperController::class, 'violation']);
-    Route::post('/create_referals', [SuperController::class, 'referal']);
-    Route::post('/create_rules', [SuperController::class, 'rules']);
-    Route::post('/sections', [HandbookController::class, 'store'])->name('sections.store');
-
-    // Update
-    Route::post('/update_penalty/{id}', [SuperController::class, 'updatePenalty']);
-    Route::post('/update_violation/{id}', [SuperController::class, 'updateViolation']);
-    Route::post('/update_rule/{id}', [SuperController::class, 'updateRule']);
-    Route::post('/update_referral/{id}', [SuperController::class, 'updateReferral']);
 
     // User Management
     Route::post('/update_user', [AuthController::class, 'updateUser']);
@@ -79,13 +62,41 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
     //export csv
     Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
 
+});
+
+// ==========================
+// HEAD ROUTES
+// ==========================
+Route::middleware(['permission:head', RedirectIfNotAuthenticated::class])->group(function () {
+    // Dashboard & Views
+    Route::get('/academic_head_dashboard', [ViewController::class, 'violation_management'])->name('academic_head_dashboard');
+    Route::get('/violation_management', [ViewController::class, 'violation_management'])->name('violation_management');
+    Route::get('/penalty_management', [ViewController::class, 'penalty_management'])->name('penalty_management');
+    Route::get('/referal_management', [ViewController::class, 'referal_management'])->name('referal_management');
+    Route::get('/rule_management', [ViewController::class, 'rule_management'])->name('rule_management');
+
+    // Create
+    Route::post('/create_violation', [SuperController::class, 'violation']);
+    Route::post('/create_penalties', [SuperController::class, 'penalties']);
+    Route::post('/create_referals', [SuperController::class, 'referal']);
+    Route::post('/create_rules', [SuperController::class, 'rules']);
+    Route::post('/sections', [HandbookController::class, 'store'])->name('sections.store');
+
+    // Update
+    Route::post('/update_penalty/{id}', [SuperController::class, 'updatePenalty']);
+    Route::post('/update_violation/{id}', [SuperController::class, 'updateViolation']);
+    Route::post('/update_rule/{id}', [SuperController::class, 'updateRule']);
+    Route::post('/update_referral/{id}', [SuperController::class, 'updateReferral']);
 
     //dynamic handbook routes soon to be migrated
     Route::get('/sections/refresh', [HandbookController::class, 'refresh'])->name('sections.refresh');
     Route::post('/sections/{id}', [HandbookController::class, 'update']);
     Route::get('/sections/{id}/html', [HandbookController::class, 'sectionHtml']);
     Route::delete('/sections/{id}', [HandbookController::class, 'destroy']);
+
 });
+
+
 
 // ==========================
 // DISCIPLINE ROUTES
@@ -185,7 +196,7 @@ Route::post('/update_notification_status', [NotificationController::class, 'upda
 
 //handbookview
 Route::get('/violation_handbook', [ViewController::class, 'violation_handbook'])->name('violation_handbook')
-->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty,super,counselor']);
+->middleware([RedirectIfNotAuthenticated::class, 'permission:discipline,student,faculty,super,counselor,head']);
 
 
 // this shit is unstable for now but it does the job like fr since it does not merge the uploaded suspected it needs to also stored in array first

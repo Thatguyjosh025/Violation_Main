@@ -53,19 +53,42 @@
                     <div class="col-lg-7 mb-3">
                         <div class="row g-3">
                              <div class="col-12 col-md-6">
-                                <div class="custom-card">
-                                    <!-- Put contents Here -->
+                                    <div class="custom-card">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                    <div class="card-title">Ongoing Session</div>
+                                    <i class="bi bi-exclamation-circle-fill text-info fs-3"></i>
                                 </div>
+                                <div class="card-number">13</div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 30%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
                              </div>
 
                              <div class="col-12 col-md-6">
                                 <div class="custom-card">
-                                    <!-- Put contents Here -->
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="card-title">High Priority List</div>
+                                        <i class="bi bi-exclamation-octagon-fill text-danger fs-3"></i>
+                                    </div>
+
+                                    <div class="pending-incident-scrollable">
+                                        <!-- Repeat this block for each incident -->
+                                        <div class="incident-item mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="mb-1 fw-semibold text-truncate me-2" style="max-width: 70%;">Mark Jecil Bausa</h6>
+                                                <span class="badge bg-danger text-light flex-shrink-0">High-risk</span>
+                                            </div>
+                                            <small class="text-muted">02000311233</small><br>
+                                                <small class="text-muted">5/25/2025</small>
+                                        </div>
+                                    </div>
                                 </div>
                              </div>
                         </div>
                     </div>
                 
+                    <!-- NOTIF -->
                     <div class="col-lg-5 mb-3">
                         <div class="card shadow-sm notif">
                             <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
