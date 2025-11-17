@@ -19,7 +19,7 @@ class RedirectIfNotAuthenticated
     {
         
     if (!Auth::check()) {
-        return redirect('/');
+        return response()->view('errors.403', [], 403);
     }
 
     return $next($request);

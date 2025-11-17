@@ -165,8 +165,4 @@ $(document).ready(function() {
         });
     });
 });
-
-    //  setInterval(function() {
-    //     $("#notif-container").load(window.location.href + " #notif-container > *");
-    // }, 10000); //10s
 </script>

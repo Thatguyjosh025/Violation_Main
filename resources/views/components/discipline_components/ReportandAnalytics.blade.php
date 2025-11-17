@@ -108,8 +108,11 @@
                             <div id="narrativeSection">
                                 @php
                                     $severities = DB::table('tb_severity')->pluck('severity');
+                                    $statusLabels = [ 2 => 'Under Review', 3 => 'Confirmed', 8 => 'Resolved'];
                                     $narratives = [];
+                                    $tableData = [];
 
+                                    //Text Narrative Generation
                                     foreach ($severities as $severity) {
                                         $violations = postviolation::where('severity_Name', $severity)->get();
 
@@ -140,24 +143,44 @@
                                         $violationList = $violationCounts->keys()->implode(', ');
 
                                         $narrativeText = "$severity reflects $totalCount recorded cases, involving violations such as $violationList. Among these, $topViolation appears most frequently, indicating a pattern that warrants attention.";
-
-                                        // Always show all status counts
-                                        $statusLines = [];
-                                        $statusLines[] = "- Under Review: $underReviewCount";
-                                        $statusLines[] = "- Confirmed: $confirmedCount";
-                                        $statusLines[] = "- Resolved: $resolvedCount";
-
-                                        // Append to narrative
-                                        $narrativeText .= "<div style='margin-left: 25px; font-size: 0.95em; color: #555; white-space: pre-line;'>" . implode('<br>', $statusLines) . "</div>";
-
+                                        
                                         $narratives[$severity] = $narrativeText;
                                     }
+                                    
+                                    foreach ($statusLabels as $statusId => $statusName) {
+                                        $row = ['status' => $statusName];
+                                        foreach ($severities as $severity) {
+                                            $violations = postviolation::where('severity_Name', $severity)->get();
+                                            $row[$severity] = $violations->where('status_name', $statusId)->count();
+                                        }
+                                        $tableData[] = $row;
+                                    }
+
                                 @endphp
 
                                 @foreach ($narratives as $severity => $text)
                                     <p><strong>{{ $severity }}:</strong> {!! $text !!}</p>
                                 @endforeach
-
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th>Status</th>
+                                                @foreach ($severities as $severity)
+                                                    <th>{{ $severity }}</th>
+                                                @endforeach
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($tableData as $row)
+                                                <tr>
+                                                    <td><strong>{{ $row['status'] }}</strong></td>
+                                                    @foreach ($severities as $severity)
+                                                        <td>{{ $row[$severity] }}</td>
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 <p>
                                     These findings highlight the importance of targeted interventions, especially where specific violations dominate.
                                     Continued monitoring and responsive measures will be essential in curbing these trends.
@@ -172,32 +195,43 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function printSection(sectionId) {
-        const $content = $('#' + sectionId).html();
-        const printWindow = window.open('', '', 'height=600,width=800');
+        const content = document.getElementById(sectionId).innerHTML;
+        const printWindow = window.open('', '', 'height=700,width=900');
 
         printWindow.document.write(`
             <html>
                 <head>
                     <title>Print Report</title>
+
+                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
                     <style>
                         body {
                             font-family: 'Segoe UI', sans-serif;
                             padding: 40px;
                             line-height: 1.8;
                             text-align: justify;
-                            margin: 0;
                         }
                         p {
-                            text-align: justify;
                             margin-bottom: 1.2rem;
+                        }
+
+                        /* Ensure table borders when printing */
+                        table, th, td {
+                            border: 1px solid #000 !important;
+                            border-collapse: collapse !important;
+                        }
+                        th, td {
+                            padding: 8px !important;
                         }
                     </style>
                 </head>
-                <body>${$content}</body>
+                <body>
+                    ${content}
+                </body>
             </html>
         `);
-
-        printWindow.document.close();
         printWindow.print();
+        printWindow.document.close();
     }
 </script>

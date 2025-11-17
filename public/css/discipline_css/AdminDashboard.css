@@ -334,11 +334,16 @@ img {
         width: 8rem;
         height: 8rem;
         margin: 0 auto;
+        margin-bottom: 1rem;
+    }
+    .profile-avatar {
+        margin-bottom: 1rem;
     }
 
-    .flex-grow-1 {
-    margin-left: 1rem;
-}
+    .d-flex.align-items-center.mt-4.flex-md-nowrap.flex-wrap{
+        justify-content: center;
+    }
+    
 
 }
 /* End of Calendar CSS */

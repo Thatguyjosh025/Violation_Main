@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>403 Forbidden</title>
+  <link rel="stylesheet" href="ErrorPage.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -12,19 +13,18 @@
 
       <div class="col-lg-6 col-12 left-side">
         <h1>403</h1>
-        <h2>OOOps! Access Denied!</h2>
-        <p>Your account is inactive. Please contact our Super Admin for help.<br>We suggest you back to home</p>
-        <a href="#" class="btn-custom">Back to homepage</a>
-        <img src="{{ }}" alt="Central Logo" class="logo">
+        <h2>Oops! Access denied</h2>
+        <p>You don’t have permission to view this page.</p>
+        <a href="{{ url('/') }}" class="">Back to homepage</a>
+        <img src="{{ asset('./Photos/403-error.png') }} " alt="Central Logo" class="logo">
       </div>
-
       <div class="col-lg-6 col-12 right-side">
-        <img src="public\Photos\ErrorIMG.png alt="404 Illustration">
+        <img src="{{ asset('./Photos/403-error.png') }}" alt="">
       </div>
     </div>
   </div>
 </body>
-<style>
+<style> 
         body {
       margin: 0;
       min-height: 100vh;

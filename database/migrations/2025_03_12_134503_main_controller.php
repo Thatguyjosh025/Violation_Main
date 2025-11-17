@@ -90,22 +90,7 @@ return new class extends Migration
              'status' => 'active'
             ]
         ]);
-
-        DB::table('tb_users')->insert([
-            ['firstname' => 'Angelo',
-             'lastname' => 'pascua',
-             'email' => 'student@gmail.com',
-             'student_no' => '02000190782',
-            //  'course_and_section' => 'Faculty',
-             'password' => bcrypt('123456789'),
-             'role' => 'student',
-             'status' => 'active'
-            ]
-        ]);
-
-
     }
-
 
     /**
      * Reverse the migrations.
