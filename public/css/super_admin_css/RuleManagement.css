@@ -15,6 +15,7 @@ body, html {
     max-width: 100%;
   }  
 
+/* Start of SideBar CSS */
 .sidebar {
     width: 15.6rem;
     height: 100%;
@@ -28,10 +29,6 @@ body, html {
     z-index: 1000;
 }
 
-.sidebar {
-    transition: width 0.3s ease-in-out;
-}
-
 .sidebar .nav-link {
     color: #333;
     margin: 0.6rem 0;
@@ -39,14 +36,12 @@ body, html {
     align-items: center;
     white-space: nowrap;
     transition: all 0.3s;
-    padding: 0.6rem 0.6rem;
 }
 
 .sidebar .nav-link i {
     min-width: 2.5rem;
     text-align: center;
     font-size: 1.2rem;
-    margin-right: 0.3rem;
 }
 
 .sidebar .nav-link.active {
@@ -82,8 +77,6 @@ body, html {
 
 .sidebar.collapsed {
     width: 4.4rem;
-    overflow: hidden;
-    white-space: nowrap;
 }
 
 .sidebar.collapsed ~ .dashboard-content {
@@ -121,7 +114,7 @@ body, html {
     cursor: pointer;
 }
 
-/* Logout */
+/* Centered logout button */
 .logout-container {
     margin-top: auto;
     display: flex;
@@ -157,93 +150,55 @@ body, html {
     display: none;
 }
 
-.violation-accordion .accordion-button.violation-toggle {
-    background: transparent;
-    color: #333;
-    box-shadow: none;
-    border: none;
-    border-radius: 5px;
-    padding: 0.6rem 0.6rem;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    width: 100%;
-    text-align: left;
+/* Logo */
+img.sidebar-logo.full-logo{
+    margin-right: 0;
 }
 
-.violation-accordion .accordion-button,
-.violation-accordion .accordion-body {
-    overflow: hidden;
+button#closeSidebar {
+    margin-right: 5px;
 }
 
-.violation-accordion .accordion-button.violation-toggle:hover {
-    background: var(--main-color);
-    color: white;
+.sidebar-logo {
+    height: 70px;
+    transition: all 0.3s ease;
 }
 
-.violation-accordion .accordion-button.violation-toggle:not(.collapsed) {
-    background: var(--second-color);
-    color: white;
+.full-logo {
+    display: block;
 }
 
-.violation-accordion .accordion-button.violation-toggle i {
-    min-width: 2.5rem;
-    text-align: center;
-    font-size: 1.2rem;
-    margin-right: 0.3rem;
-}
-
-.violation-accordion .accordion-button::after {
-    display: none !important;
-}
-
-/* Sub-links */
-.accordion-body .sub-link {
-    padding: 0.3rem 1rem 0.3rem 2.5rem;
-    font-size: 0.78rem;
-    color: #333;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.2rem; 
-    margin-top: 0;
-}
-
-.accordion-body .sub-link:hover {
-    background: var(--main-color);
-    color: white;
-    border-radius: 5px;
-}
-
-.violation-accordion .accordion-button.violation-toggle.active-parent {
-    background: var(--second-color) !important;
-    color: white !important;
-}
-
-.accordion-body .sub-link.active {
-    background: var(--second-color);
-    color: white !important;
-    border-radius: 5px;
-}
-
-.sidebar.collapsed .accordion-body {
-    display: block !important;
-    padding: 0;
-}
-
-.sidebar.collapsed .accordion-body .sub-link {
-    justify-content: center;
-    padding: 0.3rem 0;
-    margin: 0; 
-}
-
-.sidebar.collapsed .accordion-body .sub-link small {
+.icon-logo {
     display: none;
 }
 
-.sidebar.collapsed .accordion-body .sub-link i {
-    margin: 0;
-    font-size: 1.1rem;
+.sidebar.collapsed .full-logo {
+    display: none;
+}
+
+.sidebar.collapsed .icon-logo {
+    display: block !important;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 1rem;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+}
+
+img.sidebar-logo.full-logo {
+    width: 12rem;
+    object-fit: cover;
+}
+
+img.sidebar-logo.icon-logo.d-none {
+    margin-right: 2rem;
+    height: 3rem;
 }
 
 /* Responsive */
@@ -251,7 +206,6 @@ body, html {
     .sidebar {
         transform: translateX(-100%);
         width: 250px;
-        transition: all 0.3s;
     }
 
     .sidebar.show {
@@ -277,7 +231,7 @@ body, html {
         display: block !important;
     }
 }
-/* End of SideBar CSS */
+/* End of Side Bar CSS */
 
 .table-container {
     background: white;
