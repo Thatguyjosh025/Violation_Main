@@ -1,7 +1,15 @@
 <link rel="stylesheet" href="{{ asset('./css/counseling_css/CounselingDashboard.css') }}">
 @php
     use App\Models\notifications;
+    use App\Models\counseling;
     $notif = notifications::get();
+    $highPriority = counseling::where('priority_risk', 3)->get();
+
+
+    function countCounseling() {
+        return Counseling::whereIn('status', [2, 3, 4])->count();
+    }
+
 @endphp
         <!-- Dasboard Section -->
             <div class="d-flex align-items-center">
@@ -53,19 +61,54 @@
                     <div class="col-lg-7 mb-3">
                         <div class="row g-3">
                              <div class="col-12 col-md-6">
-                                <div class="custom-card">
-                                    <!-- Put contents Here -->
+                                    <div class="custom-card">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                    <div class="card-title">Ongoing Session</div>
+                                    <i class="bi bi-exclamation-circle-fill text-info fs-3"></i>
                                 </div>
+                                <div class="card-number">{{ countCounseling() }}</div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 30%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
                              </div>
 
                              <div class="col-12 col-md-6">
                                 <div class="custom-card">
-                                    <!-- Put contents Here -->
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="card-title">High Priority List</div>
+                                        <i class="bi bi-exclamation-octagon-fill text-danger fs-3"></i>
+                                    </div>
+
+                                    <div class="pending-incident-scrollable">
+                                        @if($highPriority->isEmpty())
+                                            <div class="text-center text-muted py-4">
+                                                No high priority counseling cases.
+                                            </div>
+                                        @else
+                                            @foreach ($highPriority as $case)
+                                                <div class="incident-item mb-1">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h6 class="mb-1 fw-semibold text-truncate me-2" style="max-width: 70%;">
+                                                            {{ $case->student_name }}
+                                                        </h6>
+                                                        <span class="badge bg-danger text-light flex-shrink-0">High-risk</span>
+                                                    </div>
+
+                                                    <small class="text-muted">{{ $case->student_no }}</small><br>
+                                                    <small class="text-muted">{{ $case->start_date }}</small>
+                                                </div>
+                                            @endforeach
+                                        @endif
+
+                                    </div>
                                 </div>
                              </div>
+
                         </div>
                     </div>
                 
+                    <!-- NOTIF -->
                     <div class="col-lg-5 mb-3">
                         <div class="card shadow-sm notif">
                             <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>

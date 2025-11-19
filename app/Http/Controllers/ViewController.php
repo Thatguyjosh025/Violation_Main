@@ -39,26 +39,27 @@ class ViewController extends Controller
     {
         return view('super_dashboard', ['view' => 'Authorization']);
     }
+    public function audit_management()
+    {
+        return view('super_dashboard', ['view' => 'AuditLogs']);
+    }
 
+    //academic head components
     public function rule_management()
     {
-        return view('super_dashboard', ['view' => 'RuleManage']);
+        return view('academic_head_dashboard', ['view' => 'RuleManage']);
     }
     public function violation_management()
     {
-        return view('super_dashboard', ['view' => 'ViolationManagement']);
+        return view('academic_head_dashboard', ['view' => 'ViolationManagement']);
     }
     public function penalty_management()
     {
-        return view('super_dashboard', ['view' => 'PenaltyManagement']);
+        return view('academic_head_dashboard', ['view' => 'PenaltyManagement']);
     }
     public function referal_management()
     {
-        return view('super_dashboard', ['view' => 'ReferalManagement']);
-    }
-     public function audit_management()
-    {
-        return view('super_dashboard', ['view' => 'AuditLogs']);
+        return view('academic_head_dashboard', ['view' => 'ReferalManagement']);
     }
 
 
@@ -136,7 +137,7 @@ class ViewController extends Controller
     {
         return view('student_dashboard', ['views' => 'ViolationTracking']);
     }
- public function violation_handbook()
+    public function violation_handbook()
     {
         $sections = sections::orderBy('created_at')->get();
         $userRole = Auth::user()->role;
@@ -151,7 +152,9 @@ class ViewController extends Controller
             case 'discipline':
                 return view('discipline_dashboard', $viewData);
             case 'super':
-                return view('super_dashboard', ['view' => 'Handbook', 'sections' => $sections]);
+                return view('super_dashboard', $viewData);
+            case 'head':
+                return view('academic_head_dashboard', ['view' => 'Handbook', 'sections' => $sections]);
             case 'counselor':
                 return view('counseling_dashboard', $viewData);
             default:

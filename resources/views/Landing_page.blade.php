@@ -20,7 +20,7 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid"> 
             <div class="logo">
-                <img src="{{ asset('./Photos/VS_logo.png') }}" alt="">
+              <a href="{{ url('/') }}"><img src="{{ asset('./Photos/Central-Landing-Page.png') }}" alt=""></a>
             </div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

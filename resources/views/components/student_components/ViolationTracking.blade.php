@@ -241,7 +241,7 @@ $(document).ready(function () {
     ['dragleave','drop'].forEach(e => { dropArea.addEventListener(e, () => dropArea.classList.remove('bg-light'), false); });
 
     dropArea.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
-    dropArea.addEventListener('click', () => fileInput.click());
+    // dropArea.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', e => handleFiles(e.target.files));
 
     function handleFiles(files) {
@@ -339,7 +339,7 @@ $(document).ready(function () {
         }
 
         if (data.current_page < data.last_page) {
-            html += `<li class="page-item"><a class="page-link page-btn" data-page="${data.current_page + 1}">Next</a></li>`;
+            html += `<li class="page-item" ><a class="page-link page-btn" data-page="${data.current_page + 1}">Next</a></li>`;
         }
 
         html += `</ul></nav>`;

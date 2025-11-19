@@ -1,114 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>403 Forbidden</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guidance Counselor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="CounselorCSS/Counselor.css">
 </head>
 <body>
-  <div class="container-fluid">
-    <div class="row min-vh-100">
+    <div class="d-flex">
+        <!-- Side Bar Section -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <a href="AdminDashboard.html" class="logo-link">
+                    <img src="/Photos/central.png" alt="Central Logo" class="sidebar-logo full-logo">
+                    <img src="/Photos/Central Icon.png" alt="Central Icon" class="sidebar-logo icon-logo d-none">
+                </a>
+                <button class="close-btn" id="closeSidebar"><i class="bi bi-list"></i></button>
+            </div>
+            <nav class="nav flex-column mt-3 flex-grow-1">
+                <a class="nav-link" href="CounselorDashboard.html"><i class="bi bi-columns-gap"></i> <span>Dashboard</span></a>
+                <a class="nav-link active" href="Referral&Intake.html"><i class="bi bi-person-lines-fill"></i></i> <span>Referral & Intake</span></a>
+                <a class="nav-link" href="SessionManagement.html"><i class='bi bi-people-fill'></i> <span>Session Management</span></a>
+                <a class="nav-link" href="StudentCounseling.html"><i class="bi bi-clipboard-data-fill"></i> <span>Student Counseling<br>Profile</span></a>
+                <a class="nav-link" href="StudentHanbook.html"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
+            </nav>
+            <div class="logout-container">
+                <a class="logout-link" href="#"><i class="bi bi-box-arrow-left"></i> <span>Log Out</span></a>
+            </div>
+        </div>
+        <!-- Dasboard Section -->
+        <div class="dashboard-content w-100">
+            <div class="d-flex align-items-center">
+                <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
+                <h3 class="mb-0">Dashboard</h3>
+                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
+            </div>
 
-      <div class="col-lg-6 col-12 left-side">
-        <h1>403</h1>
-        <h2>OOOps! Access Denied!</h2>
-        <p>Your account is inactive. Please contact our Super Admin for help.<br>We suggest you back to home</p>
-        <a href="#" class="btn-custom">Back to homepage</a>
-        <img src="{{ }}" alt="Central Logo" class="logo">
-      </div>
+            <div class="container dashboard-container mt-4">
+                <div class="row mt-3">
+                    <!-- Profile Card -->
+                    <div class="col-lg-7 mb-3 mb-lg-0">
+                        <div class="card card-custom shadow-sm h-100">
+                            <h4>Welcome</h4>
+                            <div class="d-flex align-items-center mt-4 flex-md-nowrap flex-wrap">
+                                <img src="/Photos/UserPic.jpg" alt="Profile Picture" class="profile-img">
+                                <div class="flex-grow-1">
+                                    <span class="badge badge-custom">Guidance Counselor</span>
+                                    <h4 class="mt-2 mb-1">Mark Jecil Bausa</h4>
+                                    <p class="mb-1">Age: 21 &nbsp; | &nbsp; School: STI Alabang</p>
+                                    <p class="mb-1">Bachelor of Science in Information Technology</p>
+                                    <span>IT Department | Part Time Worker</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-      <div class="col-lg-6 col-12 right-side">
-        <img src="public\Photos\ErrorIMG.png alt="404 Illustration">
-      </div>
+                    <!-- Calendar -->
+                    <div class="col-lg-5">
+                        <div id="calendarView" class="calendar-view text-center">
+                            <div class="calendar-header d-flex justify-content-between align-items-center mb-3">
+                                <h5 id="monthYear" class="mb-0 fw-bold"></h5>
+                            </div>
+                            <div class="calendar-days d-grid">
+                                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                            </div>
+                            <div id="calendarDates" class="calendar-dates d-grid mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <!-- Sample Cards and Notifications Below -->
+                    <div class="col-lg-7 mb-3">
+                        <div class="row g-3">
+                             <div class="col-12 col-md-6">
+                                <div class="custom-card">
+                                     <div class="d-flex justify-content-between align-items-center">
+                                        <div class="card-title">Ongoing Session</div>
+                                        <i class="bi bi-exclamation-circle-fill text-info fs-3"></i>
+                                    </div>
+                                    <div class="card-number">13</div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: 30%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                             </div>
+
+                             <div class="col-12 col-md-6">
+                                <div class="custom-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="card-title">High Priority List</div>
+                                        <i class="bi bi-exclamation-octagon-fill text-danger fs-3"></i>
+                                    </div>
+
+                                    <div class="pending-incident-scrollable">
+                                        <!-- Repeat this block for each incident -->
+                                        <div class="incident-item mb-1">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="mb-1 fw-semibold text-truncate me-2" style="max-width: 70%;">Mark Jecil Bausa</h6>
+                                                <span class="badge bg-danger text-light flex-shrink-0">High-risk</span>
+                                            </div>
+                                            <small class="text-muted">02000311233</small><br>
+                                                <small class="text-muted">5/25/2025</small>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                
+                    <div class="col-lg-5 mb-3">
+                        <div class="card shadow-sm notif">
+                            <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
+                            <div class="notif-scrollable">
+                                <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Student Appeal</h6>
+                                        <p class="mb-1 text-muted small">You’ve received an appeal from a student</p>
+                                        <small class="text-muted">20h ago</small>
+                                    </div>
+                                    <button class="btn-close ms-2 mt-1" aria-label="Close" onclick="dismissNotification(this)"></button>
+                                </div>
+                                <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Student Appeal</h6>
+                                        <p class="mb-1 text-muted small">You’ve received an appeal from a student</p>
+                                        <small class="text-muted">20h ago</small>
+                                    </div>
+                                    <button class="btn-close ms-2 mt-1" aria-label="Close" onclick="dismissNotification(this)"></button>
+                                </div>
+                                <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Student Appeal</h6>
+                                        <p class="mb-1 text-muted small">You’ve received an appeal from a student</p>
+                                        <small class="text-muted">20h ago</small>
+                                    </div>
+                                    <button class="btn-close ms-2 mt-1" aria-label="Close" onclick="dismissNotification(this)"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <div class="modal fade" id="sessionModal" tabindex="-1" aria-labelledby="sessionModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content shadow">
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                        <div class="modal-header">
+                        <h4 class="modal-title">Session List</h4>
+                        <div class="modal-subtitle">Feb 28 2025</div>
+                        </div>
+
+                        <div class="modal-body">
+                        <div class="session-header">
+                            <span>Name</span>
+                            <span>Time</span>
+                        </div>
+
+                        <div class="session-item">
+                            <span>Mark Jecil Bausa</span>
+                            <span>1:30PM – 2:00 PM</span>
+                        </div>
+                        <div class="session-item">
+                            <span>Mark Jecil Bausa</span>
+                            <span>1:30PM – 2:00 PM</span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    
+
+<script src="CounselorJS/Counselor.js"></script>
 </body>
-<style>
-        body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-    }
-    /*Right Side Error Image*/
-    .right-side {
-      background-color: #2596BE;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-    }
-
-    .right-side img {
-      max-width: 80%;
-      height: auto;
-    }
-    /*Left Side Error Text*/
-    .left-side {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 2rem;
-      position: relative;
-    }
-
-    .left-side h1 {
-      font-size: 6rem;
-      font-weight: bold;
-    }
-
-    .left-side h2 {
-      font-size: 1.8rem;
-      margin-top: 1rem;
-      font-weight: 500;
-    }
-
-    .left-side p {
-      margin: 1rem 0;
-      color: #888;
-    }
-    .logo {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 120px;
-      height: auto;
-    }
-    .btn-custom {
-      background-color: #2596BE;
-      color: white;
-      padding: 10px 25px;
-      border-radius: 5px;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .btn-custom:hover {
-      background-color: #444;
-      color: #fff;
-    }
-
-    /* Page Responsiveness */
-    @media (max-width: 992px) {
-      .left-side h1 {
-        font-size: 4rem;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .left-side h1 {
-        font-size: 3rem;
-      }
-
-      .left-side h2 {
-        font-size: 1.4rem;
-      }
-      .logo {
-        width: 90px;
-      }
-    }
-</style>
 </html>

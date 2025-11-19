@@ -12,8 +12,7 @@
         <!-- Dashboard-content -->
             <div class="d-flex align-items-center mb-4">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
-                <h3 class="mb-0">Dashboard</h3>
-                <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
+                <h3 class="mb-0">STI Violation Handbook</h3>
             </div>
 
             <!-- Student Handbook Card -->
@@ -22,7 +21,7 @@
                     <div class="row h-100">
                         <!-- Left Side (Blue Panel) -->
                         <div class="col-md-4 handbook-sidebar text-center d-flex flex-column justify-content-center">
-                            @if(Auth::user()->role === 'super')
+                            @if(Auth::user()->role === 'head')
                                 <button class="add-btn btn btn-success" id="openModalBtn" title="Add New">
                                     <i class="bi bi-plus"></i>
                                 </button>

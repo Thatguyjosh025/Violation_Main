@@ -16,27 +16,23 @@
 
 <div class="sidebar" id="sidebar">
     <div class="logo">
-         <a href="{{ route('super_dashboard') }}" class="logo-link">
+            <a href="{{ route('academic_head_dashboard') }}" class="logo-link">
                 <img src="/Photos/central.png" alt="Central Logo" class="sidebar-logo full-logo">
                 <img src="/Photos/Central-Icon.png" alt="Central Icon" class="sidebar-logo icon-logo d-none">
-        </a>
-        <button class="close-btn" id="closeSidebar"><i class="bi bi -list"></i></button>
+            </a>
+            <button class="close-btn" id="closeSidebar"><i class="bi bi-list"></i></button>
     </div>
 
     <nav class="nav flex-column mt-3 flex-grow-1">
-        <!-- Link to Authorization -->
-        <a class="nav-link" href="{{ route('super_dashboard') }}"><i class="bi bi-shield-exclamation"></i> <span>Authorization</span></a>
 
         <!-- Violation Management Links -->
-        <!-- <a class="nav-link sub-link" href="{{ route('violation_management') }}" data-section="violation-type"><i class="bi bi-exclamation-triangle "></i><span>Violation Type</span></a>
+        <a class="nav-link sub-link" href="{{ route('violation_management') }}" data-section="violation-type"><i class="bi bi-exclamation-triangle "></i><span>Violation Type</span></a>
         <a class="nav-link sub-link" href="{{ route('referal_management') }}" data-section="referral"><i class="bi bi-arrow-right-circle "></i><span>Referral</span></a>
-        <a class="nav-link sub-link" href="{{ route('penalty_management') }}" data-section="penalty"><i class="bi bi-hammer "></i><span>Penalty</span></a> -->
-        <!-- <a class="nav-link" href="{{ route('rule_management') }}"><i class="bi bi-journal-text"></i> <span>Rule Management</span></a> -->
-        <!-- <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a> -->
-
-        <a class="nav-link" href="{{ route('audit_management') }}"><i class="bi bi-journal-text"></i> <span>Audit Logs</span></a>
+        <a class="nav-link sub-link" href="{{ route('penalty_management') }}" data-section="penalty"><i class="bi bi-hammer "></i><span>Penalty</span></a>
+        <a class="nav-link" href="{{ route('rule_management') }}"><i class="bi bi-journal-text"></i> <span>Rule Management</span></a>
 
         <!-- Link to Student Handbook -->
+        <a class="nav-link" href="{{ route('violation_handbook') }}"><i class="bi bi-book-half"></i> <span>Student Handbook</span></a>
     </nav>
 
     <div class="logout-container">
@@ -57,8 +53,8 @@
 <!-- Dynamically include the correct component based on the 'view' variable -->
 
          <div class="dashboard-content w-90">
-            @if(View::exists('components.super_admin_components.' . $view))
-                @include('components.super_admin_components.' . $view)
+            @if(View::exists('components.academic_head_components.' . $view))
+                @include('components.academic_head_components.' . $view)
             @elseif(View::exists('components.shared.' . $view))
                 @include('components.shared.' . $view)
             @else
