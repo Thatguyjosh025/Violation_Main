@@ -537,7 +537,7 @@ p.b-1 {
 
 small {
     font-size: 13px;
-    color: #333;
+    /* color: #333; */
 }
 
 .RequiredCounselingBox:hover {

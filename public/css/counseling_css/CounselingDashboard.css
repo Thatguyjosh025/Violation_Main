@@ -515,7 +515,7 @@ img {
       right: 1rem;
     }
     .modal-body {
-      max-height: 60vh;
+      /* max-height: 60vh; */
       overflow-y: auto;
       padding: 0 1rem;
     }

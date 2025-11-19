@@ -212,3 +212,6 @@ textarea{
 .container.mt-4 {
     max-width: 1670px;
 }
+a.page-link.page-btn {
+    cursor: pointer;
+}

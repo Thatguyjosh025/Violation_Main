@@ -2,10 +2,12 @@
  @php
   use App\Models\notifications;
   use App\Models\postviolation;
+  use App\Models\counseling;
 
   $notif = notifications::get();
 
   $studentNotifs = $notif->where('student_no', Auth::user()->student_no)->where('is_read', 0);
+  $studentCounseling = counseling::where('student_no', Auth::user()->student_no)->get();
   function countStudentMajor() {
         return postviolation::where('is_active', 1)
         ->where('severity_Name', 'like', '%Major%')
@@ -74,19 +76,28 @@
 
               <div class="col-md-4">
                   <div class="card p-3 text-center shadow" style="background-color: white; border-radius: 7px; color: #2c698d;">
-                    <h5 class="fw-bold mb-3 text-center">Guidance Counseling</h5>
-                    <!-- CLICKABLE INNER BOX -->
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#CounselingReport" class="text-decoration-none">
-                      <div class="RequiredCounselingBox rounded d-flex justify-content-between align-items-start" style="padding: 16px 8px 16px 10px;">
-                        <div class="text-start">
-                          <p class="b-1">Follow-up Needed</p>
-                          <small>11/16/2025</small>
-                        </div>
-                        <i class="bi bi-person-fill-exclamation fs-3"></i>
-                      </div>
-                    </a>
+                      <h5 class="fw-bold mb-3 text-center">Guidance Counseling</h5>
+
+                      @if($studentCounseling->isEmpty())
+                          <div class="text-center py-4 text-muted">
+                              You have no scheduled counseling.
+                          </div>
+                      @else
+                          @foreach($studentCounseling as $counsel)
+                              <a href="#" data-bs-toggle="modal" data-bs-target="#CounselingReport" class="text-decoration-none">
+                                  <div class="RequiredCounselingBox rounded d-flex justify-content-between align-items-start"
+                                      style="padding: 16px 8px 16px 10px;">
+                                      <div class="text-start">
+                                          <p class="b-1 mb-1">{{ $counsel -> statusRelation -> session_status}}</p>
+                                          <small>{{ $counsel-> start_date }}</small>
+                                      </div>
+                                      <i class="bi bi-person-fill-exclamation fs-3"></i>
+                                  </div>
+                              </a>
+                          @endforeach
+                      @endif
                   </div>
-                </div>
+              </div>
 
             </div>
           </div>
