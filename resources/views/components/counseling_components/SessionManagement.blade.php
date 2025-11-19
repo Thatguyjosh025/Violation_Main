@@ -11,9 +11,12 @@
                 <h3 class="mb-0">Session Management</h3>
             </div>
             
+                <div class="mb-3" style="display: flex; justify-content: end;">
+                    <button class="btn btn-add-counseling btn-md" id="addSessionCounseling">+ Add Schedule</button>
+                </div>
+                
             <!-- Table Contents -->
             <div class="table-container">
-                
                 <table id="violationTable" class="table table-hover table-bordered table-striped">
                     <thead class="table-dark">
                         <tr>
@@ -187,6 +190,85 @@
                 </div>
             </div>
 
+            <!-- ADD SESSION MODAL -->
+             <div class="modal fade" id="addSessionModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content p-3">
+                        <h5 class="mb-3">Add Counseling Session</h5>
+
+                        <!-- First View -->
+                        <div id="searchView">
+                            <div class="d-flex justify-content-end mb-2">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Search Student</label>
+                                <input type="text" id="search-student" class="form-control mb-3" placeholder="Search Student">
+                                <div class="student-list">
+                                    <p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Second view -->
+                        <div id="formView" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="backToSearch">
+                                    <i class="bi bi-arrow-left"></i> Back
+                                </button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="addSessionForm">
+                                @csrf
+                                <div class="mb-2">
+                                    <label class="form-label">Student Number</label>
+                                    <input type="text" id="add_student_no" class="form-control" placeholder="e.g., 23-12345" required>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label">Student Name</label>
+                                    <input type="text" id="add_student_name" class="form-control" placeholder="e.g., Juan Dela Cruz" required>
+                                </div>
+
+                                 <div class="mb-2">
+                                    <label class="form-label">Year level / Grade</label>
+                                    <input type="text" id="add_year_level" class="form-control" placeholder="e.g., Juan Dela Cruz" required>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label">Program</label>
+                                    <input type="text" id="add_program" class="form-control" placeholder="e.g., Juan Dela Cruz" required>
+                                </div>
+
+                                <hr>
+
+                                <div class="section-title">Time and Date</div>
+
+                                <div class="mb-2">
+                                    <label>Start Date</label>
+                                    <input type="date" id="add_start_date" class="form-control rounded-pill px-3 py-2">
+                                    <div class="error-msg text-danger small mt-1" id="error_start_date"></div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label>Start Time</label>
+                                    <input type="time" id="add_start_time" class="form-control rounded-pill px-3 py-2">
+                                    <div class="error-msg text-danger small mt-1" id="error_start_time"></div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label>End Time</label>
+                                    <input type="time" id="add_end_time" class="form-control rounded-pill px-3 py-2">
+                                    <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
+                                </div>
+
+
+                                <button type="submit" class="btn btn-success w-100">Add Session</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
@@ -210,6 +292,11 @@ $(document).ready(function () {
         info: true,
         language: { emptyTable: "No scheduled counseling at the moment." }
     });
+
+    $('#addSessionCounseling').on('click', function () {
+        $('#addSessionModal').modal('show');
+    });
+
 
     // Edit button handler
     $(document).on('click', '.edit-btn', function () {
@@ -456,7 +543,97 @@ $(document).ready(function () {
     });
 
 
+    // Add this inside your $(document).ready(function () { ... });
+let typingTimer;
+const typingDelay = 0; // debounce (ms)
+
+$('#search-student').on('keyup', function () {
+    clearTimeout(typingTimer);
+    const query = $(this).val().trim();
+    // If search bar is empty → show placeholder and stop
+    if (query === '') {
+        $('.student-list').html('<p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>');
+        return;
+    }
+    typingTimer = setTimeout(function () {
+        $.ajax({
+            url: "/student_search",
+            method: 'GET',
+            data: { query: query },
+            success: function(response) {
+                const results = response.slice(0, 3); // Show only first 3
+                if (results.length === 0) {
+                    $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
+                } else {
+                    let html = '';
+                    results.forEach(function(data) {
+                        html += `
+                            <div class="student-item d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="initial-icon">
+                                        ${getInitials(data.firstname, data.lastname)}
+                                    </div>
+                                    <div class="ms-2">
+                                        <p class="mb-0 fw-bold">${data.firstname} ${data.lastname}</p>
+                                        <small>${data.student_no}</small>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm select-student-btn"
+                                    data-id="${data.id}"
+                                    data-name="${data.firstname} ${data.lastname}"
+                                    data-student_no="${data.student_no}">
+                                    Select
+                                </button>
+                            </div>`;
+                    });
+                    $('.student-list').html(html);
+                }
+            }
+        });
+    }, typingDelay);
+});
+
+    // select student button handler
+    $(document).on('click', '.select-student-btn', function() {
+        const studentNo = $(this).data('student_no');
+        const studentName = $(this).data('name');
+        $('#add_student_no').val(studentNo);
+        $('#add_student_name').val(studentName);
+    });
+
+    //auto fill
+    $(document).on('click', '.select-student-btn', function() {
+        const studentNo = $(this).data('student_no');
+        const studentName = $(this).data('name');
+
+        // Auto-fill the form fields
+        $('#add_student_no').val(studentNo);
+        $('#add_student_name').val(studentName);
+
+        // Hide the search view and show the form view
+        $('#searchView').hide();
+        $('#formView').show();
+    });
+
+    $(document).on('click', '#backToSearch', function() {
+        $('#formView').hide();
+        $('#searchView').show();
+    });
+
+    // Reset modal
+    $('#addSessionModal').on('hidden.bs.modal', function () {
+        $('#searchView').show();
+        $('#formView').hide();
+        $('#search-student').val('');
+        $('.student-list').html('<p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>');
+    });
+
+    // Helper function to get initials
+    function getInitials(firstname, lastname) {
+        return (firstname.charAt(0) + lastname.charAt(0)).toUpperCase();
+    }
 
 });
 
 </script>
+

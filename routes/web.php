@@ -182,7 +182,7 @@ Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->
 // ==========================
 // SHARED ROLE ROUTES
 // ==========================
-Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipline'])->group(function () {
+Route::middleware([RedirectIfNotAuthenticated::class,'permission:faculty,discipline,counselor'])->group(function () {
     Route::get('/get_rule/{violation_id}', [AdminController::class, 'getRule']);
     Route::get('/get_info', [AdminController::class, 'getStudentInfo']);
     Route::get('/get_violators_history/{name}/{id}', [AdminController::class, 'getStudentViolations']);
