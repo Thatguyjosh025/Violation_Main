@@ -569,3 +569,27 @@ img {
         font-family: 'Segoe UI', sans-serif;
         text-transform: uppercase;
     }
+   .has-schedule {
+        background-color: #ffcccc !important;
+        cursor: pointer !important;
+    }
+    .today {
+        background-color: #2c698d !important;
+        font-weight: bold;
+    }
+    .session-item {
+        background-color: #f8f9fa; /* Light gray background */
+        border: 1px solid #dee2e6; /* Light border */
+        border-radius: 8px; /* Rounded corners */
+        padding: 12px; /* Inner spacing */
+        margin-bottom: 7px; /* Space between items */
+        display: block; /* Ensure it behaves as a block element */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for card effect */
+    }
+
+    .session-item span,
+    .session-item p {
+        display: block; /* Force each element to be on a new line */
+        margin: 5px 0; /* Add vertical spacing */
+        color: #495057; /* Dark gray text */
+    }

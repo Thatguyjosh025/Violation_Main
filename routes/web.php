@@ -176,6 +176,8 @@ Route::middleware(['permission:counselor', RedirectIfNotAuthenticated::class])->
     Route::get('/get_priorityrisk', [DataController::class, 'getpriorityrisk']);
     Route::get('/get_guidanceservice', [DataController::class, 'getguidanceservice']);
 
+    Route::get('/schedules', [CounselingController::class, 'getSchedules']);
+
 });
 
 
