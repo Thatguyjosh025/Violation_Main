@@ -132,7 +132,7 @@ function showSchedulesForDate(day, month, year, schedules) {
                 <div class="session-item mt-3">
                     <span><strong>${schedule.student_name}</strong></span>
                     <span>Time: ${schedule.start_time} - ${schedule.end_time}</span>
-                    <p>${schedule.start_date}</p>
+                    <p>Date: ${schedule.start_date}</p>
                 </div>
             `);
             modalList.append(scheduleItem);
