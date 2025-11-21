@@ -122,6 +122,12 @@ Route::middleware(['permission:discipline', RedirectIfNotAuthenticated::class])-
     Route::get('/get_penalty', [DataController::class, 'getPenalties']);
     Route::get('/get_referal', [DataController::class, 'getReferals']);
     Route::get('/get_status', [DataController::class, 'getStatus']);
+
+    Route::post('/name-validator/run', [AdminController::class, 'validateNames'])->name('validator.run');
+    Route::get('/name-validator/export/{format}', [AdminController::class, 'export'])->name('validator.export');
+
+    // Route::post('/validator/process', [AdminController::class, 'process'])->name('validator.process');
+
 });
 
 // ==========================

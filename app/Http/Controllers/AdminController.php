@@ -7,11 +7,12 @@ use Carbon\Carbon;
 use App\Models\rules;
 use App\Models\users;
 use App\Models\incident;
+use App\Models\statuses;
 use App\Models\violation;
 use Illuminate\Http\Request;
 use App\Models\notifications;
 use App\Models\postviolation;
-use App\Models\statuses;
+use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
@@ -392,5 +393,112 @@ class AdminController extends Controller
         return response()->json($students);
     }
     
+    public function validateNames(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:2048|mimes:csv,xml,xlsx,txt'
+        ]);
+
+        $file = $request->file('file');
+        $ext = $file->getClientOriginalExtension();
+
+        if ($ext === 'csv') {
+            $names = $this->readCSV($file);
+        } else {
+            $names = $this->readXML($file);
+        }
+
+        $output = [];
+
+        foreach ($names as $studentName) {
+
+            $violations = postviolation::where('student_name', $studentName)
+            ->with('violation')
+            ->get()
+            ->map(function($pv) {
+                return optional($pv->violation)->violations ?? 'Unknown'; //
+            });
+
+            $output[] = [
+                'name' => $studentName,
+                'violation' => $violations->count() > 0 ? $violations->implode("\n") : '-',
+                'result' => $violations->count() > 0 ? 'With violation' : 'Without violation'
+            ];
+        }
+
+        Session::put('validator_results', $output);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $output
+        ]);
+    }
+
+    private function readCSV($file)
+    {
+        $names = [];
+        $handle = fopen($file->getRealPath(), 'r');
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (!empty($row[0])) {
+                $names[] = trim($row[0]);
+            }
+        }
+
+        fclose($handle);
+        return $names;
+    }
+
+    private function readXML($file)
+    {
+        $xml = simplexml_load_file($file->getRealPath());
+        $names = [];
+
+        foreach ($xml->student as $entry) {
+            $names[] = trim((string)$entry->name);
+        }
+
+        return $names;
+    }
+
+    public function export($format)
+    {
+        $results = Session::get('validator_results', []);
+
+        if ($format == 'csv') {
+            return $this->exportCSV($results);
+        }
+
+        if ($format == 'pdf') {
+            return $this->exportPseudoPDF($results);
+        }
+
+        return back();
+    }
+
+    private function exportCSV($results)
+    {
+        $filename = 'name_validator_output.csv';
+        $file = fopen($filename, 'w');
+
+        // Add BOM for UTF-8 to make Excel recognize characters properly
+        fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+        fputcsv($file, ['Name', 'Violation', 'Result']);
+
+        foreach ($results as $row) {
+            fputcsv($file, $row);
+        }
+
+        fclose($file);
+
+        return response()->download($filename)->deleteFileAfterSend(true);
+    }
+
+   private function exportPseudoPDF($results)
+    {
+        // Render the view normally
+        return view('validator_html_pdf', compact('results'));
+    }
     
 }
