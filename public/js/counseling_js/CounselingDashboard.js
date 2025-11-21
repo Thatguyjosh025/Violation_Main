@@ -52,46 +52,96 @@
  });
  // End of Side Bar JS
 
-  // Calendar JS
- document.addEventListener("DOMContentLoaded", function () {
-     const monthYear = document.getElementById("monthYear");
-     const calendarDates = document.getElementById("calendarDates");
- 
-     const date = new Date();
-     const year = date.getFullYear();
-     const month = date.getMonth();
- 
-     const months = [
-         "January", "February", "March", "April", "May", "June",
-         "July", "August", "September", "October", "November", "December"
-     ];
- 
-     const daysInMonth = new Date(year, month + 1, 0).getDate();
-     const firstDay = new Date(year, month, 1).getDay();
- 
-     monthYear.textContent = `${months[month]} ${year}`;
- 
-     // Fill initial empty slots
-     for (let i = 0; i < firstDay; i++) {
-         const emptyDiv = document.createElement("div");
-         calendarDates.appendChild(emptyDiv);
-     }
- 
-     // Fill dates
-     for (let i = 1; i <= daysInMonth; i++) {
-         const day = document.createElement("div");
-         day.textContent = i;
-         if (
-             i === date.getDate() &&
-             year === date.getFullYear() &&
-             month === date.getMonth()
-         ) {
-             day.classList.add("today");
-         }
-         calendarDates.appendChild(day);
-     }
- });
- 
+// Calendar JS
+ $(document).ready(async function() {
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+
+    // Set the month and year in the header
+    $("#monthYear").text(`${months[month]} ${year}`);
+
+    // Fetch schedules from your backend
+    const schedules = await fetchSchedules();
+
+    // Fill initial empty slots
+    for (let i = 0; i < firstDay; i++) {
+        $("<div>").appendTo("#calendarDates");
+    }
+
+    // Fill dates
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayDiv = $("<div>").text(i);
+
+        // Check if this date has schedules
+        const hasSchedule = schedules.some(schedule => {
+            const scheduleDate = new Date(schedule.start_date);
+            return (
+                scheduleDate.getDate() === i &&
+                scheduleDate.getMonth() === month &&
+                scheduleDate.getFullYear() === year
+            );
+        });
+
+        if (hasSchedule) {
+            dayDiv.addClass("has-schedule");
+            dayDiv.on("click", () => showSchedulesForDate(i, month, year, schedules));
+        }
+        if (i === date.getDate() && year === date.getFullYear() && month === date.getMonth()) {
+            dayDiv.addClass("today");
+        }
+
+        dayDiv.appendTo("#calendarDates");
+    }
+});
+
+// Function to fetch schedules (replace with your actual API call)
+async function fetchSchedules() {
+    const response = await fetch("/schedules");
+    const schedules = await response.json();
+    return schedules;
+}
+
+// Function to show schedules for a clicked date
+function showSchedulesForDate(day, month, year, schedules) {
+    const modalList = $("#scheduleList");
+    modalList.empty(); // Clear previous content
+
+    const selectedDate = new Date(year, month, day);
+    const filteredSchedules = schedules.filter(schedule => {
+        const scheduleDate = new Date(schedule.start_date);
+        return (
+            scheduleDate.getDate() === day &&
+            scheduleDate.getMonth() === month &&
+            scheduleDate.getFullYear() === year
+        );
+    });
+
+    if (filteredSchedules.length === 0) {
+        modalList.html("<p>No schedules for this date.</p>");
+    } else {
+        filteredSchedules.forEach(schedule => {
+            const scheduleItem = $(`
+                <div class="session-item mt-3">
+                    <span><strong>${schedule.student_name}</strong></span>
+                    <span>Time: ${schedule.start_time} - ${schedule.end_time}</span>
+                    <p>${schedule.start_date}</p>
+                </div>
+            `);
+            modalList.append(scheduleItem);
+        });
+    }
+
+    // Show the modal
+    $("#scheduleModal").modal("show");
+}
  // End of Calendar JS
   
  //Notification JS

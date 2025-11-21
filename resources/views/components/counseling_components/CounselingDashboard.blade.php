@@ -55,6 +55,22 @@
                             <div id="calendarDates" class="calendar-dates d-grid mt-2"></div>
                         </div>
                     </div>
+
+                    <!-- Modal for calendar-->
+                    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Today's Appointments</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="scheduleList"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>\
+
                 </div>
                 <div class="row mt-4">
                     <!-- Sample Cards and Notifications Below -->

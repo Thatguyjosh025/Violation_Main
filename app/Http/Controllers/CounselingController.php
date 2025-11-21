@@ -35,8 +35,8 @@ class CounselingController extends Controller
             'student_no'   => 'required|string',
             'student_name' => 'required|string',
             'school_email' => 'required|email',
-            'violation'    => 'required|string',
-            'severity'     => 'required|string',
+            'violation' => 'nullable|string',
+            'severity'     => 'nullable|string',
             'priority_level'=> 'required|integer',
             'guidance_service'=> 'required|integer',
             'start_date'   => 'required|date',
@@ -348,5 +348,21 @@ class CounselingController extends Controller
             'start' => $start,
             'end' => $end
         ];
+    }
+    public function getSchedules()
+    {
+        // Fetch all schedules from the tb_counseling table
+        $schedules = Counseling::select(
+            'id',
+            'student_name',
+            'start_date',
+            'end_date',
+            'start_time',
+            'end_time',
+            'guidance_service'
+        )->get();
+
+        // Return the schedules as JSON
+        return response()->json($schedules);
     }
 }

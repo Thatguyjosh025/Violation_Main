@@ -382,7 +382,7 @@ class AdminController extends Controller
         $students = users::select('id', 'firstname', 'lastname', 'email', 'student_no')
             ->where('role', 'student')
             ->where(function($q) use ($query) {
-                $q->where('firstname', 'LIKE', "%{$query}%")
+                $q->where('firstname', 'LIKE', "%{$query}%")    
                 ->orWhere('lastname', 'LIKE', "%{$query}%")
                 ->orWhere('student_no', 'LIKE', "%{$query}%");
             })

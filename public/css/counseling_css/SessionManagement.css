@@ -497,3 +497,71 @@ label {
       .kv-value { text-align: left; }
       .save-wrap { justify-content: center; }
     }
+    button#addSessionCounseling {
+        background-color: #325b74;
+        color: white;
+        border-radius: 0.7rem;
+        font-weight: 600;
+    }
+    .initial-icon {
+        width: 45px;
+        height: 45px;
+        background: #4a6cf7;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    #searchView, #formView {
+        transition: all 3s ease;
+    }
+  
+    .modal-content {
+        border-radius: 16px;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+    }
+
+    .modal-header {
+        background: rgba(245, 245, 245, 0.9);
+        backdrop-filter: blur(10px);
+        padding: 20px 24px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .student-list {
+        max-height: 420px;
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+
+    .student-item {
+        padding: 12px 8px;
+        border-radius: 10px;
+        margin-bottom: 6px;
+        transition: all 0.25s ease;
+        cursor: pointer;
+    }
+
+    .student-item:hover {
+        background: #f8f9fa;
+        transform: translateX(4px);
+        box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    }
+
+    .student-item .fw-bold {
+        font-size: 1.05rem;
+    }
+
+    .form-control {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: white;
+        border-bottom: 1px solid #eee;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
