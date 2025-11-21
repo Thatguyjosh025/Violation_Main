@@ -593,3 +593,6 @@ img {
         margin: 5px 0; /* Add vertical spacing */
         color: #495057; /* Dark gray text */
     }
+    div#scheduleList {
+        max-height: 40rem;
+    }

@@ -230,12 +230,12 @@
                     <div class="mb-2">
                         <label class="form-label fw-bold">Year level / Grade</label>
                         <input type="text" id="add_year_level" class="form-control" placeholder="First Year or Grade - 11">
-                        <div class="error-msg text-danger small mt-1" id="error_year_level"></div>
+                        <div class="error-msg text-danger small mt-1" id="add_error_year_level"></div>
                     </div>
                     <div class="mb-2">
                         <label class="form-label fw-bold">Program</label>
                         <input type="text" id="add_program" class="form-control" placeholder="Bachelor of Science in Information Technology">
-                        <div class="error-msg text-danger small mt-1" id="error_program"></div>
+                        <div class="error-msg text-danger small mt-1" id="add_error_program"></div>
                     </div>
                     <hr>
                     <div class="section-title">Time and Date</div>
@@ -514,20 +514,21 @@ $(document).ready(function () {
         // Validate Year Level / Grade format
         const yearLevelRegex = /^(?:Grade\s*-\s*\d{1,2}|\d{1,2}(?:st|nd|rd|th)\s*Year|[A-Za-z]+\s*Year)$/;
         if (!yearLevel) {
-            $('#error_year_level').text('Year level is required.');
+            $('#add_error_year_level').text('Year level is required.');
             hasError = true;
+            console.log('Submitting add session form');
         } else if (!yearLevelRegex.test(yearLevel)) {
-            $('#error_year_level').text('Invalid format. Use "Grade - 11", "1st Year", or "First Year".');
+            $('#add_error_year_level').text('Invalid format. Use "Grade - 11", "1st Year", or "First Year".');
             hasError = true;
         }
 
         // Validate Program field (only letters and spaces allowed)
         const programRegex = /^[A-Za-z\s]+$/;
         if (!program) {
-            $('#error_program').text('Program is required.');
+            $('#add_error_program').text('Program is required.');
             hasError = true;
         } else if (!programRegex.test(program)) {
-            $('#error_program').text('Invalid characters. Only letters and spaces are allowed.');
+            $('#add_error_program').text('Invalid characters. Only letters and spaces are allowed.');
             hasError = true;
         }
 

@@ -36,8 +36,8 @@
                             </div>
                                 <div class="flex-grow-1">
                                     <span class="badge badge-custom">Guidance Counselor</span>
-                                    <h4 class="mt-2 mb-1">Name: {{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h4>
-                                    <p class="mb-1">email: {{ Auth::user()->email }}</p>
+                                    <h4 class="mt-2 mb-1">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h4>
+                                    <p class="mb-1">{{ Auth::user()->email }}</p>
                                 </div>
                             </div>
                         </div>
@@ -69,7 +69,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>\
+                    </div>
 
                 </div>
                 <div class="row mt-4">
@@ -92,7 +92,7 @@
                              <div class="col-12 col-md-6">
                                 <div class="custom-card">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <div class="card-title">High Priority List</div>
+                                        <div class="card-title">High Risk Priority List</div>
                                         <i class="bi bi-exclamation-octagon-fill text-danger fs-3"></i>
                                     </div>
 

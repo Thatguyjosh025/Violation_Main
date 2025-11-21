@@ -37,8 +37,8 @@
                                     </div>
                                     <div class="flex-grow-1">
                                     <span class="badge badge-custom">Disciplinary Officer</span>
-                                    <h4 class="mt-2 mb-1">Name: {{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h4>
-                                    <p class="mb-1">email: {{ Auth::user()->email }}</p>
+                                    <h4 class="mt-2 mb-1">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h4>
+                                    <p class="mb-1">{{ Auth::user()->email }}</p>
                                 </div>
                             </div>
                         </div>

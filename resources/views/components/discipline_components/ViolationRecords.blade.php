@@ -19,6 +19,7 @@
                 <div>
                     <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
                     <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
+                    <button class="btn btn-sm btn-secondary" id="printTable">Name Validator</button>
                 </div>
                 <div class="d-flex align-items-center">
                     <select id="statusFilter" class="sort-dropdown form-select" style="width: auto; min-width: 150px;">
@@ -97,9 +98,6 @@
     $('#statusFilter').on('change', function () {
         table.ajax.reload();
     });
-    // $('#showArchived').on('change', function () {
-    //     table.ajax.reload(); // Reload table with updated filters
-    // });
 });
 
 $(document).ready(function () {
