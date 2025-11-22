@@ -5,6 +5,7 @@ use App\Models\users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
@@ -43,42 +44,80 @@ class AuthController extends Controller
     // -----------------------------CODE IS NO LONGER IN USE-----------------------------
 
 
-    public function login(Request $request){
-        $credentials = $request->only('email', 'password');
+    public function login(Request $request)
+{
+    $credentials = $request->only('email', 'password');
 
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $email = $request->email;
+    $cacheKey = 'login_attempts_' . $email;
+    $lockoutKey = 'login_lockout_' . $email;
+
+    // Check if the user is currently locked out
+    if (Cache::has($lockoutKey)) {
+        $secondsLeft = Cache::get($lockoutKey) - time();
+        return response()->json([
+            'success' => false,
+            'errors' => [
+                'email' => "Too many login attempts. Please try again in " . ceil($secondsLeft / 60) . " minute(s)."
+            ]
         ]);
+    }
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
 
-            // Check if the user's status is inactive
-            if ($user->status == 'inactive') {
-                Auth::logout(); // Log the user out if inactive
-                return response()->json([
-                    'success' => false,
-                    'errors' => [
-                        'email' => 'Your account is inactive. Please contact support.',
-                    ]
-                ]);
-            }
+        // Reset login attempts and lockout on successful login
+        Cache::forget($cacheKey);
+        Cache::forget($lockoutKey);
 
+        if ($user->status == 'inactive') {
+            Auth::logout();
             return response()->json([
-                'success' => true,
-                'role' => $user->role,
+                'success' => false,
+                'errors' => [
+                    'email' => 'Your account is inactive. Please contact support.',
+                ]
             ]);
         }
 
         return response()->json([
+            'success' => true,
+            'role' => $user->role,
+        ]);
+    }
+
+    // Handle failed login attempt
+    $attempts = Cache::get($cacheKey, 0) + 1;
+    Cache::put($cacheKey, $attempts, now()->addMinutes(10)); // Track attempts for 10 mins
+
+    if ($attempts >= 10) {
+        // Progressive lockout: 5 minutes * number of times user exceeded threshold
+        $lockoutMultiplier = floor($attempts / 10);
+        $lockoutTime = 5 * 60 * $lockoutMultiplier; // in seconds
+
+        Cache::put($lockoutKey, time() + $lockoutTime, $lockoutTime);
+
+        return response()->json([
             'success' => false,
             'errors' => [
-                'email' => 'The provided credentials do not match our records.',
-                'password' => 'The provided credentials do not match our records.'
+                'email' => "Too many login attempts. Please try again in " . ceil($lockoutTime / 60) . " minute(s)."
             ]
         ]);
     }
+
+    return response()->json([
+        'success' => false,
+        'errors' => [
+            'email' => 'The provided credentials do not match our records.',
+            'password' => 'The provided credentials do not match our records.'
+        ]
+    ]);
+}
 
     public function addUser(Request $request) {
         $request->validate([

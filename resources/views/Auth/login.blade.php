@@ -155,8 +155,10 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 // Handle server error
-                $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">Something went wrong. Please try again later.</div>');
-                $('#login_password').addClass('is-invalid').after('<div class="invalid-feedback">Something went wrong. Please try again later.</div>');
+                $('#login_email').removeClass('is-invalid').next('.invalid-feedback').remove();
+                $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
+                $('#login_password').removeClass('is-invalid').next('.invalid-feedback').remove();
+                $('#login_password').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
             }
         });
     }

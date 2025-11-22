@@ -249,3 +249,8 @@ select.form-select {
 .container.mt-5 {
     max-width: 2000px;
 }
+@media (max-width:687px) {
+    .mt-5{
+        margin-top: 1rem !important;
+    }
+}

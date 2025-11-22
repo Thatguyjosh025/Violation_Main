@@ -111,7 +111,7 @@ $(document).ready(function () {
         // Set the Authorization link as the default active link if no match is found
         if (!$('.nav-link').hasClass('active')) {
             $('.nav-link').removeClass('active');
-            $('.nav-link[href="' + "{{ route('super_dashboard') }}" + '"]').addClass('active');
+            $('.nav-link[href="' + "{{ route('violation_management') }}" + '"]').addClass('active');
         }
     });
 </script>

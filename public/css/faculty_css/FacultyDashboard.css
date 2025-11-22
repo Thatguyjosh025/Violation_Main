@@ -428,11 +428,6 @@ img {
     font-size: 1rem;
 }
 
-@media (max-width: 993px) {
-    .card.shadow-sm.notif {
-        margin-top: 1.5rem;
-    }
-}
 
 /* Table Styles */
 /* .table-container {

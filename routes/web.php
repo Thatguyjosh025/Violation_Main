@@ -62,6 +62,9 @@ Route::middleware(['permission:super', RedirectIfNotAuthenticated::class])->grou
     //export csv
     Route::get('/export-users-csv', [SuperController::class, 'exportUsersCSV']);
 
+    //deactivate graduates
+    Route::post('/deactivate-graduates', [SuperController::class, 'deactivateGraduates']);
+
 });
 
 // ==========================

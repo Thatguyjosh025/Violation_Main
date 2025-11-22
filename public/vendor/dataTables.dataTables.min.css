@@ -11,3 +11,6 @@ td.dt-empty {
 /* tr {
     width: 20rem;
 } */
+select#dt-length-0 {
+    margin-right: 0.5rem;
+}

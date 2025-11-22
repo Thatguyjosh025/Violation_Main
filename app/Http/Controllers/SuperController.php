@@ -522,7 +522,7 @@ class SuperController extends Controller
 
     public function exportUsersCSV()
     {
-        $fileName = 'user_records.csv';
+        $fileName = 'backup_user_records.csv';
         $users = Users::all(['firstname', 'lastname','email', 'password', 'role', 'student_no','status']); 
 
         $headers = [
@@ -560,7 +560,7 @@ class SuperController extends Controller
     public function importUsersCSV(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv'
+            'csv_file' => 'required|file|mimes:csv,txt'
         ]);
 
         $file = $request->file('csv_file');
@@ -589,5 +589,52 @@ class SuperController extends Controller
         return response()->json(['status' => 200, 'message' => 'CSV imported successfully']);
     }
 
-    
+public function deactivateGraduates(Request $request)
+{
+    $request->validate([
+        'file' => 'required|file|mimes:csv,txt'
+    ]);
+
+    $file = $request->file('file');
+    $handle = fopen($file, 'r');
+    $deactivated = 0;
+
+    while (($row = fgetcsv($handle)) !== false) {
+        $fullName = trim($row[0] ?? '');
+        $email = trim($row[1] ?? '');
+
+        // SPLIT NAME WITH ORIGINAL CASE
+        $parts = preg_split('/\s+/', $fullName);
+        if (count($parts) >= 3) {
+            $firstname = $parts[0] . ' ' . $parts[1];
+            $lastname = implode(' ', array_slice($parts, 2));
+        } else {
+            $firstname = $parts[0] ?? '';
+            $lastname  = $parts[1] ?? '';
+        }
+
+        // Build the query dynamically
+        $query = users::query()
+            ->whereRaw('LOWER(firstname) = LOWER(?)', [$firstname])
+            ->whereRaw('LOWER(lastname) = LOWER(?)', [$lastname]);
+
+        // Only add email condition if email is provided
+        if (!empty($email)) {
+            $query->whereRaw('LOWER(email) = LOWER(?)', [$email]);
+        }
+
+        $user = $query->first();
+
+        if ($user) {
+            $user->update(['status' => 'inactive']);
+            $deactivated++;
+        }
+    }
+
+    fclose($handle);
+    return response()->json([
+        'message' => "Successfully deactivated {$deactivated} accounts."
+    ]);
+}
+        
 }

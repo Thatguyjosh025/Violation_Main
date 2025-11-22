@@ -245,6 +245,9 @@ body {
     .studentinfo {
         text-align: center;
     }
+    .row{
+        flex-direction: column-reverse;
+    }
 }
 
 .recent-violation {
