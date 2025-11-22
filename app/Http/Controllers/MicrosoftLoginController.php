@@ -92,7 +92,7 @@ class MicrosoftLoginController extends Controller
             // $status = 'inactive';
         } elseif (str_contains($userData['displayName'], '(Faculty)')) {
             $role = 'faculty';
-            $status = 'inactive';
+            $status = 'active';
         }
     }
 

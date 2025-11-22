@@ -269,6 +269,10 @@ button.btnSignIn:hover {
 .contact p {
     text-align: center;
 }
+.home-img-circle {
+    width: 90%;
+    margin-left: 10%;
+}
 
 
 /* RESPONSIVE SECTION */
@@ -285,6 +289,24 @@ button.btnSignIn:hover {
     .home-text h2 {
         font-size: 1.5rem;
     }
+    .links a {
+    /* font-size: 1rem; */
+    /* font-weight: 500; */
+    /* color: var(--main-color); */
+    padding: 0.5rem;
+    display: block;
+    text-align: center;
+    }
+
+    img {
+        width: 100%;
+        margin-left: 0;
+    }
+    .home-img-circle {
+        width: 100%;
+        margin-left: 0;
+    }
+
 }
 @media (max-width: 108vh) {
     header {

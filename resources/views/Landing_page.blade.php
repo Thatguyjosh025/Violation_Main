@@ -51,7 +51,7 @@
           <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal">Log In</button>
       </div>
       <div class="home-img">
-          <img style="width: 90%; margin-left: 10%;" src="Photos/violation-picture-landing.png" alt="">
+          <img class="home-img-circle" src="Photos/violation-picture-landing.png" alt="">
       </div>
   </section>
 

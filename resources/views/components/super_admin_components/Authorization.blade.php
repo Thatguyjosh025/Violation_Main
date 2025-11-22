@@ -18,12 +18,15 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
             <!-- Left side: Export and Print buttons -->
             <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
                 <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
-                <form id="importCSVForm" enctype="multipart/form-data">
-                <input type="file" id="importCSVInput" name="csv_file" accept=".csv" style="display:none;">
-            </form>
+                <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
                 <button type="button" class="btn btn-sm btn-success" id="importCSVBtn">Import CSV</button>
+                <form id="importCSVForm" enctype="multipart/form-data">
+                    <input type="file" id="importCSVInput" name="csv_file" accept=".csv" style="display:none;">
+                </form>
+                <button type="button" class="btn btn-sm btn-success" id="insert_graduates">
+                    Import list of graduates
+                </button>
             </div>
 
 
@@ -169,6 +172,7 @@
                                 <option value="discipline">Discipline</option>
                                 <option value="faculty">Faculty</option>
                                 <option value="counselor">Counselor</option>
+                                <option value="head">Head</option>
                             </select>
                         </div>
 
@@ -188,6 +192,35 @@
         </div>
     </div>
 
+    <!-- Modal: Upload Graduates CSV -->
+    <div class="modal fade" id="graduatesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import Graduates CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="graduatesForm" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="mb-3">
+                            <label class="form-label">Upload CSV File</label>
+                            <input type="file" name="file" id="graduatesFile"
+                                class="form-control" accept=".csv" required>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" id="uploadGraduatesBtn">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
@@ -202,6 +235,57 @@
             "ordering": true,    
             "info": true,       
             "responsive": true,   
+        });
+    });
+
+    $('#insert_graduates').on('click', function () {
+        $('#graduatesModal').modal('show');
+    });
+
+    $('#uploadGraduatesBtn').on('click', function () {
+        let formData = new FormData(document.getElementById('graduatesForm'));
+
+        // Show SweetAlert loading
+        Swal.fire({
+            title: 'Uploading...',
+            text: 'Please wait while we process your file.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        $.ajax({
+            url: '/deactivate-graduates',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function(response) {
+
+                Swal.close(); // close loader
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message,
+                    timer: 2000
+                });
+
+                $('#authbody').load(location.href + " #authbody > *");
+            },
+
+            error: function(xhr) {
+
+                Swal.close(); // close loader
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error uploading CSV.'
+                });
+            }
         });
     });
 </script>
