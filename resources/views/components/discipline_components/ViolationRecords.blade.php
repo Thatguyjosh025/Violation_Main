@@ -19,7 +19,7 @@
                 <div>
                     <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
                     <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
-                    <button class="btn btn-sm btn-secondary" id="printTable">Name Validator</button>
+                    <button class="btn btn-sm btn-secondary" id="validateName">Name Validator</button>
                 </div>
                 <div class="d-flex align-items-center">
                     <select id="statusFilter" class="sort-dropdown form-select" style="width: auto; min-width: 150px;">
@@ -55,10 +55,27 @@
                     </tbody>
                 </table>
             </div>
-        @include('components.discipline_components.modals.modal')
+
+            <div class="modal fade" id="validatorModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content p-3">
+                        <h5>Upload CSV or XML</h5>
+                        <input type="file" id="validatorFile" class="form-control mt-2" accept=".csv">
+                        <button class="btn btn-primary mt-3" id="runValidator">Run Validator</button>
+                    </div>
+                </div>
+            </div>
+    @include('components.discipline_components.modals.modal')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
    $(document).ready(function() {
+
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
+        }
+    });
+
     let table = $('#violationrecordstable').DataTable({
         responsive: true,
         processing: true,
@@ -164,6 +181,56 @@ $(document).ready(function () {
             printWindow.document.close();
             printWindow.focus();
             printWindow.print();
+        });
+
+        $('#validateName').click(function() {
+            $('#validatorModal').modal('show');
+        });
+        
+        $('#runValidator').click(function() {
+            let file = $('#validatorFile')[0].files[0];
+            if (!file) {
+                Swal.fire("Error", "Please upload a file!", "error");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('file', file);
+
+            Swal.fire({
+                title: "Comparing...",
+                text: "Please wait while validating data",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            $.ajax({
+                url: "{{ route('validator.run') }}",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(res) {
+                    Swal.close();
+
+                    $('#validatorModal').modal('hide');
+
+                    $('#validatorFile').val('');
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Done",
+                        html: `
+                            <p>Validation completed.</p>
+                            <a href="{{ url('/name-validator/export/csv') }}" class="btn btn-success">Download CSV</a>
+                            <a href="{{ url('/name-validator/export/pdf') }}" class="btn btn-danger" target="_blank">Open PDF</a>
+                        `
+                    });
+                },
+                error: function() {
+                    Swal.fire("Error", "Failed to process file", "error");
+                }
+            });
         });
     });
 </script>
