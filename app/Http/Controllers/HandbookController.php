@@ -17,7 +17,7 @@ class HandbookController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'header' => 'required|string|max:50',
+            'header' => 'required|string|max:55',
             'description' => 'required|string',
         ]);
 

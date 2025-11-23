@@ -487,8 +487,7 @@
                 </div>
             </div>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
-<script src="FacultyJS/StudentHandbook.js"></script>
-
+<script></script>
 </body>
 
 </html>

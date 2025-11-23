@@ -300,6 +300,9 @@ label {
     width: 100%;
     margin-bottom: 10px;
 }
+ .mb-2.d-flex.align-items-center.justify-content-between {
+        flex-direction: column-reverse;
+    }
 }
 
 

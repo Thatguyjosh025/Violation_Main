@@ -154,7 +154,7 @@
                             <input type="text" class="form-control" id="lastname" name="lastname">
                         </div>
     
-                        <div class="mb-3">
+                        <div class="mb-3" style="display: none;">
                             <label for="email" class="form-label">Email:</label>
                             <input type="email" class="form-control" id="email" name="email">
                         </div>
