@@ -12,11 +12,13 @@
             @csrf
             <div class="mb-3">
                 <label for="title" class="form-label">Header</label>
-                <input type="text" name="header" id="header" class="form-control" required>
+                <input type="text" name="header" id="header" class="form-control">
+                <div class="invalid-feedback" style="display:none;"></div>
             </div>
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea name="description" id="description" rows="4" class="form-control" style="max-height: 15rem; min-height: 15rem;" required></textarea>
+                <textarea name="description" id="description" rows="4" class="form-control" style="max-height: 15rem; min-height: 15rem;"></textarea>
+                <div class="invalid-feedback" style="display:none;"></div>
             </div>
             <div id="form-feedback" class="mt-2"></div>
             <button type="submit" class="btn btn-primary">Create Section</button>
@@ -40,11 +42,13 @@
             <input type="hidden" name="id" id="edit-section-id">
             <div class="mb-3">
                 <label for="edit-header" class="form-label">Header</label>
-                <input type="text" class="form-control" name="header" id="edit-header" required>
+                <input type="text" class="form-control" name="header" id="edit-header">
+                <div class="invalid-feedback" style="display:none;"></div>
             </div>
             <div class="mb-3">
                 <label for="edit-description" class="form-label">Description</label>
                 <textarea class="form-control" name="description" id="edit-description" rows="5" style="max-height: 15rem; min-height: 15rem;" required></textarea>
+                <div class="invalid-feedback" style="display:none;"></div>
             </div>
             <div id="edit-feedback" class="mt-2"></div>
             </div>
@@ -58,20 +62,52 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+const headerRegex = /^(?![-\/\s])(?!.*[-\/\s]$)(?!.*[-\/]{2,})(?!.*\s{2,})[A-Za-z\s\-\/]+$/;
 $(document).ready(function() {
-    // Open modal
+
     $('#openModalBtn').on('click', function() {
         $('#handbookModal').modal('show');
     });
 
-    // Close modal manually
     $('#modalCloseBtn').on('click', function() {
         $('#handbookModal').modal('hide');
+    });
+
+    // Clear errors on typing
+    $('#header, #description, #edit-header, #edit-description').on('input', function() {
+        $(this).removeClass('is-invalid');
+        $(this).siblings('.invalid-feedback').hide();
     });
 
     // Submit form via AJAX
     $('#section-form').on('submit', function(e) {
         e.preventDefault();
+
+        const $header = $('#header');
+        const $headerFeedback = $header.siblings('.invalid-feedback');
+        const header = $header.val().trim();
+
+        const $desc = $('#description');
+        const $descFeedback = $desc.siblings('.invalid-feedback');
+        const description = $desc.val().trim();
+
+        // Header validation
+        if (!header) {
+            $header.addClass('is-invalid');
+            $headerFeedback.text('Header cannot be empty.').show();
+            return;
+        }
+        if (!headerRegex.test(header)) {
+            $header.addClass('is-invalid');
+            $headerFeedback.text('Header may contain letters, spaces, hyphens (-), and slashes (/). Cannot start/end with special characters or spaces, and no consecutive special characters or double spaces.').show();
+            return;
+        }
+
+        if (!description) {
+            $desc.addClass('is-invalid');
+            $descFeedback.text('Description cannot be empty.').show();
+            return;
+        }
 
         $.ajax({
             url: "{{ route('sections.store') }}",
@@ -102,12 +138,22 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 let errors = xhr.responseJSON.errors;
-                let message = '<div class="alert alert-danger"><ul>';
-                $.each(errors, function(key, value) {
-                    message += `<li>${value}</li>`;
-                });
-                message += '</ul></div>';
-                $('#form-feedback').html(message);
+
+                // Header
+                if(errors.header){
+                    const $header = $('#header');
+                    const $headerFeedback = $header.siblings('.invalid-feedback');
+                    $header.addClass('is-invalid');
+                    $headerFeedback.text(errors.header[0]).show();
+                }
+
+                // Description
+                if(errors.description){
+                    const $desc = $('#description');
+                    const $descFeedback = $desc.siblings('.invalid-feedback');
+                    $desc.addClass('is-invalid');
+                    $descFeedback.text(errors.description[0]).show();
+                }
             }
         });
     });
@@ -138,6 +184,32 @@ $(document).ready(function() {
     $('#edit-section-form').on('submit', function(e) {
         e.preventDefault();
         const id = $('#edit-section-id').val();
+        const $header = $('#edit-header');
+        const $headerFeedback = $header.siblings('.invalid-feedback');
+        const header = $header.val().trim();
+
+        const $desc = $('#edit-description');
+        const $descFeedback = $desc.siblings('.invalid-feedback');
+        const description = $desc.val().trim();
+
+        // Header validation
+        if (!header) {
+            $header.addClass('is-invalid');
+            $headerFeedback.text('Header cannot be empty.').show();
+            return;
+        }
+        if (!headerRegex.test(header)) {
+            $header.addClass('is-invalid');
+            $headerFeedback.text('Header may contain letters, spaces, hyphens (-), and slashes (/). Cannot start/end with special characters or spaces, and no consecutive special characters or double spaces.').show();
+            return;
+        }
+
+        // Description validation
+        if (!description) {
+            $desc.addClass('is-invalid');
+            $descFeedback.text('Description cannot be empty.').show();
+            return;
+        }
 
         $.ajax({
             url: `/sections/${id}`,
@@ -165,12 +237,21 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 let errors = xhr.responseJSON.errors;
-                let message = '<div class="alert alert-danger"><ul>';
-                $.each(errors, function(key, value) {
-                    message += `<li>${value}</li>`;
-                });
-                message += '</ul></div>';
-                $('#edit-feedback').html(message);
+                // Header
+                if(errors.header){
+                    const $header = $('#edit-header'); // use edit modal field
+                    const $headerFeedback = $header.siblings('.invalid-feedback');
+                    $header.addClass('is-invalid');
+                    $headerFeedback.text(errors.header[0]).show();
+                }
+
+                // Description
+                if(errors.description){
+                    const $desc = $('#edit-description'); // use edit modal field
+                    const $descFeedback = $desc.siblings('.invalid-feedback');
+                    $desc.addClass('is-invalid');
+                    $descFeedback.text(errors.description[0]).show();
+                }
             }
         });
     });
