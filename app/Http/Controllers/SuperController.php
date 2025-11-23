@@ -51,7 +51,7 @@ class SuperController extends Controller
         ]);
 
         // Create audit entry
-        $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+        $name = Auth::user()->id;
         $audit = audits::create([
             'changed_at' => now()->format('Y-m-d H:i'),
             'changed_by' => $name,

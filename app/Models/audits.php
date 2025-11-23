@@ -20,5 +20,10 @@ class audits extends Model
     ];
     public $timestamps = false;
 
+    public function user()
+    {
+        return $this->belongsTo(users::class, 'changed_by', 'id');
+    }
+
 
 }

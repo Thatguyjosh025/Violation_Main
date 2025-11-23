@@ -1,6 +1,8 @@
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
+
+
     $(document).ready(function () {
         // Toggle visibility of password when the eye icon is clicked
         $('#toggleUserPassword').on('click', function () {
@@ -321,76 +323,107 @@
         }
     });
 
-    $(document).ready(function () {
-            function cloneTableWithoutActions() {
-                let cloned = $('#authTable').clone();
-                cloned.find('tr').each(function () {
-                    $(this).find('th:last-child, td:last-child').remove(); // remove last column
-                });
-                return cloned;
+  $(document).ready(function () {
+    function cloneTableWithoutActions() {
+        let cloned = $('#authTable').clone();
+        cloned.find('tr').each(function () {
+            $(this).find('th:last-child, td:last-child').remove(); // remove last column
+        });
+        return cloned;
+    }
+
+    // Export CSV with SweetAlert confirmation
+    $('#exportCSV').click(function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Export Backup CSV?',
+            text: "Do you want to download the backup CSV now?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, download it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/export-users-csv'; // your export route
             }
+        });
+    });
 
-            $('#exportCSV').click(function () {
-                window.location.href = '/export-users-csv';
+    // Print table without Actions column
+    $('#printTable').click(function () {
+        let clonedTable = cloneTableWithoutActions();
+
+        clonedTable.removeClass().removeAttr('id');
+        clonedTable.find('*').removeClass();
+
+        let styles = `
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h2 { text-align: center; margin-bottom: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #000; padding: 8px; font-size: 12px; text-align: left; }
+                th { background-color: #f2f2f2; }
+            </style>
+        `;
+
+        let printWindow = window.open('', '', 'width=1000,height=700');
+        printWindow.document.write('<html><head><title>Print User Records</title>' + styles + '</head><body>');
+        printWindow.document.write('<h2>User Records</h2>');
+        printWindow.document.write(clonedTable.prop('outerHTML'));
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    });
+
+    // Trigger file input for import
+    $('#importCSVBtn').on('click', function () {
+        $('#importBackupModal').modal('show');
+    });
+
+    // Trigger the hidden file input inside the modal
+    $('#importBackupModal').on('shown.bs.modal', function () {
+        $('#backupCSVFile').val(''); // clear previous selection
+    });
+
+    // Handle CSV import
+    $('#importBackupBtn').on('click', function () {
+    var formData = new FormData($('#importBackupForm')[0]);
+    formData.append('_token', $('meta[name="csrf-token"]').attr('content')); // CSRF token
+
+    Swal.fire({
+        title: 'Importing Backup CSV...',
+        text: 'Please wait while we process your file.',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    $.ajax({
+        url: '/import_users_csv', // your import route
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            Swal.close();
+            Swal.fire({
+                icon: "success",
+                text: "Backup CSV imported successfully!",
+                timer: 1500,
+                showConfirmButton: false
             });
 
-
-            $('#printTable').click(function () {
-                // Clone the DataTable and remove the Actions column
-                let clonedTable = $('#authTable').clone();
-
-                // Remove the last column (Actions)
-                clonedTable.find('tr').each(function () {
-                    $(this).find('th:last-child, td:last-child').remove();
-                });
-
-                // Remove all DataTable classes and IDs for clean print
-                clonedTable.removeClass().removeAttr('id');
-                clonedTable.find('*').removeClass();
-
-                // Define CSS for print
-                let styles = `
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        h2 { text-align: center; margin-bottom: 20px; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th, td { border: 1px solid #000; padding: 8px; font-size: 12px; text-align: left; }
-                        th { background-color: #f2f2f2; }
-                    </style>
-                `;
-
-                // Open new window for print
-                let printWindow = window.open('', '', 'width=1000,height=700');
-                printWindow.document.write('<html><head><title>Print Violation Records</title>' + styles + '</head><body>');
-                printWindow.document.write('<h2>Violation Records</h2>');
-                printWindow.document.write(clonedTable.prop('outerHTML'));
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-                printWindow.focus();
-                printWindow.print();
+            $('#authbody').load(location.href + " #authbody > *"); // reload table
+            $('#importBackupModal').modal('hide'); // close modal
+        },
+        error: function (xhr) {
+            Swal.close();
+            Swal.fire({
+                icon: "error",
+                text: "Failed to import Backup CSV."
             });
-        });
-
-        $('#importCSVBtn').on('click', function() {
-            $('#importCSVInput').click();
-        });
-
-        $('#importCSVInput').on('change', function() {
-            var formData = new FormData($('#importCSVForm')[0]);
-            formData.append('_token', $('meta[name="csrf-token"]').attr('content')); // add csrf token
-
-            $.ajax({
-                url: '/import_users_csv',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    Swal.fire({ icon: "success", text: "CSV imported successfully!" });
-                    $('#authbody').load(location.href + " #authbody > *");
-                },
-                error: function(xhr) {
-                    Swal.fire({ icon: "error", text: "Failed to import CSV." });
-                }
-            });
-        });
+        }
+    });
+});
+});

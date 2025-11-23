@@ -18,25 +18,18 @@ class AdminController extends Controller
 {
     //
 
-    public function getRule($violation_id) 
+    public function getRule($violation_id)
     {
-        $rule = rules::where('violation_id', $violation_id)
+        $rules = rules::where('violation_id', $violation_id)
             ->with('severity')
-            ->first();
+            ->get();
 
-        if (!$rule) {
-            return response()->json([
-                'rule_name'     => '-',
-                'description'   => '-',
-                'severity_name' => '-',
-                'test no rule found'
-            ]);
+        if ($rules->isEmpty()) {
+            return response()->json(['rules' => []]);
         }
 
         return response()->json([
-            'rule_name'     => $rule->rule_name,
-            'description'   => $rule->description,
-            'severity_name' => $rule->severity->severity
+            'rules' => $rules
         ]);
     }
 
@@ -382,8 +375,9 @@ class AdminController extends Controller
 
         $students = users::select('id', 'firstname', 'lastname', 'email', 'student_no')
             ->where('role', 'student')
+            ->where('status', 'active')
             ->where(function($q) use ($query) {
-                $q->where('firstname', 'LIKE', "%{$query}%")    
+                $q->where('firstname', 'LIKE', "%{$query}%")
                 ->orWhere('lastname', 'LIKE', "%{$query}%")
                 ->orWhere('student_no', 'LIKE', "%{$query}%");
             })

@@ -38,7 +38,7 @@ $auditdata = audits::get();
                                 <tr>
                                     <th scope="row" data-label="ID">{{ $data->id }}</th>
                                     <td data-label="change_at">{{ $data->changed_at }}</td>
-                                    <td data-label="change_by">{{ $data->changed_by }}</td>
+                                    <td data-label="change_by">{{ $data->user->firstname . ' ' . $data->user->lastname }}</td>
                                     <td data-label="event_type">{{ $data->event_type }}</td>
                                     <td data-label="field_name">{{ $data->field_name }}</td>
                                     <td data-label="old_value">{{ $data->old_value }}</td>

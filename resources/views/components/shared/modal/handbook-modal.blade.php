@@ -12,12 +12,12 @@
             @csrf
             <div class="mb-3">
                 <label for="title" class="form-label">Header</label>
-                <input type="text" name="header" id="header" class="form-control">
+                <input type="text" name="header" id="header" class="form-control" maxlength="55">
                 <div class="invalid-feedback" style="display:none;"></div>
             </div>
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea name="description" id="description" rows="4" class="form-control" style="max-height: 15rem; min-height: 15rem;"></textarea>
+                <textarea name="description" id="description" rows="4" class="form-control" style="max-height: 15rem; min-height: 15rem;" maxlength="555" ></textarea>
                 <div class="invalid-feedback" style="display:none;"></div>
             </div>
             <div id="form-feedback" class="mt-2"></div>
@@ -39,7 +39,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-            <input type="hidden" name="id" id="edit-section-id">
+                <input type="hidden" name="id" id="edit-section-id" maxlength="55">
             <div class="mb-3">
                 <label for="edit-header" class="form-label">Header</label>
                 <input type="text" class="form-control" name="header" id="edit-header">
@@ -47,7 +47,7 @@
             </div>
             <div class="mb-3">
                 <label for="edit-description" class="form-label">Description</label>
-                <textarea class="form-control" name="description" id="edit-description" rows="5" style="max-height: 15rem; min-height: 15rem;" required></textarea>
+                <textarea class="form-control" name="description" id="edit-description" rows="5" style="max-height: 15rem; min-height: 15rem;" maxlength="555"></textarea>
                 <div class="invalid-feedback" style="display:none;"></div>
             </div>
             <div id="edit-feedback" class="mt-2"></div>
@@ -168,7 +168,6 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 
-    // ✅ Use event delegation so newly added/updated buttons still work
     $(document).on('click', '.edit-section-btn', function() {
         const id = $(this).data('id');
         const header = $(this).data('header');

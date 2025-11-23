@@ -40,7 +40,10 @@
 
                     <!-- RuleName, Description, Severity auto populate -->
                     <label class="fw-bold mt-2 text text-dark">Rule Name:</label>
-                    <p id="ruleName" class="text text-dark">-</p>
+                    <select id="ruleDropdown" class="form-select">
+                        <option value="" hidden>Select Rule</option>
+                    </select>
+                    <!-- <p id="ruleName" class="text text-dark">-</p> -->
                     <input type="hidden" id="ruleNameInput" name="rule_Name" style="display: none;"> 
 
                     <label class="fw-bold mt-2 text text-dark">Description: </label>
@@ -337,6 +340,11 @@
             <select id="edit_violation_type" class="form-select" name="update_violation_type"></select>
           </div>
 
+          <div class="mb-3">
+            <label for="edit_ruleDropdown" class="form-label">Rule</label>
+            <select id="edit_ruleDropdown" class="form-select"></select>
+          </div>
+
           <div class="mb-3" style="display: none;">
             <label for="edit_rule_Name" class="form-label">Rule Name</label>
             <input id="edit_rule_Name" class="form-control" name="update_rule_name" pattern="[A-Za-z]+" title="Only letters are allowed" readonly required>
@@ -431,16 +439,16 @@
 // View student
 $(document).on('click', '.btn-view-post', function () {
     var id = $(this).val();
-    console.log("test", id);
+    // console.log("test", id);
 
     $.ajax({
         type: "GET",
         url: "/get_info?id=" + id,
         success: function (response) {
             if (response.status == 500) {
-                console.log(response.message);
+                // console.log(response.message);
             } else if (response.status == 200) {
-                console.log(response);
+                // console.log(response);
 
                 // Populate fields
                 $('#viewviolation_type').text(response.data.violation_name);
@@ -514,21 +522,24 @@ $(document).on('click', '.btn-view-post', function () {
 });
 
 // dropdown loader
-function loadViolationDropdown(url, id, selectedValue) {
-  $.ajax({
-    url: url,
-    success: function(response) {
-      var dropdown = $(id);
-      dropdown.empty(); 
+function loadViolationDropdown(url, id, selectedValue, callback) {
+    $.ajax({
+        url: url,
+        success: function(response) {
+            var dropdown = $(id);
+            dropdown.empty();
 
-      response.violation_data.forEach(function(item) {
-        var isSelected = item.violation_id == selectedValue ? 'selected' : '';
-        dropdown.append(`<option value="${item.violation_id}" ${isSelected}>${item.violations}</option>`);
-      });
+            response.violation_data.forEach(function(item) {
+                var isSelected = item.violation_id == selectedValue ? 'selected' : '';
+                dropdown.append(`<option value="${item.violation_id}" ${isSelected}>${item.violations}</option>`);
+            });
 
-    }
-  });
+            // Call callback after population
+            if (typeof callback === "function") callback();
+        }
+    });
 }
+
 
 function loadPenaltyDropdown(url, id, selectedValue){
   $.ajax({
@@ -546,262 +557,298 @@ function loadPenaltyDropdown(url, id, selectedValue){
   })
 }
 
-function loadStatusDropdown(url, id, selectedValue){
+  function loadStatusDropdown(url, id, selectedValue){
   $.ajax({
-    url:url,
-    success:function(response){
+    url: url,
+    success: function(response){
       var dropdown = $(id);
 
       dropdown.empty();
 
       response.status_data.forEach(function(item){
+        // Skip pending status (status_id = 1)
+        if(item.status_id == 1) return;
 
-        var isSelected  = item.status_id == selectedValue ? 'selected' : '';
-        dropdown.append(`<option value="${item.status_id}" ${isSelected}>${item.status}</option>`)
+        var isSelected = item.status_id == selectedValue ? 'selected' : '';
+        dropdown.append(`<option value="${item.status_id}" ${isSelected}>${item.status}</option>`);
       });
     }
   });
 }
 
-function loadReferalDropdown(url, id, selectedValue){
-  $.ajax({
-    url:url,
-    success:function(response){
-      var dropdown = $(id);
+  function loadReferalDropdown(url, id, selectedValue){
+    $.ajax({
+      url:url,
+      success:function(response){
+        var dropdown = $(id);
 
-      dropdown.empty();
+        dropdown.empty();
 
-      response.referals_data.forEach(function(item){
-        var isSelected = item.referal_id == selectedValue ? 'selected' : '';
-        dropdown.append(`<option value="${item.referal_id}" ${isSelected}>${item.referals}</option>`)
-      });
-    }
-  });
+        response.referals_data.forEach(function(item){
+          var isSelected = item.referal_id == selectedValue ? 'selected' : '';
+          dropdown.append(`<option value="${item.referal_id}" ${isSelected}>${item.referals}</option>`)
+        });
+      }
+    });
+  }
+
+function loadRuleDropdown(url, id, selectedValue = null) {
+    $.ajax({
+        url: url,
+        success: function(response) {
+            var dropdown = $(id);
+            dropdown.empty().append('<option value="">Select Rule</option>');
+
+            if (!response.rules || response.rules.length === 0) return;
+
+            response.rules.forEach(function(item) {
+                var isSelected = item.id == selectedValue ? 'selected' : '';
+                dropdown.append(
+                  `<option value="${item.id}" ${isSelected} 
+                      data-rule="${item.rule_name}" 
+                      data-desc="${item.description}" 
+                      data-severity="${item.severity ? item.severity.severity : '-'}">
+                      ${item.rule_name}
+                  </option>`
+              );
+            });
+
+            // Trigger change to populate rule details if editing
+            if (selectedValue) {
+                dropdown.trigger('change');
+            }
+        }
+    });
 }
-// End dropdown loader
+  // End dropdown loader
 
-//populate selected violation for edit form
-$(document).on("change", "#edit_violation_type", function (e) {
+  //populate selected violation for edit form
+  $(document).on("change", "#edit_violation_type", function () {
+      let violation_id = $(this).val();
+
+      resetEditRuleDisplay();
+
+      if (!violation_id) return;
+
+      loadRuleDropdown(`/get_rule/${violation_id}`, "#edit_ruleDropdown");
+  });
+
+  $(document).on("change", "#edit_ruleDropdown", function () {
+
+      let selected = $(this).find(":selected");
+
+      let rule = selected.data("rule");
+      let desc = selected.data("desc");
+      let severity = selected.data("severity");
+
+      $("#edit_rule_Name").val(rule);
+      $("#edit_description_Name").val(desc);
+      $("#edit_severity_Name").val(severity);
+  });
+
+  function resetEditRuleDisplay() {
+      $("#edit_ruleDropdown").empty().append('<option value="">Select Rule</option>');
+      $("#edit_rule_Name").val("");
+      $("#edit_description_Name").val("");
+      $("#edit_severity_Name").val("");
+  }
+
+  //Preview edit
+  $(document).on('click', '.btn-edit-post', function(){
+    var id = $(this).val();
+
+    $.ajax({
+      type: "GET",
+      url: '/get_info?id=' + id,
+      success: function(response){
+        if(response.status == 500)
+        {
+          // console.log(response.message);
+        }
+        else if(response.status == 200)
+        {
+          // console.log(response);
+
+          //fetching the selected value
+          $('#edit_violation_type').val(response.data.violation_type);
+          if (!$('#edit_violation_type').val()) {
+              $('#edit_violation_type').append(
+                  `<option value="${response.data.violation_type}" selected>${response.data.violation_name}</option>`
+              );
+          }
+
+          $('#edit_penalty_type').val(response.data.penalty_type);
+          if(!$('#edit_penalty_type').val()){
+            $('#edit_penalty_type').append(
+                  `<option value="${response.data.penalty_type}" selected>${response.data.penalty_name}</option>`
+              );
+          }
+
+          $('#edit_status_type').val(response.data.status_name);
+          if(!$('#edit_status_type').val()){
+            $('#edit_status_type').append(
+                  `<option value="${response.data.status_name}" selected>${response.data.status_label}</option>`
+              );
+          }
+
+          $('#edit_referal_type').val(response.data.referal_type);
+          if(!$('#edit_referal_type').val()){
+            $('#edit_referal_type').append(
+                  `<option value="${response.data.referal_type}" selected>${response.data.referal_name}</option>`
+              );
+          }
+
+          // Populate fields with response data
+          $('#edit_student_id').val(response.data.view_id);
+          $('#edit_student_no').val(response.data.student_no);
+          $('#edit_student_name').val(response.data.student_name);
+          $('#edit_course').val(response.data.course);
+          $('#edit_school_email').val(response.data.school_email);
+          $('#edit_rule_Name').val(response.data.rule_Name);
+          $('#edit_description_Name').val(response.data.description_Name);
+          $('#edit_severity_Name').val(response.data.severity_Name);
+          $('#edit_faculty_involvement').val(response.data.faculty_involvement);  
+          $('#edit_faculty_name').val(response.data.faculty_name);
+          $('#edit_counseling_required').val(response.data.counseling_required);
+          $('#edit_Remarks').val(response.data.Remarks);
+          $('#edit_notes').val(response.data.notes);
+          $('#Date_Created').text(response.data.Date_Created);
+    
+          loadViolationDropdown('/get_violations', '#edit_violation_type', response.data.violation_type, function() {
+              loadRuleDropdown(`/get_rule/${response.data.violation_type}`, "#edit_ruleDropdown", response.data.rule_id);
+          }); 
+          loadPenaltyDropdown('/get_penalty', '#edit_penalty_type', response.data.penalty_type);
+          loadStatusDropdown('/get_status', '#edit_status_type', response.data.status_name);
+          loadReferalDropdown('/get_referal', '#edit_referal_type', response.data.referal_type);
+
+          $('input[name="edit_counseling_required"]').each(function () {
+              if ($(this).val() === response.data.counseling_required) {
+                  $(this).prop('checked', true);
+              }
+          });
+
+          $('input[name="edit_faculty_involvement"]').each(function () {
+              if ($(this).val() === response.data.faculty_involvement) {
+                  $(this).prop('checked', true);
+              }
+          });
+
+          if ($('#edit_faculty_yes').is(':checked')) {
+              $('#edit_faculty_Name').show().val(response.data.faculty_name);
+              $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');        
+            }
+          else {
+              $('#edit_faculty_Name').hide().val('N/A');
+              $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark');        
+            }
+
+          $('input[name="edit_faculty_involvement"]').change(function () {
+              if ($('#edit_faculty_yes').is(':checked')) {
+                  $('#edit_faculty_Name').show().val(''); 
+                  $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');            
+                } else {
+                  $('#edit_faculty_Name').hide().val('N/A');
+                  $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark');            
+                }
+          });
+
+        }
+      }
+    });
+          $('#editStudentModal').modal('show');
+  });
+
+  // Remove validation error for faculty name dropdown
+    $("#edit_faculty_Name").on("change", function () {
+        if ($(this).val() !== "") {
+            $(this).removeClass("is-invalid");
+            $(this).next(".invalid-feedback").remove();
+        }
+    });
+
+  //submit student edit form
+    $('#editStudentForm').submit(function(e) {
         e.preventDefault();
+        let isValid = true; // Define isValid
 
-        var violation_id = $(this).val();
+        // Remove existing error messages
+        $(".invalid-feedback").remove();
+        $("#edit_Remarks").removeClass("is-invalid");
 
-        if (!violation_id) {
-            updateRuleDetails("-", "-", "-");
+        // Validate the Remarks field
+        if (!$("#edit_Remarks").val()) {
+            $("#edit_Remarks").addClass("is-invalid").after('<div class="invalid-feedback">Please provide remarks.</div>');
+            isValid = false;
+        }
+
+        // Validate the Faculty Name dropdown if it is visible
+        if ($("#edit_faculty_Name").is(":visible") && !$("#edit_faculty_Name").val()) {
+            $("#edit_faculty_Name").addClass("is-invalid").after('<div class="invalid-feedback">Please select a faculty name.</div>');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
             return;
         }
 
-        $.get("/get_rule/" + violation_id, function (response) {
-            if (response.error) {
-                updateRuleDetails("-", "-", "-");
-            } else {
-                updateRuleDetails(response.rule_name, response.description, response.severity_name);
+        var id = $('#edit_student_id').val();
+
+        let facultyName = $('#edit_faculty_yes').is(':checked') ? $("#edit_faculty_Name").val() : "N/A";
+
+        $.ajax({
+            type: "POST",
+            url: "/update_student_info/" + id,
+            data: {
+                _token: $('input[name="_token"]').val(),
+                update_student_no: $('#edit_student_no').val(),
+                update_name: $('#edit_student_name').val(),
+                update_course: $('#edit_course').val(),
+                update_school_email: $('#edit_school_email').val(),
+                update_violation_type: $('#edit_violation_type').val(),
+                update_rule_name: $('#edit_rule_Name').val(),
+                update_description: $('#edit_description_Name').val(),
+                update_severity: $('#edit_severity_Name').val(),
+                update_penalty_type: $('#edit_penalty_type').val(),
+                update_status: $('#edit_status_type').val(),
+                update_faculty_involvement: $('input[name="edit_faculty_involvement"]:checked').val(),
+                update_faculty_name: facultyName,
+                update_counseling_required: $('input[name="edit_counseling_required"]:checked').val(),
+                update_referral_type: $('#edit_referal_type').val(),
+                update_remarks: $('#edit_Remarks').val(),
+                update_notes: $('#edit_notes').val()
+            },
+            success: function(response) {
+
+                Swal.fire({
+                    title: "Updated Successfully!",
+                    text: "The information has been saved.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                });
+                
+                if (response.status == 200) {
+                    // console.log(response.message);
+                    $('#editStudentModal').modal('hide');
+                    // console.log('update success');
+                } else {
+                    // console.log("Error updating student info");
+                }
+
+                $('#violationrecordstable').DataTable().ajax.reload(null, false);
+            },
+            error: function(xhr) {
+                // console.log(xhr.responseText);
+                // console.log("An error occurred.");
             }
         });
+    });
 
-        function updateRuleDetails(rule, desc, severity) {
-       
-            $("#edit_description_Name").val(desc);
-            $("#edit_severity_Name").val(severity);
-            $("#edit_rule_Name").val(rule);
-        }
+  // Add event listener to remove error messages when the user types in the Remarks textarea
+  $("#edit_Remarks").on("input", function () {
+      $(this).removeClass("is-invalid");
+      $(this).next(".invalid-feedback").remove();
   });
-
-//Preview edit
-$(document).on('click', '.btn-edit-post', function(){
-  var id = $(this).val();
-  console.log(id + "test");
-
-  $.ajax({
-    type: "GET",
-    url: '/get_info?id=' + id,
-    success: function(response){
-      if(response.status == 500)
-      {
-        console.log(response.message);
-      }
-      else if(response.status == 200)
-      {
-        console.log(response);
-
-        //fetching the selected value
-        $('#edit_violation_type').val(response.data.violation_type);
-        if (!$('#edit_violation_type').val()) {
-            $('#edit_violation_type').append(
-                `<option value="${response.data.violation_type}" selected>${response.data.violation_name}</option>`
-            );
-        }
-
-        $('#edit_penalty_type').val(response.data.penalty_type);
-        if(!$('#edit_penalty_type').val()){
-          $('#edit_penalty_type').append(
-                `<option value="${response.data.penalty_type}" selected>${response.data.penalty_name}</option>`
-            );
-        }
-
-        $('#edit_status_type').val(response.data.status_name);
-        if(!$('#edit_status_type').val()){
-          $('#edit_status_type').append(
-                `<option value="${response.data.status_name}" selected>${response.data.status_label}</option>`
-            );
-        }
-
-        $('#edit_referal_type').val(response.data.referal_type);
-        if(!$('#edit_referal_type').val()){
-          $('#edit_referal_type').append(
-                `<option value="${response.data.referal_type}" selected>${response.data.referal_name}</option>`
-            );
-        }
-
-         // Populate fields with response data
-         $('#edit_student_id').val(response.data.view_id);
-         $('#edit_student_no').val(response.data.student_no);
-         $('#edit_student_name').val(response.data.student_name);
-         $('#edit_course').val(response.data.course);
-         $('#edit_school_email').val(response.data.school_email);
-         $('#edit_rule_Name').val(response.data.rule_Name);
-         $('#edit_description_Name').val(response.data.description_Name);
-         $('#edit_severity_Name').val(response.data.severity_Name);
-         $('#edit_faculty_involvement').val(response.data.faculty_involvement);  
-         $('#edit_faculty_name').val(response.data.faculty_name);
-         $('#edit_counseling_required').val(response.data.counseling_required);
-         $('#edit_Remarks').val(response.data.Remarks);
-         $('#edit_notes').val(response.data.notes);
-         $('#Date_Created').text(response.data.Date_Created);
-  
-         loadViolationDropdown('/get_violations', '#edit_violation_type', response.data.violation_type);
-         loadPenaltyDropdown('/get_penalty', '#edit_penalty_type', response.data.penalty_type);
-         loadStatusDropdown('/get_status', '#edit_status_type', response.data.status_name);
-         loadReferalDropdown('/get_referal', '#edit_referal_type', response.data.referal_type);
-
-        $('input[name="edit_counseling_required"]').each(function () {
-            if ($(this).val() === response.data.counseling_required) {
-                $(this).prop('checked', true);
-            }
-        });
-
-        $('input[name="edit_faculty_involvement"]').each(function () {
-             if ($(this).val() === response.data.faculty_involvement) {
-                 $(this).prop('checked', true);
-             }
-        });
-
-        if ($('#edit_faculty_yes').is(':checked')) {
-            $('#edit_faculty_Name').show().val(response.data.faculty_name);
-            $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');        
-          }
-        else {
-            $('#edit_faculty_Name').hide().val('N/A');
-            $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark');        
-          }
-
-        $('input[name="edit_faculty_involvement"]').change(function () {
-            if ($('#edit_faculty_yes').is(':checked')) {
-                $('#edit_faculty_Name').show().val(''); 
-                $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');            
-              } else {
-                $('#edit_faculty_Name').hide().val('N/A');
-                $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark');            
-              }
-        });
-
-      }
-    }
-  });
-        $('#editStudentModal').modal('show');
-});
-
-// Remove validation error for faculty name dropdown
-  $("#edit_faculty_Name").on("change", function () {
-      if ($(this).val() !== "") {
-          $(this).removeClass("is-invalid");
-          $(this).next(".invalid-feedback").remove();
-      }
-  });
-
-//submit student edit form
-  $('#editStudentForm').submit(function(e) {
-      e.preventDefault();
-      let isValid = true; // Define isValid
-
-      // Remove existing error messages
-      $(".invalid-feedback").remove();
-      $("#edit_Remarks").removeClass("is-invalid");
-
-      // Validate the Remarks field
-      if (!$("#edit_Remarks").val()) {
-          $("#edit_Remarks").addClass("is-invalid").after('<div class="invalid-feedback">Please provide remarks.</div>');
-          isValid = false;
-      }
-
-      // Validate the Faculty Name dropdown if it is visible
-      if ($("#edit_faculty_Name").is(":visible") && !$("#edit_faculty_Name").val()) {
-          $("#edit_faculty_Name").addClass("is-invalid").after('<div class="invalid-feedback">Please select a faculty name.</div>');
-          isValid = false;
-      }
-
-      if (!isValid) {
-          Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
-          return;
-      }
-
-      var id = $('#edit_student_id').val();
-
-      let facultyName = $('#edit_faculty_yes').is(':checked') ? $("#edit_faculty_Name").val() : "N/A";
-
-      $.ajax({
-          type: "POST",
-          url: "/update_student_info/" + id,
-          data: {
-              _token: $('input[name="_token"]').val(),
-              update_student_no: $('#edit_student_no').val(),
-              update_name: $('#edit_student_name').val(),
-              update_course: $('#edit_course').val(),
-              update_school_email: $('#edit_school_email').val(),
-              update_violation_type: $('#edit_violation_type').val(),
-              update_rule_name: $('#edit_rule_Name').val(),
-              update_description: $('#edit_description_Name').val(),
-              update_severity: $('#edit_severity_Name').val(),
-              update_penalty_type: $('#edit_penalty_type').val(),
-              update_status: $('#edit_status_type').val(),
-              update_faculty_involvement: $('input[name="edit_faculty_involvement"]:checked').val(),
-              update_faculty_name: facultyName,
-              update_counseling_required: $('input[name="edit_counseling_required"]:checked').val(),
-              update_referral_type: $('#edit_referal_type').val(),
-              update_remarks: $('#edit_Remarks').val(),
-              update_notes: $('#edit_notes').val()
-          },
-          success: function(response) {
-
-              Swal.fire({
-                  title: "Updated Successfully!",
-                  text: "The information has been saved.",
-                  icon: "success",
-                  confirmButtonText: "OK"
-              });
-              
-              if (response.status == 200) {
-                  console.log(response.message);
-                  $('#editStudentModal').modal('hide');
-                  console.log('update success');
-              } else {
-                  console.log("Error updating student info");
-              }
-
-              $('#violationrecordstable').DataTable().ajax.reload(null, false);
-          },
-          error: function(xhr) {
-              console.log(xhr.responseText);
-              console.log("An error occurred.");
-          }
-      });
-  });
-
-// Add event listener to remove error messages when the user types in the Remarks textarea
-$("#edit_Remarks").on("input", function () {
-    $(this).removeClass("is-invalid");
-    $(this).next(".invalid-feedback").remove();
-});
 
 //archive edit button
 $(document).on('click', '.btn-archive-post', function () {

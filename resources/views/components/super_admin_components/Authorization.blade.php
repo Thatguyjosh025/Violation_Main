@@ -1,10 +1,8 @@
     <link rel="stylesheet" href="{{ asset('css/super_admin_css/Authorization.css') }}">
     <link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
 
-
     @php
     use App\Models\users;
-
     $userdata = users::get();
     @endphp
 
@@ -16,20 +14,17 @@
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <!-- Left side: Export and Print buttons -->
             <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-secondary" id="printTable">Print</button>
-                <button class="btn btn-sm btn-primary" id="exportCSV">Export CSV</button>
-                <button type="button" class="btn btn-sm btn-success" id="importCSVBtn">Import CSV</button>
-                <form id="importCSVForm" enctype="multipart/form-data">
+                <button class="btn btn-sm btn-secondary" id="printTable">Print Table</button>
+                <button class="btn btn-sm btn-primary" id="exportCSV">Export Backup CSV</button>        
+                <button type="button" class="btn btn-sm btn-success" id="importCSVBtn">Import Backup CSV</button>
+                <!-- <form id="importCSVForm" enctype="multipart/form-data">
                     <input type="file" id="importCSVInput" name="csv_file" accept=".csv" style="display:none;">
-                </form>
-                <button type="button" class="btn btn-sm btn-success" id="insert_graduates">
+                </form> -->
+                <button type="button" class="btn btn-sm btn-danger" id="insert_graduates">
                     Import list of graduates
                 </button>
             </div>
-
-
         </div>
 
         <div class="table-container mt-3">
@@ -221,6 +216,31 @@
         </div>
     </div>
 
+    <!-- Modal for Import Backup CSV -->
+    <div class="modal fade" id="importBackupModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import Backup CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="importBackupForm" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label">Upload CSV File</label>
+                            <input type="file" name="csv_file" id="backupCSVFile" class="form-control" accept=".csv" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" id="importBackupBtn">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
@@ -274,6 +294,8 @@
                 });
 
                 $('#authbody').load(location.href + " #authbody > *");
+                $('#graduatesFile').val('');
+                $('#graduatesModal').modal('hide');
             },
 
             error: function(xhr) {

@@ -60,11 +60,12 @@ return new class extends Migration
         Schema::create('tb_audit', function (Blueprint $table) {
             $table->id();
             $table->timestamp('changed_at');
-            $table->string('changed_by');
-
+            $table->unsignedBigInteger('changed_by');
+            $table->foreign('changed_by')->references('id')->on('tb_users')->onDelete('cascade');
             // $table->string('changed_by_email', 255);
             // $table->foreign('changed_by_email')->references('email')->on('tb_users');
-
+            // $table->string('changed_by');
+            
             $table->string('event_type');
             $table->string('field_name');
             $table->text('old_value')->nullable();
