@@ -130,9 +130,9 @@ $(document).ready(function () {
             $("#referals").addClass("is-invalid");
             $('.invalid-feedback').text("Referral name must be at least 3 characters long.").show();
             return;
-        } else if (!/^[A-Za-z0-9 \-\/]+$/.test(referralName)) {
+        } else if (!/^(?![-\/])(?!.*[-\/]$)(?!.*[-\/]{2,})[A-Za-z ]+([-\/][A-Za-z ]+)*$/.test(referralName)) {
             $("#referals").addClass("is-invalid");
-            $('.invalid-feedback').text("Referral name may contain letters, numbers, spaces, hyphens, and slashes.").show();
+            $('.invalid-feedback').text("Referral name may only contain letters, spaces, hyphens (-), and slashes (/), but cannot start or end with them, nor contain numbers.").show();
             return;
         } else {
             $("#referals").removeClass("is-invalid");
@@ -187,13 +187,20 @@ $(document).ready(function () {
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");
 
-        let referralID = row.children().eq(0).text().trim();  // referal_id
-        let referralName = row.children().eq(1).text().trim(); // referals
-        let visibility = row.children().eq(2).text().trim();   // is_visible
+        let referralID = row.children().eq(0).text().trim();   
+        let referralUID = row.children().eq(1).text().trim();  
+        let referralName = row.children().eq(2).text().trim();
+        let visibility = row.children().eq(3).text().trim().toLowerCase(); 
+
+
+        if (visibility === "active" || visibility === "1") {
+            $("#is_visible").val("active");
+        } else {
+            $("#is_visible").val("inactive");
+        }
 
         $("#referal_id").val(referralID);
         $("#referals").val(referralName).removeClass("is-invalid");
-        $("#is_visible").val(visibility.toLowerCase()); 
         $('.invalid-feedback').hide();
         $('#referralModal').modal('show');
     });

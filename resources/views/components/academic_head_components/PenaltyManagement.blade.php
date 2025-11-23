@@ -1,5 +1,11 @@
+{{-- Penalty Management Blade (full updated) --}}
+{{-- Screenshots for reference:
+     /mnt/data/3474a80d-2896-4835-a2c5-befdb9f8006f.png
+     /mnt/data/5915b86e-db6e-4c1a-b71e-df8eb1843420.png
+--}}
+
 <link rel="stylesheet" href="{{ asset('css/super_admin_css/ViolationManagement.css') }}">
-<link rel="stylesheet" href="{{asset('./vendor/dataTables.dataTables.min.css')}}">
+<link rel="stylesheet" href="{{ asset('./vendor/dataTables.dataTables.min.css') }}">
 
 @php
 use App\Models\penalties;
@@ -53,21 +59,22 @@ $penaltydata = penalties::get();
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="penaltyModalLabel">Add/Edit Penalty</h1>
+                <h5 class="modal-title" id="penaltyModalLabel">Add/Edit Penalty</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
 
-                <form id="penaltyForm" class="mb-4">
+                <form id="penaltyForm" class="mb-4" autocomplete="off">
                     @csrf
                     <input type="hidden" name="penalties_id" id="penalties_id">
 
                     <!-- Penalty Name -->
                     <div class="mb-3">
                         <label for="penalties" class="form-label">Penalty:</label>
-                        <input type="text" name="penalties" id="penalties" class="form-control" min="5" required>
+                        <!-- use minlength instead of min for text -->
+                        <input type="text" name="penalties" id="penalties" class="form-control" minlength="5" required>
                         <div class="invalid-feedback">
-                            Penalty name should only contain alphanumeric characters and hyphens.
+                            Penalty name should only contain letters, numbers, spaces, hyphens (-) and slashes (/). Minimum 5 characters.
                         </div>
                     </div>
 
@@ -92,39 +99,74 @@ $penaltydata = penalties::get();
 <!-- Scripts -->
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="{{ asset('./vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('./vendor/dataTables.dataTables.min.js') }}"></script>
 
 <script>
 $(document).ready(function () {
-    $('#penaltyTable').DataTable({
-        paging: true,
-        searching: true,
-        ordering: true,
-        info: true,
-        responsive: true
-    });
+    function initPenaltyTable() {
+        if ($.fn.DataTable.isDataTable('#penaltyTable')) {
+            $('#penaltyTable').DataTable().destroy();
+        }
+        $('#penaltyTable').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            responsive: true,
+        });
+    }
+
+    initPenaltyTable();
+
+    function resetModalForAdd() {
+        $("#penalties_id").val("");
+        $("#penalties").val("").removeClass("is-invalid");
+        $("#is_visible").val("active");
+        $('.invalid-feedback').hide();
+        // remove any leftover backdrops and ensure modal class state clean
+        $('.modal-backdrop').remove();
+    }
 
     // Show Add Modal
     $('#addPenaltyBtn').on('click', function (e) {
         e.preventDefault();
-        $("#penalties_id").val("");
-        $("#penalties").val("").removeClass("is-invalid");
-        $("#is_visible").val("active"); // default
-        $('.invalid-feedback').hide();
+        resetModalForAdd();
         $('#penaltyModal').modal('show');
+        // focus after shown
+        setTimeout(function(){ $('#penalties').focus(); }, 200);
     });
 
     // Clear error on typing
     $("#penalties").on("input", function () {
         if ($(this).hasClass("is-invalid")) {
             $(this).removeClass("is-invalid");
-            $('.invalid-feedback').hide();
+            $(this).next('.invalid-feedback').hide();
         }
     });
 
-    // Save Penalty (Create or Update)
+
+    const penaltyRegex = /^(?![-\/\s])(?!.*[-\/\s]$)(?!.*[-\/]{2,})(?!.*\s{2,})[A-Za-z]+(?:[ \/-][A-Za-z]+)*$/;
+
+    function reloadPenaltyTableFragment() {
+        // Destroy DataTable before replacing content
+        if ($.fn.DataTable.isDataTable('#penaltyTable')) {
+            $('#penaltyTable').DataTable().destroy();
+        }
+
+        $('#penaltybody').load(location.href + " #penaltybody > *", function(response, status, xhr) {
+            if (status === "error") {
+                console.error("Error reloading penalty body:", xhr.statusText);
+                return;
+            }
+            // After replacing markup, re-init table
+            initPenaltyTable();
+        });
+    }
+
     $("#penaltyForm").on("submit", function (e) {
         e.preventDefault();
 
+        // get and normalize
         let penaltyName = $("#penalties").val().trim();
         let visibility = $("#is_visible").val();
 
@@ -134,15 +176,17 @@ $(document).ready(function () {
             return;
         }
 
-        if (!/^[a-zA-Z0-9\s\/-]+$/.test(penaltyName)) {
+        // regex validation
+        if (!penaltyRegex.test(penaltyName)) {
             $("#penalties").addClass("is-invalid");
-            $('.invalid-feedback').text("Penalty name can only contain letters, numbers, spaces, slashes, and hyphens.").show();
+            $('.invalid-feedback').text("Penalty name may only contain letters, single spaces, hyphens (-), and slashes (/). It cannot start or end with a special character, and it cannot contain consecutive special characters or double spaces.").show();
             return;
         } else {
             $("#penalties").removeClass("is-invalid");
             $('.invalid-feedback').hide();
         }
 
+        // Decide URL (create or update)
         let url = $("#penalties_id").val()
             ? "/update_penalty/" + $("#penalties_id").val()
             : "/create_penalties";
@@ -159,6 +203,7 @@ $(document).ready(function () {
                 const isEdit = $("#penalties_id").val() !== "";
 
                 if (response.message && response.message.includes("No changes detected")) {
+                    // show info and keep modal open if you want to edit
                     Swal.fire({
                         icon: 'info',
                         title: 'No Changes',
@@ -169,33 +214,20 @@ $(document).ready(function () {
                     return;
                 }
 
-                $('#penaltybody').load(location.href + " #penaltybody > *");
-                const rowCount = $('#intakebody tr').length;
-
-                // If table body is empty after reload, show message manually
-                if (rowCount === 0) {
-                    $('#intakebody').html(`
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-3">
-                                No pending counseling at the moment.
-                            </td>
-                        </tr>
-                    `);
-                }
+                // Reload the penalty table fragment and reinitialize DataTable (safe)
+                reloadPenaltyTableFragment();
 
                 Swal.fire({
                     icon: 'success',
                     title: isEdit ? 'Penalty Updated!' : 'Penalty Added!',
                     text: response.message || 'The penalty has been successfully saved.',
-                    timer: 2000,
+                    timer: 1600,
                     showConfirmButton: false
                 });
 
-                $("#penalties").val("");
-                $("#penalties_id").val("");
-                $("#is_visible").val("active");
+                // Reset modal and hide
+                resetModalForAdd();
                 $('#penaltyModal').modal('hide');
-                $('.modal-backdrop').remove();
             },
             error: function (xhr) {
                 let errorMessage = "An error occurred. Please try again.";
@@ -210,18 +242,34 @@ $(document).ready(function () {
         });
     });
 
-    // Edit Button
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");
-        let penaltyId = row.find("th:eq(0)").text();     
-        let penaltyName = row.find("td:eq(1)").text();   
-        let visibilityValue = row.find("td:eq(2)").text().trim(); 
+
+
+        let penaltyId = row.find("th:eq(0)").text().trim();
+        let penaltyName = row.find("td:eq(1)").text().trim();
+        let visibilityValue = row.find("td:eq(2)").text().trim();
+
+        // normalize visibility to lowercase to match option values (active/inactive)
+        if (visibilityValue) {
+            visibilityValue = visibilityValue.toLowerCase();
+        } else {
+            visibilityValue = "active";
+        }
 
         $("#penalties_id").val(penaltyId);
         $("#penalties").val(penaltyName).removeClass("is-invalid");
         $("#is_visible").val(visibilityValue);
         $('.invalid-feedback').hide();
+
         $('#penaltyModal').modal('show');
-        });
+
+        setTimeout(function(){ $('#penalties').focus(); }, 200);
     });
+
+    $('#penaltyModal').on('hidden.bs.modal', function () {
+        resetModalForAdd();
+    });
+
+}); // end document.ready
 </script>
