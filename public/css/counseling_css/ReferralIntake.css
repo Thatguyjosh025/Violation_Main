@@ -524,3 +524,7 @@ input {
 .approved-label:not(:empty)::after {
     margin-left: .75em;
 }
+.dt-search {
+    display: flex;
+    align-items: baseline;
+}
