@@ -102,7 +102,7 @@
         createdRow: function(row, data, dataIndex) {
             $('td', row).eq(0).attr('data-label', 'Student No.');
             $('td', row).eq(1).attr('data-label', 'Name');
-            $('td', row).eq(2).attr('data-label', 'Email');
+            $('td', row).eq(2).attr('data-label', '');
             $('td', row).eq(3).attr('data-label', 'Violation');
             $('td', row).eq(4).attr('data-label', 'Status');
             $('td', row).eq(5).attr('data-label', 'Created On');

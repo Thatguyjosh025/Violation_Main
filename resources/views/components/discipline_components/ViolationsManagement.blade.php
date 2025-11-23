@@ -316,33 +316,58 @@ $(document).ready(function(){
     // -----------------------------
     // Rule details
     // -----------------------------
-    $(document).on("change", "#violation_type", function (e) {
-        e.preventDefault();
-        var violation_id = $(this).val();
+    $(document).on("change", "#violation_type", function () {
 
-        if (!violation_id) {
-            updateRuleDetails("-", "-", "-");
-            return;
-        }
+        let violation_id = $(this).val();
+
+        $("#ruleDropdown").empty().append('<option hidden>Select Rule</option>');
+        resetRuleDisplay();
+
+        if (!violation_id) return;
 
         $.get("/get_rule/" + violation_id, function (response) {
-            if (response.error) {
-                updateRuleDetails("", "", "");
-            } else {
-                updateRuleDetails(response.rule_name, response.description, response.severity_name);
+
+            if (!response.rules || response.rules.length === 0) {
+                resetRuleDisplay();
+                return;
             }
+
+            // Populate dropdown
+            response.rules.forEach(rule => {
+                $("#ruleDropdown").append(`
+                    <option 
+                        value="${rule.id}" 
+                        data-desc="${rule.description}" 
+                        data-severity="${rule.severity.severity}" 
+                        data-rule="${rule.rule_name}">
+                        ${rule.rule_name}
+                    </option>
+                `);
+            });
+
         });
 
-        function updateRuleDetails(rule, desc, severity) {
-            $("#ruleName").text(rule);
-            $("#descriptionName").text(desc);
-            $("#severityName").text(severity);
-
-            $("#descriptionNameInput").val(desc);
-            $("#severityNameInput").val(severity);
-            $("#ruleNameInput").val(rule);
-        }
     });
+    $(document).on("change", "#ruleDropdown", function () {
+        let ruleName = $(this).find(":selected").data("rule");
+        let desc = $(this).find(":selected").data("desc");
+        let severity = $(this).find(":selected").data("severity");
+
+        $("#ruleNameInput").val(ruleName);
+        $("#descriptionNameInput").val(desc);
+        $("#severityNameInput").val(severity);
+
+        $("#descriptionName").text(desc || "-");
+        $("#severityName").text(severity || "-");
+    });
+
+    function resetRuleDisplay() {
+        $("#ruleDropdown").empty().append('<option hidden>Select Rule</option>');
+        $("#descriptionName, #severityName").text("-");
+        $("#ruleNameInput").val("");
+        $("#descriptionNameInput").val("");
+        $("#severityNameInput").val("");
+    }
 
     // -----------------------------
     // Faculty involvement toggle
@@ -390,11 +415,17 @@ $(document).ready(function(){
 
         $(".invalid-feedback").remove();
         $("#violation_type, #referal_type, #penalty_type, #facultyName, #remarks, input[name='faculty_involvement'], input[name='counseling_required']").removeClass("is-invalid");
-
-        const fieldsToValidate = [
+        $("#ruleDropdown").on("change", function () {
+            if ($(this).val()) {
+                $(this).removeClass("is-invalid");
+                $(this).next(".invalid-feedback").remove();
+            }
+        });
+        const fieldsToValidate = [ 
             { id: "#violation_type", message: "Please select a violation." },
             { id: "#penalty_type", message: "Please select a penalty." },
             { id: "#referal_type", message: "Please select a referral action." },
+            { id: "#ruleDropdown", message: "Please select a Rule." },
             { id: "#remarks", message: "Please provide a remarks." }
         ];
         fieldsToValidate.forEach(field => {
@@ -477,6 +508,15 @@ $(document).ready(function(){
                 $('#student_name').val('').hide();
                 $('#course_and_section').val('').hide();
                 $('#schoolEmail').val('').hide();
+
+                $('.profile-avatar-big').remove();
+                $('#profilePlaceholder').show();
+
+                $('.recent-violation').html(`
+                    <div class="violation-card-no" style="text-align: center;">
+                        <p>No selected student.</p>
+                    </div>
+                `);
 
                 $('.recent-violation').html('<div class="violation-card-no" style="text-align: center;"><p>No selected student.</p></div>');
             },

@@ -26,9 +26,9 @@
     <nav class="nav flex-column mt-3 flex-grow-1">
 
         <!-- Violation Management Links -->
-        <a class="nav-link sub-link" href="{{ route('violation_management') }}" data-section="violation-type"><i class="bi bi-exclamation-triangle "></i><span>Violation Type</span></a>
-        <a class="nav-link sub-link" href="{{ route('referal_management') }}" data-section="referral"><i class="bi bi-arrow-right-circle "></i><span>Referral</span></a>
-        <a class="nav-link sub-link" href="{{ route('penalty_management') }}" data-section="penalty"><i class="bi bi-hammer "></i><span>Penalty</span></a>
+        <a class="nav-link sub-link" href="{{ route('violation_management') }}" data-section="violation-type"><i class="bi bi-exclamation-triangle "></i><span>Violation Management</span></a>
+        <a class="nav-link sub-link" href="{{ route('referal_management') }}" data-section="referral"><i class="bi bi-arrow-right-circle "></i><span>Referral Management</span></a>
+        <a class="nav-link sub-link" href="{{ route('penalty_management') }}" data-section="penalty"><i class="bi bi-hammer "></i><span>Penalty Management</span></a>
         <a class="nav-link" href="{{ route('rule_management') }}"><i class="bi bi-journal-text"></i> <span>Rule Management</span></a>
 
         <!-- Link to Student Handbook -->

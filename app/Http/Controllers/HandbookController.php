@@ -18,7 +18,7 @@ class HandbookController extends Controller
     {
         $request->validate([
             'header' => 'required|string|max:55',
-            'description' => 'required|string',
+            'description' => 'required|string|max:555',
         ]);
 
         sections::create($request->only('header', 'description'));
@@ -34,7 +34,7 @@ class HandbookController extends Controller
     {
         $request->validate([
             'header' => 'required|string|max:55',
-            'description' => 'required|string',
+            'description' => 'required|string|max:555',
         ]);
 
         $section = sections::findOrFail($id);
