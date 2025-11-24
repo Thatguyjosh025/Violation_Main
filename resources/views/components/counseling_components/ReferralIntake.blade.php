@@ -70,16 +70,16 @@
                 <div class="btns">
                     <div>
                         <button class="btn approve bi bi-check-lg"> Approve</button>
-                        <button class="btn reject bi bi-x-lg"> Reject</button>
                     </div>
                 </div>
             </div>
 
             <!-- Expanded Modal -->
             <div id="scheduleView" class="hidden">
-                <div class="approved-label">Approved</div>
+                <div class="approved-label"></div>
                 <h4>Schedule a Counseling Session</h4>
                 <div class="field">
+                    <input type="hidden" id="hidden_postviolation_id">
                     <label>Start Date</label>
                     <input type="date" id="start_date" class="form-control rounded-pill px-3 py-2">
                     <div class="error-msg text-danger small mt-1" id="error_start_date"></div>
@@ -139,6 +139,7 @@ $(document).ready(function () {
     $(document).on('click', '.view-report', function () {
         var id = $(this).data('id');
 
+        $('#hidden_postviolation_id').val(id);
         $.ajax({
             type: "GET",
             url: "/counseling_report/" + id,
@@ -291,6 +292,7 @@ $(document).ready(function () {
         if (hasError) return;
 
         const data = {
+            id: $('#hidden_postviolation_id').val(),
             student_no: $('#report_student_no_input').val(),
             student_name: $('#report_name_input').val(),
             school_email: $('#report_email_input').val(),

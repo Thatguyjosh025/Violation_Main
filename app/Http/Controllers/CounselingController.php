@@ -32,6 +32,7 @@ class CounselingController extends Controller
     public function storeCounselingSchedule(Request $request)
     {
         $validated = $request->validate([
+            'id' => 'required|integer',
             'student_no'   => 'required|string',
             'student_name' => 'required|string',
             'school_email' => 'required|email',
@@ -90,8 +91,8 @@ class CounselingController extends Controller
         ]);
 
         if ($counseling) {
-            postviolation::where('student_no', $validated['student_no'])
-                ->update(['is_admitted' => false]);
+            postviolation::where('id', $validated['id'])
+            ->update(['is_admitted' => false]);
 
             return response()->json([
                 'success' => true,
@@ -110,7 +111,7 @@ class CounselingController extends Controller
 
     public function getSession($id)
     {
-        $session = Counseling::findOrFail($id);
+        $session = Counseling::with('priorityRiskRelation')->findOrFail($id);
         return response()->json($session);
     }
 

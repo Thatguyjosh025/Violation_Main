@@ -15,7 +15,7 @@
         <!-- Side Bar Section -->   
         <div class="sidebar" id="sidebar">
             <div class="logo">
-                <a href="AdminDashboard.html" class="logo-link">
+                <a href="{{ route('counseling_dashboard') }}" class="logo-link">
                     <img src="/Photos/central.png" alt="Central Logo" class="sidebar-logo full-logo">
                     <img src="/Photos/Central-Icon.png" alt="Central Icon" class="sidebar-logo icon-logo d-none">
                 </a>
