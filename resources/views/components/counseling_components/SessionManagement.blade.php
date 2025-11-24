@@ -79,6 +79,7 @@
                         <div class="kv-row"><div class="kv-label">Name</div><div class="kv-value"></div></div>
                         <div class="kv-row"><div class="kv-label">Student No.</div><div class="kv-value"></div></div>
                         <div class="kv-row"><div class="kv-label">Email</div><div class="kv-value"><span class="badge-severity"></span></div></div>
+                        <div class="kv-row"><div class="kv-label">Priority Level</div><div class="kv-value"></div></div>
                         <hr class="my-3">
                         <div class="section-title">Time and Date</div>
                         <div class="kv-row"><div class="kv-label">Start Time: </div><div class="kv-value"></div></div>
@@ -88,7 +89,16 @@
                         <hr class="my-3">
                         <div class="mb-3">
                             <div class="section-title">Year level / Grade</div>
-                            <input class="form-control" id="year_level_input" placeholder="First Year or Grade - 11">
+                            <!-- <input class="form-control" id="year_level_input" placeholder="First Year or Grade - 11"> -->
+                             <select name="" id="year_level_input_select" class="form-select">
+                                <option value="" hidden>Select Year/Grade Level</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                                <option value="Grade - 11">Grade - 11</option>
+                                <option value="Grade - 12">Grade - 12</option>
+                            </select>
                             <div class="error-msg text-danger small mt-1" id="error_year_level"></div>
                         </div>
                         <div class="mb-3">
@@ -229,7 +239,16 @@
                     <hr>
                     <div class="mb-2">
                         <label class="form-label fw-bold">Year level / Grade</label>
-                        <input type="text" id="add_year_level" class="form-control" placeholder="First Year or Grade - 11">
+                        <!-- <input type="text" id="add_year_level" class="form-control" placeholder="First Year or Grade - 11"> -->
+                        <select name="" id="add_year_level_select" class="form-select">
+                            <option value="">Select Year/Grade Level</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                            <option value="Grade - 11">Grade - 11</option>
+                            <option value="Grade - 12">Grade - 12</option>
+                        </select>
                         <div class="error-msg text-danger small mt-1" id="add_error_year_level"></div>
                     </div>
                     <div class="mb-2">
@@ -282,9 +301,7 @@
 <script>
 $(document).ready(function () {
 
-    /* ============================================================
-       WORKING HOURS VALIDATION (8:00 AM – 4:00 PM)
-    ============================================================ */
+    //setting the working hours
     const MIN_TIME = "08:00";
     const MAX_TIME = "17:00";
 
@@ -305,6 +322,32 @@ $(document).ready(function () {
         }
     }
 
+    function clearErrorOnInput(inputSelector, errorSelector) {
+        $(document).on("input change", inputSelector, function () {
+            $(errorSelector).text("");
+        });
+    }
+
+    // ADD AREA
+    clearErrorOnInput("#add_year_level_select", "#add_error_year_level");
+    clearErrorOnInput("#add_program", "#add_error_program");
+    clearErrorOnInput("#add_start_date", "#error_start_date");
+    clearErrorOnInput("#add_start_time", "#error_start_time");
+    clearErrorOnInput("#add_end_time", "#error_end_time");
+    clearErrorOnInput("#add_priority_level_input", "#error_priority_level");
+    clearErrorOnInput("#add_guidance_service_input", "#error_guidance_service");
+
+    // EDIT AREA
+    clearErrorOnInput("#year_level_input", "#error_year_level");
+    clearErrorOnInput("#program_input", "#error_program");
+
+        
+    // RESCHED
+    clearErrorOnInput("#resched_date", "#error_new_start_date");
+
+    // FOLLOW-UP
+    clearErrorOnInput("#follow_date", "#error_follow_start_date");
+
     // Apply limits to all time fields
     applyTimeLimits("#add_start_time");
     applyTimeLimits("#add_end_time");
@@ -321,10 +364,6 @@ $(document).ready(function () {
     $("#follow_start_time").on("change", () => validateWorkingHours("#follow_start_time", "#error_follow_start_time"));
     $("#follow_end_time").on("change", () => validateWorkingHours("#follow_end_time", "#error_follow_end_time"));
 
-    /* ============================================================
-       START OF YOUR ORIGINAL SCRIPT (UNTOUCHED)
-    ============================================================ */
-
     let currentStatusId = null;
     let currentSessionId = null;
     let currentReschedId = null;
@@ -332,14 +371,6 @@ $(document).ready(function () {
     let typingTimer;
     const typingDelay = 0;
 
-    // Auto-capitalize Year Level
-    $('#add_year_level, #year_level_input').on('input', function () {
-        let input = $(this).val();
-        if (input.length > 0) {
-            let capitalized = input.charAt(0).toUpperCase() + input.slice(1);
-            $(this).val(capitalized);
-        }
-    });
 
     // Program validation
     $('#add_program, #program_input').on('input', function () {
@@ -353,9 +384,9 @@ $(document).ready(function () {
 
     // Clear errors when typing times
     $('#add_start_time, #add_end_time, #resched_start_time, #resched_end_time, #follow_start_time, #follow_end_time')
-        .on('input', function () {
-            $(this).val($(this).val());
-        });
+    .on('input', function () {
+        $(this).val($(this).val());
+    });
 
     function loadDropdown(url, dropdownId, placeholder, key, label) {
         $.ajax({
@@ -402,12 +433,13 @@ $(document).ready(function () {
                 $('#editModal .kv-value').eq(0).text(data.student_name);
                 $('#editModal .kv-value').eq(1).text(data.student_no);
                 $('#editModal .kv-value').eq(2).html(`<span>${data.school_email || 'N/A'}</span>`);
-                $('#editModal .kv-value').eq(3).text(data.start_time || 'N/A');
-                $('#editModal .kv-value').eq(4).text(data.end_time || 'N/A');
-                $('#editModal .kv-value').eq(5).text(data.start_date || 'N/A');
-                $('#editModal .kv-value').eq(6).text(data.end_date || 'N/A');
+                $('#editModal .kv-value').eq(3).html(`<span>${data.priority_risk_relation?.priority_risk || 'N/A'}</span>`);
+                $('#editModal .kv-value').eq(4).text(data.start_time || 'N/A');
+                $('#editModal .kv-value').eq(5).text(data.end_time || 'N/A');
+                $('#editModal .kv-value').eq(6).text(data.start_date || 'N/A');
+                $('#editModal .kv-value').eq(7).text(data.end_date || 'N/A');
 
-                $('#year_level_input').val(data.year_level || '');
+                $('#year_level_input_select').val(data.year_level || '');
                 $('#program_input').val(data.program || '');
                 $('#session_notes_input').val(data.session_notes || '');
                 $('#emotional_state_input').val(data.emotional_state || '');
@@ -448,14 +480,14 @@ $(document).ready(function () {
         e.preventDefault();
         $('.error-msg').text('');
 
-        const yearLevel = $('#year_level_input').val().trim();
+        const yearLevel = $('#year_level_input_select').val();
         const program = $('#program_input').val().trim();
         let hasError = false;
 
         const yearLevelRegex = /^(?:Grade\s*-\s*\d{1,2}|\d{1,2}(?:st|nd|rd|th)\s*Year|[A-Za-z]+\s*Year)$/;
 
         if (!yearLevel) {
-            $('#error_year_level').text('Year level is required.');
+            $('#error_year_level_select').text('Year level is required.');
             hasError = true;
         } else if (!yearLevelRegex.test(yearLevel)) {
             $('#error_year_level').text('Invalid format.');
@@ -542,7 +574,7 @@ $(document).ready(function () {
         const studentNo = $('#add_student_no').val();
         const studentName = $('#add_student_name').val();
         const studentEmail = $('#add_student_email').val();
-        const yearLevel = $('#add_year_level').val().trim();
+        const yearLevel = $('#add_year_level_select').val();
         const program = $('#add_program').val().trim();
         const addstartDate = $('#add_start_date').val();
         const addstartTime = $('#add_start_time').val();
@@ -643,10 +675,8 @@ $(document).ready(function () {
         });
     });
 
-    /* ============================================================
-       RESCHEDULE HANDLER
-    ============================================================ */
-
+ 
+    //RESCHEDULE HANDLER
     $(document).on('click', '.resched-btn', function () {
         currentReschedId = $(this).data('id');
         $('#reschedModal').modal('show');
@@ -705,10 +735,8 @@ $(document).ready(function () {
         });
     });
 
-    /* ============================================================
-       FOLLOW-UP HANDLER
-    ============================================================ */
-
+  
+    // FOLLOW-UP HANDLER
     $(document).on('click', '.follow-btn', function () {
         currentFollowUpId = $(this).data('id');
         $('#followModal').modal('show');
@@ -765,10 +793,7 @@ $(document).ready(function () {
         });
     });
 
-    /* ============================================================
-       RESET MODALS
-    ============================================================ */
-
+    //RESET MODALS
     $('#reschedModal').on('hidden.bs.modal', function () {
         $('#reschedForm')[0].reset();
         $('.new-error-msg').text('');
@@ -779,10 +804,8 @@ $(document).ready(function () {
         $('.follow-error-msg').text('');
     });
 
-    /* ============================================================
-       SEARCH STUDENT
-    ============================================================ */
-
+  
+    //SEARCH STUDENT
     $('#search-student').on('keyup', function () {
         clearTimeout(typingTimer);
         const query = $(this).val().trim();
@@ -862,6 +885,10 @@ $(document).ready(function () {
         $('#search-student').val('');
         $('.student-list').html('<p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>');
         $(this).find('form').trigger('reset');
+        $('.error-msg').text('');
+    });
+      $('#editModal').on('hidden.bs.modal', function () {
+        $('#search-student').val('');
         $('.error-msg').text('');
     });
 

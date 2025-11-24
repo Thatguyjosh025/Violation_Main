@@ -328,7 +328,10 @@ Route::get('/violation_records/data', function (Request $request) {
         ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')
         ->addColumn('actions', function ($data) {
             $viewBtn = '<button class="btn btn-primary btn-view-post" value="' . $data->id . '">View</button>';
-            $editBtn = '<button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>';
+            $editBtn = '';
+            if ($data->status->status !== 'Resolved') {
+                $editBtn = '<button class="btn btn-primary btn-edit-post" value="' . $data->id . '">Edit</button>';
+            }
             return $viewBtn . ' ' . $editBtn;
         })
         ->editColumn('Date_Created', fn($data) => Carbon::parse($data->Date_Created)->format('Y-m-d'))

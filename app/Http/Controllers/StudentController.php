@@ -20,8 +20,9 @@ class StudentController extends Controller
         $student_number = $user->student_no;
         $school_email = $user->email;
     
-        $violations = postviolation::with(['violation', 'penalty', 'referal', 'status'])
+         $violations = PostViolation::with(['violation', 'penalty', 'referal', 'status'])
         ->where('student_no', $student_number)
+        ->where('status_name', '!=', 8) // exclude resolved status
         ->paginate(9);
 
         // 5 mins violation demo expiration check
