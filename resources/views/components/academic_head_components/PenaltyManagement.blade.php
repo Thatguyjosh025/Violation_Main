@@ -1,9 +1,3 @@
-{{-- Penalty Management Blade (full updated) --}}
-{{-- Screenshots for reference:
-     /mnt/data/3474a80d-2896-4835-a2c5-befdb9f8006f.png
-     /mnt/data/5915b86e-db6e-4c1a-b71e-df8eb1843420.png
---}}
-
 <link rel="stylesheet" href="{{ asset('css/super_admin_css/ViolationManagement.css') }}">
 <link rel="stylesheet" href="{{ asset('./vendor/dataTables.dataTables.min.css') }}">
 

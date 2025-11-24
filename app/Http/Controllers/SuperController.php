@@ -97,7 +97,7 @@ class SuperController extends Controller
         ]);
 
         // Create audit entry
-        $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+        $name = Auth::user()->id;
         $email = Auth::user()->email;
 
         audits::create([
@@ -144,7 +144,7 @@ class SuperController extends Controller
         ]);
 
         // Create audit entry
-        $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+        $name = Auth::user()->id;
         $audit = audits::create([
             'changed_at' => now()->format('Y-m-d H:i'),
             'changed_by' => $name,
@@ -190,7 +190,7 @@ class SuperController extends Controller
         $create->load('violation', 'severity');
 
         // Audit creation
-        $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+        $name = Auth::user()->id;
 
         audits::insert([
             [
@@ -277,7 +277,7 @@ class SuperController extends Controller
         }
 
         // Get user name for audit
-        $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+        $name = Auth::user()->id;
         $email = Auth::user()->email;
 
         // Audit changed fields
@@ -341,7 +341,7 @@ class SuperController extends Controller
         }
 
         // Get user name for audit
-        $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+        $name = Auth::user()->id;
         $email = Auth::user()->email;
 
         // Audit changed fields
@@ -414,7 +414,7 @@ class SuperController extends Controller
             ], 200);
         }
 
-        $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+        $name = Auth::user()->id;
 
         // Audit changed fields
         if ($rule->rule_name !== $request->rule_name) {

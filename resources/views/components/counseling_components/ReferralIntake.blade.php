@@ -294,6 +294,8 @@ $(document).ready(function () {
             student_no: $('#report_student_no_input').val(),
             student_name: $('#report_name_input').val(),
             school_email: $('#report_email_input').val(),
+            year_level: null,
+            program: null,
             violation: $('#report_violation_input').val(),
             severity: $('#report_severity_input').val(),
             priority_level: $('#priority_level_input').val(),
