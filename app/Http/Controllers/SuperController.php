@@ -190,7 +190,7 @@ class SuperController extends Controller
         $create->load('violation', 'severity');
 
         // Audit creation
-        $name = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+        $name = Auth::user()->id;
 
         audits::insert([
             [
