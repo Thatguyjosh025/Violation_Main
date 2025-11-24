@@ -29,7 +29,7 @@
                     <tr>
                         <td data-label="Student No.">{{ $person->student_no }}</td>
                         <td data-label="Name">{{ $person->student_name }}</td>
-                        <td data-label="Email">{{ $person->school_email }}</td>
+                        <td data-label="">{{ $person->school_email }}</td>
                         <td data-label="Violation">{{ $person->violation->violations }}</td>
                         <td data-label="Status">
                             <span class="badge bg-warning text-dark">Pending Intake</span>
@@ -86,12 +86,14 @@
                 </div>
                 <div class="field">
                     <label>Start Time</label>
-                    <input type="time" id="start_time" class="form-control rounded-pill px-3 py-2">
+                        <input type="time" id="start_time" class="form-control rounded-pill px-3 py-2"
+                         min="08:00" max="16:00">
                     <div class="error-msg text-danger small mt-1" id="error_start_time"></div>
                 </div>
                 <div class="field">
                     <label>End Time</label>
-                    <input type="time" id="end_time" class="form-control rounded-pill px-3 py-2">
+                        <input type="time" id="end_time" class="form-control rounded-pill px-3 py-2"
+                        min="08:00" max="16:00">
                     <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
                 </div>
                 <div class="field">
@@ -108,7 +110,6 @@
                     </select>
                     <div class="error-msg text-danger small mt-1" id="error_guidance_service"></div>
                 </div>
-                
                 <button class="btn schedule">Set Schedule</button>
             </div>
         </div>
@@ -208,6 +209,34 @@ $(document).ready(function () {
         });
     });
 
+    
+     // Validate working hours function
+    // function validateWorkingHours(inputId, errorId) {
+    //     const timeStr = $(inputId).val();
+    //     if (!timeStr) return;
+
+    //     const [hours, minutes] = timeStr.split(":").map(Number);
+    //     const totalMinutes = hours * 60 + minutes;
+
+    //     const minMinutes = 8 * 60;   // 08:00
+    //     const maxMinutes = 17 * 60;  // 17:00
+
+    //     // Remove existing error div first
+    //     $(errorId).empty();
+
+    //     if (totalMinutes < minMinutes || totalMinutes > maxMinutes) {
+    //         // Create a div dynamically
+    //         console.log("Invalid time");  
+    //         $(errorId).empty().append('<div class="text-danger small mt-1">Test error message</div>');
+    //         $(inputId).val('');
+    //     }
+    // }
+
+    // // Attach working hours validation
+    // $("#start_time").on("change", function () { validateWorkingHours("#start_time", "#error_start_time"); });
+    // $("#end_time").on("change", function () { validateWorkingHours("#end_time", "#error_end_time"); });
+
+
 
     // Approve 
     $(document).on('click', '.approve', function () {
@@ -238,6 +267,19 @@ $(document).ready(function () {
         if (!prioritylevel) { $('#error_priority_level').text('The Priority level field is required.'); hasError = true; }
         if (!guidanceservice) { $('#error_guidance_service').text('The Guidance service field is required.'); hasError = true; }
 
+          function checkWorkingHours(timeStr, errorId) {
+            if (!timeStr) return false;
+            const [hours, minutes] = timeStr.split(":").map(Number);
+            const totalMinutes = hours * 60 + minutes;
+            if (totalMinutes < 8 * 60 || totalMinutes > 17 * 60) {
+                $(errorId).append('<div class="text-danger mt-1">Counseling hours are only from 8:00 AM to 5:00 PM.</div>');
+                return false;
+            }
+            return true;
+        }
+
+        if (!checkWorkingHours(startTime, '#error_start_time')) hasError = true;
+        if (!checkWorkingHours(endTime, '#error_end_time')) hasError = true;
 
         const start = new Date(`${startDate}T${startTime}`);
         const end = new Date(`${startDate}T${endTime}`);

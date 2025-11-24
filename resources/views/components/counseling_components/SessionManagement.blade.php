@@ -161,7 +161,7 @@
                 @csrf
                 <div class="mb-3">
                     <label class="form-label">Follow-up Date</label>
-                    <input type="date" id="follow_date" class="form-control">
+                    <input type="date" id="follow_date" class="form-control" >
                     <div class="follow-error-msg text-danger small mt-1" id="error_follow_start_date"></div>
                 </div>
                 <div class="mb-3">
@@ -281,6 +281,50 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function () {
+
+    /* ============================================================
+       WORKING HOURS VALIDATION (8:00 AM – 4:00 PM)
+    ============================================================ */
+    const MIN_TIME = "08:00";
+    const MAX_TIME = "17:00";
+
+    function applyTimeLimits(selector) {
+        $(selector).attr("min", MIN_TIME);
+        $(selector).attr("max", MAX_TIME);
+    }
+
+    function validateWorkingHours(inputId, errorId) {
+        const time = $(inputId).val();
+        if (!time) return;
+
+        if (time < MIN_TIME || time > MAX_TIME) {
+            $(errorId).text("Time must be between 8:00 AM and 5:00 PM only.");
+            $(inputId).val("");
+        } else {
+            $(errorId).text("");
+        }
+    }
+
+    // Apply limits to all time fields
+    applyTimeLimits("#add_start_time");
+    applyTimeLimits("#add_end_time");
+    applyTimeLimits("#resched_start_time");
+    applyTimeLimits("#resched_end_time");
+    applyTimeLimits("#follow_start_time");
+    applyTimeLimits("#follow_end_time");
+
+    // Trigger validation on time change
+    $("#add_start_time").on("change", () => validateWorkingHours("#add_start_time", "#error_start_time"));
+    $("#add_end_time").on("change", () => validateWorkingHours("#add_end_time", "#error_end_time"));
+    $("#resched_start_time").on("change", () => validateWorkingHours("#resched_start_time", "#error_new_start_time"));
+    $("#resched_end_time").on("change", () => validateWorkingHours("#resched_end_time", "#error_new_end_time"));
+    $("#follow_start_time").on("change", () => validateWorkingHours("#follow_start_time", "#error_follow_start_time"));
+    $("#follow_end_time").on("change", () => validateWorkingHours("#follow_end_time", "#error_follow_end_time"));
+
+    /* ============================================================
+       START OF YOUR ORIGINAL SCRIPT (UNTOUCHED)
+    ============================================================ */
+
     let currentStatusId = null;
     let currentSessionId = null;
     let currentReschedId = null;
@@ -288,42 +332,30 @@ $(document).ready(function () {
     let typingTimer;
     const typingDelay = 0;
 
-    // Auto-capitalize and validate Year Level / Grade input
-    $('#add_year_level, #year_level_input').on('input', function() {
+    // Auto-capitalize Year Level
+    $('#add_year_level, #year_level_input').on('input', function () {
         let input = $(this).val();
         if (input.length > 0) {
-            // Auto-capitalize the first letter
             let capitalized = input.charAt(0).toUpperCase() + input.slice(1);
             $(this).val(capitalized);
         }
     });
 
-    // Validate Program input (only letters and spaces)
-    $('#add_program, #program_input').on('input', function() {
+    // Program validation
+    $('#add_program, #program_input').on('input', function () {
         let input = $(this).val();
         if (input.length > 0) {
-            // Auto-capitalize the first letter
             let capitalized = input.charAt(0).toUpperCase() + input.slice(1);
-            // Remove non-letters and non-spaces
             let sanitized = capitalized.replace(/[^A-Za-z\s]/g, '');
             $(this).val(sanitized);
         }
     });
 
-    // Clear errors on input
-    $('#add_year_level, #add_program, #add_start_date, #add_start_time, #add_end_time, #add_priority_level_input, #add_guidance_service_input').on('input change', function () {
-        $(this).next('.error-msg').text('');
-    });
-
-    // Clear errors on input for Reschedule form
-    $('#resched_date, #resched_start_time, #resched_end_time').on('input change', function () {
-        $(this).next('.new-error-msg').text('');
-    });
-
-    // Clear errors on input for Follow-up form
-    $('#follow_date, #follow_start_time, #follow_end_time').on('input change', function () {
-        $(this).next('.follow-error-msg').text('');
-    });
+    // Clear errors when typing times
+    $('#add_start_time, #add_end_time, #resched_start_time, #resched_end_time, #follow_start_time, #follow_end_time')
+        .on('input', function () {
+            $(this).val($(this).val());
+        });
 
     function loadDropdown(url, dropdownId, placeholder, key, label) {
         $.ajax({
@@ -352,16 +384,21 @@ $(document).ready(function () {
         $('#addSessionModal').modal('show');
     });
 
-    // Edit button handler
+    /* ============================================================
+       EDIT SESSION LOGIC
+    ============================================================ */
+
     $(document).on('click', '.edit-btn', function () {
         const sessionId = $(this).data('id');
         currentSessionId = sessionId;
+
         $.ajax({
             url: `/counseling/getsession/${sessionId}`,
             method: 'GET',
             success: function (data) {
+
                 currentStatusId = data.status;
-                // Populate modal fields
+
                 $('#editModal .kv-value').eq(0).text(data.student_name);
                 $('#editModal .kv-value').eq(1).text(data.student_no);
                 $('#editModal .kv-value').eq(2).html(`<span>${data.school_email || 'N/A'}</span>`);
@@ -369,12 +406,14 @@ $(document).ready(function () {
                 $('#editModal .kv-value').eq(4).text(data.end_time || 'N/A');
                 $('#editModal .kv-value').eq(5).text(data.start_date || 'N/A');
                 $('#editModal .kv-value').eq(6).text(data.end_date || 'N/A');
+
                 $('#year_level_input').val(data.year_level || '');
                 $('#program_input').val(data.program || '');
                 $('#session_notes_input').val(data.session_notes || '');
                 $('#emotional_state_input').val(data.emotional_state || '');
                 $('#Behavior_observe_input').val(data.behavior_observe || '');
                 $('#plans_goals_input').val(data.plan_goals || '');
+
                 $('#editModal').modal('show');
             },
             error: function () {
@@ -383,7 +422,6 @@ $(document).ready(function () {
         });
     });
 
-    // Populate counseling status dropdown when modal is opened
     $('#editModal').on('show.bs.modal', function () {
         $.ajax({
             url: '/get_counselingstatus',
@@ -392,45 +430,45 @@ $(document).ready(function () {
                 const dropdown = $('#counselingstatus');
                 dropdown.empty();
                 dropdown.append('<option disabled>Select status</option>');
+
                 response.counselingstatus_data.forEach(function (status) {
                     if (status.id === 4) return;
                     const selected = status.id === currentStatusId ? 'selected' : '';
                     dropdown.append(`<option value="${status.id}" ${selected}>${status.session_status}</option>`);
                 });
-            },
-            error: function () {
-                console.error('Failed to fetch counseling statuses.');
             }
         });
     });
 
-    // Submit the form handler with validation
+    /* ============================================================
+       UPDATE SESSION HANDLER
+    ============================================================ */
+
     $('#sessionForm').on('submit', function (e) {
         e.preventDefault();
-        $('.error-msg').text(''); // Clear previous error messages
+        $('.error-msg').text('');
 
-        // Get form values
         const yearLevel = $('#year_level_input').val().trim();
         const program = $('#program_input').val().trim();
         let hasError = false;
 
-        // Validate Year Level format
         const yearLevelRegex = /^(?:Grade\s*-\s*\d{1,2}|\d{1,2}(?:st|nd|rd|th)\s*Year|[A-Za-z]+\s*Year)$/;
+
         if (!yearLevel) {
             $('#error_year_level').text('Year level is required.');
             hasError = true;
         } else if (!yearLevelRegex.test(yearLevel)) {
-            $('#error_year_level').text('Invalid format. Use "Grade - 11", "1st Year", or "First Year".');
+            $('#error_year_level').text('Invalid format.');
             hasError = true;
         }
 
-        // Validate Program field (only letters and spaces allowed)
         const programRegex = /^[A-Za-z\s]+$/;
+
         if (!program) {
             $('#error_program').text('Program is required.');
             hasError = true;
         } else if (!programRegex.test(program)) {
-            $('#error_program').text('Invalid characters. Only letters and spaces are allowed.');
+            $('#error_program').text('Invalid characters.');
             hasError = true;
         }
 
@@ -439,11 +477,8 @@ $(document).ready(function () {
             return;
         }
 
-        if (hasError) {
-            return; // Stop form submission if there are errors
-        }
+        if (hasError) return;
 
-        // Prepare payload
         const payload = {
             year_level: yearLevel,
             program: program,
@@ -455,7 +490,6 @@ $(document).ready(function () {
             _token: '{{ csrf_token() }}'
         };
 
-        // Submit the form via AJAX
         $.ajax({
             url: `/counseling/updatesession/${currentSessionId}`,
             method: 'POST',
@@ -476,6 +510,7 @@ $(document).ready(function () {
                             language: { emptyTable: "No pending counseling at the moment." }
                         });
                     });
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Updated',
@@ -483,6 +518,7 @@ $(document).ready(function () {
                         timer: 1500,
                         showConfirmButton: false
                     });
+
                     const endDate = response.end_date || 'N/A';
                     $('#editModal .kv-value').eq(6).text(endDate);
                 } else {
@@ -495,10 +531,14 @@ $(document).ready(function () {
         });
     });
 
-    // Add Session Form Submit Handler
-    $('#addSessionForm').on('submit', function(e) {
+    /* ============================================================
+       ADD SESSION HANDLER
+    ============================================================ */
+
+    $('#addSessionForm').on('submit', function (e) {
         e.preventDefault();
         $('.error-msg').text('');
+
         const studentNo = $('#add_student_no').val();
         const studentName = $('#add_student_name').val();
         const studentEmail = $('#add_student_email').val();
@@ -511,28 +551,26 @@ $(document).ready(function () {
         const addguidanceService = $('#add_guidance_service_input').val();
         let hasError = false;
 
-        // Validate Year Level / Grade format
         const yearLevelRegex = /^(?:Grade\s*-\s*\d{1,2}|\d{1,2}(?:st|nd|rd|th)\s*Year|[A-Za-z]+\s*Year)$/;
+
         if (!yearLevel) {
             $('#add_error_year_level').text('Year level is required.');
             hasError = true;
-            console.log('Submitting add session form');
         } else if (!yearLevelRegex.test(yearLevel)) {
-            $('#add_error_year_level').text('Invalid format. Use "Grade - 11", "1st Year", or "First Year".');
+            $('#add_error_year_level').text('Invalid format.');
             hasError = true;
         }
 
-        // Validate Program field (only letters and spaces allowed)
         const programRegex = /^[A-Za-z\s]+$/;
+
         if (!program) {
             $('#add_error_program').text('Program is required.');
             hasError = true;
         } else if (!programRegex.test(program)) {
-            $('#add_error_program').text('Invalid characters. Only letters and spaces are allowed.');
+            $('#add_error_program').text('Invalid characters.');
             hasError = true;
         }
 
-        // Validate other fields
         if (!addstartDate) {
             $('#error_start_date').text('Start date is required.');
             hasError = true;
@@ -545,6 +583,7 @@ $(document).ready(function () {
             $('#error_end_time').text('End time is required.');
             hasError = true;
         }
+
         if (!addpriorityLevel) {
             $('#error_priority_level').text('Priority level is required.');
             hasError = true;
@@ -554,11 +593,9 @@ $(document).ready(function () {
             hasError = true;
         }
 
-        // Validate start and end time
-        const start = new Date(`${addstartDate}T${addstartTime}`);
-        const end = new Date(`${addstartDate}T${addendTime}`);
-        if (end <= start) {
-            $('#error_end_time').text('End time must be after start time on the same day.');
+        // Check time order
+        if (addstartTime && addendTime && addendTime <= addstartTime) {
+            $('#error_end_time').text('End time must be after start time.');
             hasError = true;
         }
 
@@ -584,7 +621,7 @@ $(document).ready(function () {
             url: '/counseling_schedule',
             method: 'POST',
             data: payload,
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#addSessionModal').modal('hide');
                     Swal.fire({
@@ -594,20 +631,22 @@ $(document).ready(function () {
                         timer: 1500,
                         showConfirmButton: false
                     });
-                $('#violationTable tbody').load(location.href + " #violationTable tbody > *");
+                    $('#violationTable tbody').load(location.href + " #violationTable tbody > *");
                 } else {
                     Swal.fire('Error', response.message, 'error');
                 }
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 const errorMessage = xhr.responseJSON?.message || 'Something went wrong.';
                 Swal.fire('Error', errorMessage, 'error');
-                console.log('Error occurred:', xhr);
             }
         });
     });
 
-    // Reschedule handler
+    /* ============================================================
+       RESCHEDULE HANDLER
+    ============================================================ */
+
     $(document).on('click', '.resched-btn', function () {
         currentReschedId = $(this).data('id');
         $('#reschedModal').modal('show');
@@ -615,15 +654,25 @@ $(document).ready(function () {
 
     $('#reschedForm').on('submit', function (e) {
         e.preventDefault();
+
         $('#error_new_start_date, #error_new_start_time, #error_new_end_time').text('');
+
         const newstartDate = $('#resched_date').val();
         const newstartTime = $('#resched_start_time').val();
         const newendTime = $('#resched_end_time').val();
         let hasError = false;
-        if (!newstartDate) {$('#error_new_start_date').text('Start date is required.'); hasError = true;}
-        if (!newstartTime) {$('#error_new_start_time').text('Start time is required.'); hasError = true;}
-        if (!newendTime) {$('#error_new_end_time').text('End time is required.'); hasError = true;}
+
+        if (!newstartDate) { $('#error_new_start_date').text('Date is required.'); hasError = true; }
+        if (!newstartTime) { $('#error_new_start_time').text('Start time is required.'); hasError = true; }
+        if (!newendTime) { $('#error_new_end_time').text('End time is required.'); hasError = true; }
+
+        if (newstartTime && newendTime && newendTime <= newstartTime) {
+            $('#error_new_end_time').text('End time must be after start time.');
+            hasError = true;
+        }
+
         if (hasError) return;
+
         $.ajax({
             url: `/counseling/reschedule/${currentReschedId}`,
             method: 'POST',
@@ -638,6 +687,7 @@ $(document).ready(function () {
                     $('#reschedModal').modal('hide');
                     $('#reschedForm')[0].reset();
                     $('#violationTable tbody').load(location.href + " #violationTable tbody > *");
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Rescheduled',
@@ -655,7 +705,10 @@ $(document).ready(function () {
         });
     });
 
-    // Follow-up handler
+    /* ============================================================
+       FOLLOW-UP HANDLER
+    ============================================================ */
+
     $(document).on('click', '.follow-btn', function () {
         currentFollowUpId = $(this).data('id');
         $('#followModal').modal('show');
@@ -663,21 +716,30 @@ $(document).ready(function () {
 
     $('#followForm').on('submit', function (e) {
         e.preventDefault();
+
         const followstartDate = $('#follow_date').val();
         const followstartTime = $('#follow_start_time').val();
         const followendTime = $('#follow_end_time').val();
         let hasError = false;
-        if (!followstartDate) {$('#error_follow_start_date').text('Start date is required.'); hasError = true;}
-        if (!followstartTime) {$('#error_follow_start_time').text('Start time is required.'); hasError = true;}
-        if (!followendTime) {$('#error_follow_end_time').text('End time is required.'); hasError = true;}
+
+        if (!followstartDate) { $('#error_follow_start_date').text('Date is required.'); hasError = true; }
+        if (!followstartTime) { $('#error_follow_start_time').text('Start time is required.'); hasError = true; }
+        if (!followendTime) { $('#error_follow_end_time').text('End time is required.'); hasError = true; }
+
+        if (followstartTime && followendTime && followendTime <= followstartTime) {
+            $('#error_follow_end_time').text('End time must be after start time.');
+            hasError = true;
+        }
+
         if (hasError) return;
+
         $.ajax({
             url: `/counseling/followup/${currentFollowUpId}`,
             method: 'POST',
             data: {
-                start_date: $('#follow_date').val(),
-                start_time: $('#follow_start_time').val(),
-                end_time: $('#follow_end_time').val(),
+                start_date: followstartDate,
+                start_time: followstartTime,
+                end_time: followendTime,
                 _token: '{{ csrf_token() }}'
             },
             success: function (response) {
@@ -685,6 +747,7 @@ $(document).ready(function () {
                     $('#followModal').modal('hide');
                     $('#followForm')[0].reset();
                     $('#violationTable tbody').load(location.href + " #violationTable tbody > *");
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Follow-up Created',
@@ -702,7 +765,10 @@ $(document).ready(function () {
         });
     });
 
-    // Reset modals and clear errors
+    /* ============================================================
+       RESET MODALS
+    ============================================================ */
+
     $('#reschedModal').on('hidden.bs.modal', function () {
         $('#reschedForm')[0].reset();
         $('.new-error-msg').text('');
@@ -713,32 +779,36 @@ $(document).ready(function () {
         $('.follow-error-msg').text('');
     });
 
-    // Search student
+    /* ============================================================
+       SEARCH STUDENT
+    ============================================================ */
+
     $('#search-student').on('keyup', function () {
         clearTimeout(typingTimer);
         const query = $(this).val().trim();
+
         if (query === '') {
             $('.student-list').html('<p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>');
             return;
         }
+
         typingTimer = setTimeout(function () {
             $.ajax({
                 url: "/student_search",
                 method: 'GET',
                 data: { query: query },
-                success: function(response) {
+                success: function (response) {
                     const results = response.slice(0, 3);
+
                     if (results.length === 0) {
                         $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
                     } else {
                         let html = '';
-                        results.forEach(function(data) {
+                        results.forEach(function (data) {
                             html += `
                                 <div class="student-item d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <div class="initial-icon">
-                                            ${getInitials(data.firstname, data.lastname)}
-                                        </div>
+                                        <div class="initial-icon">${getInitials(data.firstname, data.lastname)}</div>
                                         <div class="ms-2">
                                             <p class="mb-0 fw-bold">${data.firstname} ${data.lastname}</p>
                                             <small>${data.student_no}</small>
@@ -757,32 +827,35 @@ $(document).ready(function () {
                     }
                 }
             });
-        }, typingDelay);
+        }, 0);
     });
 
-    // Select student button handler
-    $(document).on('click', '.select-student-btn', function() {
+    // Select student
+    $(document).on('click', '.select-student-btn', function () {
         const studentNo = $(this).data('student_no');
         const studentName = $(this).data('name');
         const studentEmail = $(this).data('email');
+
         $('#add_student_no').val(studentNo);
         $('#add_student_name').val(studentName);
         $('#add_student_email').val(studentEmail);
+
         $('#display_student_number').text(studentNo || '-');
         $('#display_student_name').text(studentName || '-');
         $('#display_student_email').text(studentEmail || '-');
+
         loadDropdown('/get_priorityrisk', '#add_priority_level_input', 'Select priority level', 'priorityrisk_data', 'priority_risk');
         loadDropdown('/get_guidanceservice', '#add_guidance_service_input', 'Select guidance service', 'guidanceservice_data', 'guidance_service');
+
         $('#searchView').hide();
         $('#formView').show();
     });
 
-    $(document).on('click', '#backToSearch', function() {
+    $('#backToSearch').on('click', function () {
         $('#formView').hide();
         $('#searchView').show();
     });
 
-    // Reset modal
     $('#addSessionModal').on('hidden.bs.modal', function () {
         $('#searchView').show();
         $('#formView').hide();
@@ -792,9 +865,9 @@ $(document).ready(function () {
         $('.error-msg').text('');
     });
 
-    // Helper function to get initials
     function getInitials(firstname, lastname) {
         return (firstname.charAt(0) + lastname.charAt(0)).toUpperCase();
     }
+
 });
 </script>

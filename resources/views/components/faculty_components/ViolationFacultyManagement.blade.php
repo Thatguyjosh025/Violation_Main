@@ -53,10 +53,16 @@ $accounts = users::get();
                             </select>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label class="fw mt-2">Rule Name:</label>
+                        <select id="incident_report_ruleDropdown" class="form-select" >
+                            <option value="">Select Rule</option>
+                        </select>
+                    </div>
 
                     <!-- RuleName, Description, Severity auto populate -->
-                    <label class="fw mt-2">Rule Name:</label>
-                    <p id="ruleName">-</p>
+                    <!-- <label class="fw mt-2">Rule Name:</label> -->
+                    <!-- <p id="ruleName">-</p> -->
                     <input type="hidden" id="incident_report_ruleName" name="rule_name" style="display: none;" readonly required>
 
                     <label class="fw mt-2">Description: </label>
@@ -105,53 +111,104 @@ $accounts = users::get();
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script>
-$(document).on("click", ".select-btn", function (e) {
-    e.preventDefault();
-    var studentId = $(this).data("id");
-    var studentName = $(this).data("name");
-    var email = $(this).data("email");
-    var studentNo = $(this).data("student_no");
-    $('#displaystudentname').text(studentName);
-    $('#displaystudentno').text(studentNo);
-    $('#displayemail').text(email);
-    $("#incident_report_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
-    $("#incident_report_email").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
-    $("#incident_report_studentno").val(studentNo).removeClass("is-invalid").next(".invalid-feedback").remove();
-});
-
-$(document).on("change", "#incident_report_violationType", function (e) {
-    e.preventDefault();
-    var violation_id = $(this).val();
-    if (!violation_id) {
-        updateRuleDetails("-", "-", "-");
-        return;
-    }
-    $.get("/get_rule/" + violation_id, function (response) {
-        if (response.error) {
-            updateRuleDetails("", "", "");
-        } else {
-            updateRuleDetails(response.rule_name, response.description, response.severity_name);
-        }
-    });
-
-    function updateRuleDetails(rule, desc, severity) {
-        $("#ruleName").text(rule);
-        $("#descriptionName").text(desc);
-        $("#severityName").text(severity);
-        $("#incident_report_desc").val(desc);
-        $("#incident_report_severity").val(severity);
-        $("#incident_report_ruleName").val(rule);
-    }
-});
-
 $(document).ready(function () {
     let selectedFiles = [];
     const fileInput = document.getElementById("uploadEvidence");
     const fileList = document.getElementById("fileList");
     const dropArea = document.querySelector(".drop-area");
 
+    // ---------- STUDENT SELECTION ----------
+    $(document).on("click", ".select-btn", function (e) {
+        e.preventDefault();
+        const studentName = $(this).data("name");
+        const studentNo = $(this).data("student_no");
+        const email = $(this).data("email");
+
+        $('#displaystudentname').text(studentName);
+        $('#displaystudentno').text(studentNo);
+        $('#displayemail').text(email);
+
+        $("#incident_report_name").val(studentName).removeClass("is-invalid").next(".invalid-feedback").remove();
+        $("#incident_report_studentno").val(studentNo).removeClass("is-invalid").next(".invalid-feedback").remove();
+        $("#incident_report_email").val(email).removeClass("is-invalid").next(".invalid-feedback").remove();
+    });
+
+    // ---------- DROPDOWN LOADERS ----------
+    function loadViolationDropdown(url, id, selectedValue = null, callback) {
+        $.ajax({
+            url: url,
+            success: function(response) {
+                const dropdown = $(id);
+                dropdown.empty().append('<option value="">Select Violation</option>');
+
+                response.violation_data.forEach(item => {
+                    const isSelected = item.violation_id == selectedValue ? 'selected' : '';
+                    dropdown.append(`<option value="${item.violation_id}" ${isSelected}>${item.violations}</option>`);
+                });
+
+                if (typeof callback === "function") callback();
+            }
+        });
+    }
+
+   // ---------- LOAD RULE DROPDOWN ----------
+    function loadRuleDropdown(url) {
+        $.get(url, function(response) {
+            const dropdown = $("#incident_report_ruleDropdown");
+            dropdown.empty().append('<option value="">Select Rule</option>');
+
+            if (!response.rules || response.rules.length === 0) {
+                dropdown.append('<option value="">No rules available</option>');
+                updateRuleDetails("-", "-", "-");
+                return;
+            }
+
+            response.rules.forEach(item => {
+                dropdown.append(
+                    `<option value="${item.id}" data-rule="${item.rule_name}" data-desc="${item.description}" data-severity="${item.severity ? item.severity.severity : '-'}">
+                        ${item.rule_name}
+                    </option>`
+                );
+            });
+
+            // Reset rule details on new load
+            updateRuleDetails("-", "-", "-");
+        });
+    }
+
+    // ---------- UPDATE RULE DETAILS ----------
+    function updateRuleDetails(rule, desc, severity) {
+        $("#ruleName").text(rule);
+        $("#descriptionName").text(desc);
+        $("#severityName").text(severity);
+        $("#incident_report_ruleName").val(rule);
+        $("#incident_report_desc").val(desc);
+        $("#incident_report_severity").val(severity);
+    }
+
+    $(document).on("change", "#incident_report_violationType", function () {
+        const violation_id = $(this).val();
+        if (!violation_id) {
+            updateRuleDetails("-", "-", "-");
+            $("#incident_report_ruleDropdown").empty().append('<option value="">Select Rule</option>');
+            return;
+        }
+        loadRuleDropdown(`/get_rule/${violation_id}`);
+    });
+
+    $(document).on("change", "#incident_report_ruleDropdown", function () {
+        const selected = $(this).find(":selected");
+        updateRuleDetails(
+            selected.data("rule") || "-",
+            selected.data("desc") || "-",
+            selected.data("severity") || "-"
+        );
+    });
+
+
+    // ---------- FILE UPLOAD ----------
     function syncInput() {
-        let dt = new DataTransfer();
+        const dt = new DataTransfer();
         selectedFiles.forEach(f => dt.items.add(f));
         fileInput.files = dt.files;
     }
@@ -179,79 +236,88 @@ $(document).ready(function () {
     }
 
     fileInput.addEventListener("change", e => handleFiles([...e.target.files]));
-
-    ["dragenter","dragover"].forEach(evt =>
-        dropArea.addEventListener(evt, e => {
-            e.preventDefault(); e.stopPropagation();
-            dropArea.classList.add("bg-light");
-        })
-    );
-
-    ["dragleave","drop"].forEach(evt =>
-        dropArea.addEventListener(evt, e => {
-            e.preventDefault(); e.stopPropagation();
-            dropArea.classList.remove("bg-light");
-        })
-    );
-
+    ["dragenter","dragover"].forEach(evt => dropArea.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dropArea.classList.add("bg-light"); }));
+    ["dragleave","drop"].forEach(evt => dropArea.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dropArea.classList.remove("bg-light"); }));
     dropArea.addEventListener("drop", e => handleFiles([...e.dataTransfer.files]));
 
-    // Search on Enter only
-    $('#search-student').on('keypress', function(e) {
-        if (e.which === 13) { // Enter key
-            e.preventDefault();
-            const query = $(this).val().trim();
-            if (query.length > 0) {
-                $.ajax({
-                    url: "/student_search",
-                    method: 'GET',
-                    data: { query: query },
-                    success: function(response) {
-                        if (response.length === 0) {
-                            $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
-                        } else {
-                            let html = '';
-                            response.forEach(function(data) {
+    // ---------- STUDENT SEARCH ----------
+    let typingTimer;
+    const typingDelay = 0; // debounce (ms)
+    function getInitials(first, last) {
+        const f = first ? first.charAt(0).toUpperCase() : '';
+        const l = last ? last.charAt(0).toUpperCase() : '';
+        return f + l;
+    }
+    $('#search-student').on('keyup', function () {
+        clearTimeout(typingTimer);
+
+        const query = $(this).val().trim();
+
+        // If search bar is empty → show placeholder and stop
+        if (query === '') {
+            $('.student-list').html('<p class="text-muted text-center" id="search-placeholder">Start searching student name...</p>');
+            return;
+        }
+
+        typingTimer = setTimeout(function () {
+
+            $.ajax({
+                url: "/student_search",
+                method: 'GET',
+                data: { query: query },
+                success: function(response) {
+
+                    const results = response.slice(0, 3); // Show only first 3
+
+                    if (results.length === 0) {
+                        $('.student-list').html('<p class="text-muted text-center">No student found.</p>');
+                    } else {
+                        let html = '';
+                            results.forEach(function(data) {
                                 html += `
-                                    <div class="student-item">
+                                    <div class="student-item d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
-                                            <img src="/Photos/avatar.png" alt="Student">
+                                            <div class="initial-icon">
+                                                ${getInitials(data.firstname, data.lastname)}
+                                            </div>
                                             <div class="ms-2">
-                                                <p class="mb-0 fw-bold">Student No.</p>
+                                                <p class="mb-0 fw-bold">${data.firstname} ${data.lastname}</p>
                                                 <small>${data.student_no}</small>
-                                                <p>${data.firstname} ${data.lastname}</p>
                                             </div>
                                         </div>
                                         <button class="btn btn-outline-primary btn-sm select-btn"
                                             data-id="${data.id}"
                                             data-name="${data.firstname} ${data.lastname}"
                                             data-email="${data.email}"
-                                            data-student_no="${data.student_no}">
+                                            data-student_no="${data.student_no}"
+                                            data-first="${data.firstname}"
+                                            data-last="${data.lastname}"
+                                            data-course="${data.course_and_section}">
                                             Select
                                         </button>
                                     </div>`;
                             });
-                            $('.student-list').html(html);
-                        }
+                        $('.student-list').html(html);
                     }
-                });
-            }
-        }
+                }
+            });
+
+        }, 0);
     });
 
-    // Form submission with explicit formData.append()
+    // ---------- FORM SUBMISSION ----------
     $("#IncidentReportForm").on('submit', function (e) {
         e.preventDefault();
         let isValid = true;
         const requiredFields = [
-            {id: "#incident_report_name", msg: "Please enter the student name."},
-            {id: "#incident_report_studentno", msg: "Please enter the student number."},
-            {id: "#incident_report_email", msg: "Please enter the school email."},
+            {id: "#incident_report_name", msg: "Please select student name in the list."},
+            {id: "#incident_report_studentno", msg: "Please select student number in the list."},
+            {id: "#incident_report_email", msg: "Please select school email in the list."},
             {id: "#incident_report_violationType", msg: "Please select a violation type."},
             {id: "#incident_report_remarks", msg: "Please provide a detailed description."},
-            {id: "#incident_report_ruleName", msg: "Rule name is required."},
-            {id: "#incident_report_desc", msg: "Description is required."},
-            {id: "#incident_report_severity", msg: "Severity is required."},
+            {id: "#incident_report_ruleDropdown", msg: "Please select a rule."},
+            // {id: "#incident_report_desc", msg: "Description is required."},
+            // {id: "#incident_report_severity", msg: "Severity is required."},
         ];
 
         requiredFields.forEach(field => {
@@ -269,7 +335,6 @@ $(document).ready(function () {
 
         if (!isValid) return;
 
-        // Create FormData and append all fields explicitly
         let formData = new FormData();
         formData.append('_token', $('input[name="_token"]').val());
         formData.append('student_name', $("#incident_report_name").val());
@@ -283,7 +348,6 @@ $(document).ready(function () {
         formData.append('severity', $("#incident_report_severity").val());
         formData.append('remarks', $("#incident_report_remarks").val());
 
-        // Append files
         for (let i = 0; i < fileInput.files.length; i++) {
             formData.append("upload_evidence[]", fileInput.files[i]);
         }
@@ -315,6 +379,21 @@ $(document).ready(function () {
                 console.error(xhr.responseText);
             }
         });
+    });
+
+    $(document).on("change", "#incident_report_violationType", function () {
+        if ($(this).val() !== "") {
+            $(this).removeClass("is-invalid");
+            $(this).next(".invalid-feedback").remove();
+        }
+    });
+
+    // REMOVE ERROR ON INPUT FOR RULE DROPDOWN
+    $(document).on("change", "#incident_report_ruleDropdown", function () {
+        if ($(this).val() !== "") {
+            $(this).removeClass("is-invalid");
+            $(this).next(".invalid-feedback").remove();
+        }
     });
 });
 </script>

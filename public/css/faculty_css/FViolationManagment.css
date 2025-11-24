@@ -381,3 +381,15 @@ textarea {
         flex-direction: column-reverse;
     }
 }
+.initial-icon {
+    width: 45px;
+    height: 45px;
+    background: #4a6cf7;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+}
