@@ -767,35 +767,63 @@ function loadRuleDropdown(url, id, selectedValue = null) {
     });
 
   //submit student edit form
-    $('#editStudentForm').submit(function(e) {
-        e.preventDefault();
-        let isValid = true; // Define isValid
+   $('#editStudentForm').submit(function(e) {
+    e.preventDefault();
+    let isValid = true;
+    let status = $("#edit_status_type").val();
 
-        // Remove existing error messages
-        $(".invalid-feedback").remove();
-        $("#edit_Remarks").removeClass("is-invalid");
+    // Remove existing error messages
+    $(".invalid-feedback").remove();
+    $("#edit_Remarks").removeClass("is-invalid");
+    $("#edit_faculty_Name").removeClass("is-invalid");
 
-        // Validate the Remarks field
-        if (!$("#edit_Remarks").val()) {
-            $("#edit_Remarks").addClass("is-invalid").after('<div class="invalid-feedback">Please provide remarks.</div>');
-            isValid = false;
-        }
+    // Validate the Remarks field
+    if (!$("#edit_Remarks").val()) {
+        $("#edit_Remarks").addClass("is-invalid").after('<div class="invalid-feedback">Please provide remarks.</div>');
+        isValid = false;
+    }
 
-        // Validate the Faculty Name dropdown if it is visible
-        if ($("#edit_faculty_Name").is(":visible") && !$("#edit_faculty_Name").val()) {
-            $("#edit_faculty_Name").addClass("is-invalid").after('<div class="invalid-feedback">Please select a faculty name.</div>');
-            isValid = false;
-        }
+    // Validate the Faculty Name dropdown if it is visible
+    if ($("#edit_faculty_Name").is(":visible") && !$("#edit_faculty_Name").val()) {
+        $("#edit_faculty_Name").addClass("is-invalid").after('<div class="invalid-feedback">Please select a faculty name.</div>');
+        isValid = false;
+    }
 
-        if (!isValid) {
-            Swal.fire({ icon: "error", title: "Oops...", text: "Please fill out all required fields before submitting." });
-            return;
-        }
+    if (!isValid) {
+        Swal.fire({ 
+            icon: "error", 
+            title: "Oops...", 
+            text: "Please fill out all required fields before submitting." 
+        });
+        return;
+    }
 
-        var id = $('#edit_student_id').val();
+    var id = $('#edit_student_id').val();
+    let facultyName = $('#edit_faculty_yes').is(':checked') ? $("#edit_faculty_Name").val() : "N/A";
 
-        let facultyName = $('#edit_faculty_yes').is(':checked') ? $("#edit_faculty_Name").val() : "N/A";
+    // Check for "Resolved" status (example ID = 8)
+    if (status == 8) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will mark the violation as Resolved.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, resolve it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // AJAX call happens only after confirmation
+                submitAjax();
+            }
+        });
+    } else {
+        // For other statuses, submit immediately
+        submitAjax();
+    }
 
+    // AJAX function defined inline
+    function submitAjax() {
         $.ajax({
             type: "POST",
             url: "/update_student_info/" + id,
@@ -810,7 +838,7 @@ function loadRuleDropdown(url, id, selectedValue = null) {
                 update_description: $('#edit_description_Name').val(),
                 update_severity: $('#edit_severity_Name').val(),
                 update_penalty_type: $('#edit_penalty_type').val(),
-                update_status: $('#edit_status_type').val(),
+                update_status: status,
                 update_faculty_involvement: $('input[name="edit_faculty_involvement"]:checked').val(),
                 update_faculty_name: facultyName,
                 update_counseling_required: $('input[name="edit_counseling_required"]:checked').val(),
@@ -819,31 +847,25 @@ function loadRuleDropdown(url, id, selectedValue = null) {
                 update_notes: $('#edit_notes').val()
             },
             success: function(response) {
-
                 Swal.fire({
                     title: "Updated Successfully!",
                     text: "The information has been saved.",
                     icon: "success",
                     confirmButtonText: "OK"
                 });
-                
+
                 if (response.status == 200) {
-                    // console.log(response.message);
                     $('#editStudentModal').modal('hide');
-                    // console.log('update success');
-                } else {
-                    // console.log("Error updating student info");
                 }
 
                 $('#violationrecordstable').DataTable().ajax.reload(null, false);
             },
             error: function(xhr) {
-                // console.log(xhr.responseText);
-                // console.log("An error occurred.");
+                console.log(xhr.responseText);
             }
         });
-    });
-
+    }
+});
   // Add event listener to remove error messages when the user types in the Remarks textarea
   $("#edit_Remarks").on("input", function () {
       $(this).removeClass("is-invalid");
