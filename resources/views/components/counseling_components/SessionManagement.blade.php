@@ -338,7 +338,7 @@ $(document).ready(function () {
     clearErrorOnInput("#add_guidance_service_input", "#error_guidance_service");
 
     // EDIT AREA
-    clearErrorOnInput("#year_level_input", "#error_year_level");
+    clearErrorOnInput("#year_level_input_select", "#error_year_level");
     clearErrorOnInput("#program_input", "#error_program");
 
         
@@ -487,7 +487,7 @@ $(document).ready(function () {
         const yearLevelRegex = /^(?:Grade\s*-\s*\d{1,2}|\d{1,2}(?:st|nd|rd|th)\s*Year|[A-Za-z]+\s*Year)$/;
 
         if (!yearLevel) {
-            $('#error_year_level_select').text('Year level is required.');
+            $('#error_year_level').text('Year level is required.');
             hasError = true;
         } else if (!yearLevelRegex.test(yearLevel)) {
             $('#error_year_level').text('Invalid format.');
