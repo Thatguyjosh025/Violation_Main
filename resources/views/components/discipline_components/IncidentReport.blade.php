@@ -120,7 +120,7 @@ $rejectedReports = incident::where('is_visible', 'reject')->paginate(9, ['*'], '
                             @csrf
                             <p id="write_incident_name"><strong>Name of violator:</strong> Mark Jecil Bausa</p>
                             <p id="write_incident_no"><strong>Student No:</strong> 02000311488</p>
-                            <p id="write_incident_course"><strong>Course and Section:</strong> BSIT 611</p>
+                            <!-- <p id="write_incident_course"><strong>Course and Section:</strong> BSIT 611</p> -->
                             <p id="write_incident_email"><strong>School email:</strong> mark@gmail.com</p>
                             <hr>
                             <p id="write_incident_violation"><strong>Reason/s for Referral:</strong> Cheating</p>
@@ -450,7 +450,7 @@ $(document).ready(function () {
                   $("#approve-btn")
                     .prop("disabled", false)
                     .text("Approve");
-                    
+
                 Swal.fire({
                     icon: "error",
                     title: "Submission Failed",

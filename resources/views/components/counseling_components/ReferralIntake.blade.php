@@ -110,7 +110,7 @@
                     </select>
                     <div class="error-msg text-danger small mt-1" id="error_guidance_service"></div>
                 </div>
-                <button class="btn schedule">Set Schedule</button>
+                <button class="btn schedule" id="btnsched" >Set Schedule</button>
             </div>
         </div>
     </div>
@@ -308,6 +308,19 @@ $(document).ready(function () {
             _token: '{{ csrf_token() }}'
         };
 
+        $("#btnsched")
+        .prop("disabled", true)
+        .text("Scheduling...");
+
+        Swal.fire({
+            title: 'Scheduling Counseling Session',
+            text: 'Please wait while we schedule the counseling session.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         $.ajax({
             type: 'POST',
             url: '/counseling_schedule',
@@ -319,6 +332,10 @@ $(document).ready(function () {
                     $('#CounselingReport').on('hidden.bs.modal', function () {
                         $('.modal-backdrop').remove();  
                         $('body').removeClass('modal-open').css('padding-right', '');
+
+                         $("#btnsched")
+                        .prop("disabled", false)
+                        .text("Set Schedule");
 
                         Swal.fire({
                             icon: 'success',
@@ -341,6 +358,11 @@ $(document).ready(function () {
                         });
                     });
                 } else {
+
+                    $("#btnsched")
+                    .prop("disabled", false)
+                    .text("Set Schedule");
+
                     Swal.fire({
                         icon: 'warning',
                         title: 'Failed',
@@ -349,6 +371,10 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
+
+                     $("#btnsched")
+                        .prop("disabled", false)
+                        .text("Set Schedule");
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
