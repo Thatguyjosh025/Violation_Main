@@ -358,9 +358,11 @@ $(document).ready(function () {
 
     // Trigger validation on time change
     $("#add_start_time").on("change", () => validateWorkingHours("#add_start_time", "#error_start_time"));
-    $("#add_end_time").on("change", () => validateWorkingHours("#add_end_time", "#error_end_time"));
+    $("#add_end_time").on("change", () => validateWorkingHours("#add_end_time", "#error_start_time"));
+
     $("#resched_start_time").on("change", () => validateWorkingHours("#resched_start_time", "#error_new_start_time"));
     $("#resched_end_time").on("change", () => validateWorkingHours("#resched_end_time", "#error_new_end_time"));
+    
     $("#follow_start_time").on("change", () => validateWorkingHours("#follow_start_time", "#error_follow_start_time"));
     $("#follow_end_time").on("change", () => validateWorkingHours("#follow_end_time", "#error_follow_end_time"));
 
