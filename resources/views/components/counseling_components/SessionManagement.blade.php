@@ -464,6 +464,8 @@ $(document).ready(function () {
                 dropdown.append('<option disabled>Select status</option>');
 
                 response.counselingstatus_data.forEach(function (status) {
+                    if (status.id === 1) return;
+                    if (status.id === 3) return;
                     if (status.id === 4) return;
                     const selected = status.id === currentStatusId ? 'selected' : '';
                     dropdown.append(`<option value="${status.id}" ${selected}>${status.session_status}</option>`);
