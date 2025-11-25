@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\counseling;
 use Illuminate\Http\Request;
+use App\Models\notifications;
 use App\Models\postviolation;
 use Illuminate\Support\Facades\DB;
 
@@ -93,6 +94,18 @@ class CounselingController extends Controller
             postviolation::where('id', $postViolationId)
                 ->update(['is_admitted' => false]);
         }
+
+       $notif = notifications::create([
+            'title'        => 'Counseling Session Scheduled',
+            'message'      => 'You have been scheduled for a counseling session.',
+            'role'         => 'student',
+            'student_no'   => $request->student_no,
+            'school_email' => $request->school_email,
+            'type'         => 'posted',
+            'url'          => null,
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+        ]);
 
         return response()->json([
             'success' => true,
