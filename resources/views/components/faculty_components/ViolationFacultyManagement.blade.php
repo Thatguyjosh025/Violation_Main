@@ -92,7 +92,7 @@ $accounts = users::get();
                         <ul id="fileList" class="list-group mt-2" style="max-height: 150px; overflow-y: auto;"></ul>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mt-2 btn-submit-incident">Submit</button>
+                    <button type="submit" class="btn btn-primary mt-2 btn-submit-incident" id="btnsubmitincident" >Submit</button>
                 </form>
             </div>
         </div>
@@ -351,6 +351,19 @@ $(document).ready(function () {
         for (let i = 0; i < fileInput.files.length; i++) {
             formData.append("upload_evidence[]", fileInput.files[i]);
         }
+        
+        $("#btnsubmitincident")
+        .prop("disabled", true)
+        .text("Submiting...");
+
+        Swal.fire({
+            title: 'Processing Incident Report',
+            text: 'Please wait while submitting the incident report.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         $.ajax({
             url: "/submit_incident_report",
@@ -364,6 +377,12 @@ $(document).ready(function () {
                 selectedFiles = [];
                 $("#ruleName, #descriptionName, #severityName").text("-");
                 $('#displaystudentname, #displaystudentno, #displayemail').text('-');
+
+
+                $("#btnsubmitincident")
+                    .prop("disabled", false)
+                    .text("Submit");
+
                 Swal.fire({
                     icon: "success",
                     text: "Incident report submitted successfully!",
@@ -371,10 +390,15 @@ $(document).ready(function () {
                 });
             },
             error: function (xhr) {
+                
+                 $("#btnsubmitincident")
+                .prop("disabled", false)
+                .text("Submit");
+
                 Swal.fire({
                     icon: "error",
-                    title: "Oops...",
-                    text: xhr.responseJSON?.message || "An error occurred. Please try again.",
+                    title: "Error",
+                    text: "Something went wrong. Try to refresh the page and try again."
                 });
                 console.error(xhr.responseText);
             }

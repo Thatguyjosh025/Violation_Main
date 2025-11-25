@@ -125,7 +125,7 @@
                             </select>
                         </div>
                         <div class="save-wrap">
-                            <button type="submit" class="btn btn-save">Save</button>
+                            <button type="submit" class="btn btn-save" id="btnupdate" >Save</button>
                         </div>
                     </form>
                 </div>
@@ -156,7 +156,7 @@
                     <input type="time" id="resched_end_time" class="form-control">
                     <div class="new-error-msg text-danger small mt-1" id="error_new_end_time"></div>
                 </div>
-                <button type="submit" class="btn btn-primary">Confirm Reschedule</button>
+                <button type="submit" class="btn btn-primary" id="btnconfirm" >Confirm Reschedule</button>
             </form>
         </div>
     </div>
@@ -184,7 +184,7 @@
                     <input type="time" id="follow_end_time" class="form-control">
                     <div class="follow-error-msg text-danger small mt-1" id="error_follow_end_time"></div>
                 </div>
-                <button type="submit" class="btn btn-success">Create Follow-up</button>
+                <button type="submit" class="btn btn-success" id="btnfollowup" >Create Follow-up</button>
             </form>
         </div>
     </div>
@@ -288,7 +288,7 @@
                         </select>
                         <div class="error-msg text-danger small mt-1" id="error_guidance_service"></div>
                     </div>
-                    <button type="submit" class="btn btn-success w-100">Add Session</button>
+                    <button type="submit" class="btn btn-success w-100" id="btnadd" >Add Session</button>
                 </form>
             </div>
         </div>
@@ -522,12 +522,28 @@ $(document).ready(function () {
             _token: '{{ csrf_token() }}'
         };
 
+        $("#btnupdate")
+        .prop("disabled", true)
+        .text("Saving...");
+
+        Swal.fire({
+            title: 'Saving Changes',
+            text: 'Please wait while updating the record.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         $.ajax({
             url: `/counseling/updatesession/${currentSessionId}`,
             method: 'POST',
             data: payload,
             success: function (response) {
                 if (response.success) {
+                    $("#btnupdate")
+                    .prop("disabled", false)
+                    .text("Save");
                     $('#editModal').modal('hide');
                     if ($.fn.DataTable.isDataTable('#violationTable')) {
                         $('#violationTable').DataTable().destroy();
@@ -554,10 +570,16 @@ $(document).ready(function () {
                     const endDate = response.end_date || 'N/A';
                     $('#editModal .kv-value').eq(6).text(endDate);
                 } else {
+                    $("#btnupdate")
+                    .prop("disabled", false)
+                    .text("Save");
                     Swal.fire('Error', response.message || 'Update failed.', 'error');
                 }
             },
             error: function () {
+                $("#btnupdate")
+                .prop("disabled", false)
+                .text("Save");
                 Swal.fire('Error', 'Something went wrong while updating.', 'error');
             }
         });
@@ -649,12 +671,28 @@ $(document).ready(function () {
             _token: '{{ csrf_token() }}'
         };
 
+      $("#btnadd")
+        .prop("disabled", true)
+        .text("Adding Session...");
+
+        Swal.fire({
+            title: 'Adding Counseling Session',
+            text: 'Please wait while saving the new session record.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         $.ajax({
             url: '/counseling_schedule',
             method: 'POST',
             data: payload,
             success: function (response) {
                 if (response.success) {
+                        $("#btnadd")
+                        .prop("disabled", false)
+                        .text("Add Session");
                     $('#addSessionModal').modal('hide');
                     Swal.fire({
                         icon: 'success',
@@ -665,10 +703,16 @@ $(document).ready(function () {
                     });
                     $('#violationTable tbody').load(location.href + " #violationTable tbody > *");
                 } else {
+                    $("#btnadd")
+                    .prop("disabled", false)
+                    .text("Add Session");
                     Swal.fire('Error', response.message, 'error');
                 }
             },
             error: function (xhr) {
+                $("#btnadd")
+                .prop("disabled", false)
+                .text("Add Session");
                 const errorMessage = xhr.responseJSON?.message || 'Something went wrong.';
                 Swal.fire('Error', errorMessage, 'error');
             }
@@ -703,6 +747,10 @@ $(document).ready(function () {
 
         if (hasError) return;
 
+        $("#btnconfirm")
+        .prop("disabled", true)
+        .text("Rescheduling Session...");
+
         $.ajax({
             url: `/counseling/reschedule/${currentReschedId}`,
             method: 'POST',
@@ -714,6 +762,9 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
+                    $("#btnconfirm")
+                    .prop("disabled", false)
+                    .text("Confirm Reschedule");
                     $('#reschedModal').modal('hide');
                     $('#reschedForm')[0].reset();
                     $('#violationTable tbody').load(location.href + " #violationTable tbody > *");
@@ -726,10 +777,16 @@ $(document).ready(function () {
                         showConfirmButton: false
                     });
                 } else {
+                    $("#btnconfirm")
+                    .prop("disabled", false)
+                    .text("Confirm Reschedule");
                     Swal.fire('Error', response.message, 'error');
                 }
             },
             error: function () {
+                $("#btnconfirm")
+                .prop("disabled", false)
+                .text("Confirm Reschedule");
                 Swal.fire('Error', 'Something went wrong while rescheduling.', 'error');
             }
         });
@@ -761,6 +818,10 @@ $(document).ready(function () {
 
         if (hasError) return;
 
+        
+       $("#btnfollowup")
+        .prop("disabled", true)
+        .text("Scheduling Follow-up...");
         $.ajax({
             url: `/counseling/followup/${currentFollowUpId}`,
             method: 'POST',
@@ -772,6 +833,9 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
+                      $("#btnfollowup")
+                    .prop("disabled", false)
+                    .text("Create Follow-up");
                     $('#followModal').modal('hide');
                     $('#followForm')[0].reset();
                     $('#violationTable tbody').load(location.href + " #violationTable tbody > *");
@@ -784,10 +848,16 @@ $(document).ready(function () {
                         showConfirmButton: false
                     });
                 } else {
+                    $("#btnfollowup")
+                    .prop("disabled", false)
+                    .text("Create Follow-up");
                     Swal.fire('Error', response.message, 'error');
                 }
             },
             error: function () {
+                $("#btnfollowup")
+                .prop("disabled", false)
+                .text("Create Follow-up");
                 Swal.fire('Error', 'Something went wrong while creating follow-up.', 'error');
             }
         });
