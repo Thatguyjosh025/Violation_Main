@@ -14,9 +14,9 @@ $auditdata = audits::get();
 
             <div class="container mt-4">
                 <div class="exportBtn d-flex justify-content-end">
-                    <button id="printTable" class="btn btn-primary">
+                    <!-- <button id="printTable" class="btn btn-primary">
                         <i class="bi bi-printer"></i> Print Table
-                    </button>
+                    </button> -->
                 </div>
                 <div class="table-container mt-3">
                     <!-- Table -->

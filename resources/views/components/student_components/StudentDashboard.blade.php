@@ -77,25 +77,29 @@
               <div class="col-md-4">
                   <div class="card p-3 text-center shadow" style="background-color: white; border-radius: 7px; color: #2c698d;">
                       <h5 class="fw-bold mb-3 text-center">Guidance Counseling</h5>
-
+                      <div class="guidanceCard">                 
                       @if($studentCounseling->isEmpty())
                           <div class="text-center py-4 text-muted">
                               You have no scheduled counseling.
                           </div>
                       @else
                           @foreach($studentCounseling as $counsel)
-                              <a href="#" data-bs-toggle="modal" data-bs-target="#CounselingReport" class="text-decoration-none">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#CounselingReport" class="text-decoration-none">
                                   <div class="RequiredCounselingBox rounded d-flex justify-content-between align-items-start"
                                       style="padding: 16px 8px 16px 10px;">
                                       <div class="text-start">
                                           <p class="b-1 mb-1">{{ $counsel -> statusRelation -> session_status}}</p>
                                           <small>{{ $counsel-> start_date }}</small>
+                                          <small>{{ \Carbon\Carbon::parse($counsel->start_time)->format('g:i A') }}
+                                            -
+                                            {{ \Carbon\Carbon::parse($counsel->end_time)->format('g:i A') }}</small>
                                       </div>
                                       <i class="bi bi-person-fill-exclamation fs-3"></i>
                                   </div>
                               </a>
                           @endforeach
                       @endif
+                      </div>
                   </div>
               </div>
 
