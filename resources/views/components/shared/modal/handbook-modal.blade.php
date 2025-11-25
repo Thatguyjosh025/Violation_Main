@@ -21,7 +21,7 @@
                 <div class="invalid-feedback" style="display:none;"></div>
             </div>
             <div id="form-feedback" class="mt-2"></div>
-            <button type="submit" class="btn btn-primary">Create Section</button>
+            <button type="submit" class="btn btn-primary" id="btnsubmit" >Create Section</button>
             </form>
         </div>
         </div>
@@ -53,7 +53,7 @@
             <div id="edit-feedback" class="mt-2"></div>
             </div>
             <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="submit" class="btn btn-primary" id="btneditsubmit" >Save Changes</button>
             </div>
         </form>
         </div>
@@ -109,6 +109,21 @@ $(document).ready(function() {
             return;
         }
 
+        $("#btnsubmit")
+        .prop("disabled", true)
+        .text("Creating Section...");
+
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait while we add the section.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+
         $.ajax({
             url: "{{ route('sections.store') }}",
             method: "POST",
@@ -122,6 +137,10 @@ $(document).ready(function() {
                     timer: 2000,
                     showConfirmButton: false
                 });
+
+                $("#btnsubmit")
+                .prop("disabled", false)
+                .text("Create Section");
 
                 // Reset form and close modal
                 $('#section-form')[0].reset();
@@ -138,7 +157,9 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 let errors = xhr.responseJSON.errors;
-
+                $("#btnsubmit")
+                .prop("disabled", false)
+                .text("Create Section");
                 // Header
                 if(errors.header){
                     const $header = $('#header');
@@ -209,6 +230,19 @@ $(document).ready(function() {
             $descFeedback.text('Description cannot be empty.').show();
             return;
         }
+        $("#btneditsubmit")
+        .prop("disabled", true)
+        .text("Saving Changes...");
+
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait while updating the section.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         $.ajax({
             url: `/sections/${id}`,
@@ -222,6 +256,9 @@ $(document).ready(function() {
                     timer: 2000,
                     showConfirmButton: false
                 });
+                $("#btneditsubmit")
+                .prop("disabled", false)
+                .text("Save Changes");
 
                 $('#editSectionModal').modal('hide');
 
@@ -236,6 +273,11 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 let errors = xhr.responseJSON.errors;
+
+                 $("#btneditsubmit")
+                .prop("disabled", false)
+                .text("Save Changes");
+
                 // Header
                 if(errors.header){
                     const $header = $('#edit-header'); // use edit modal field

@@ -82,7 +82,7 @@ $referalsdata = referals::get();
                     </div>
 
                     <!-- Save Button -->
-                    <button type="submit" class="btn btn-primary">Save Referral</button>
+                    <button type="submit" class="btn btn-primary" id="btnsubmit" >Save Referral</button>
                 </form>
             </div>
         </div>
@@ -120,87 +120,126 @@ $(document).ready(function () {
     });
 
     // Add/Edit Referral Submit
-    $("#referralForm").on("submit", function (e) {
-        e.preventDefault();
+$("#referralForm").on("submit", function (e) {
+    e.preventDefault();
 
-        let referralName = $("#referals").val().trim();
-        let isVisible = $("#is_visible").val();
+    let referralName = $("#referals").val().trim();
+    let isVisible = $("#is_visible").val();
 
-        if (referralName.length < 3) {
-            $("#referals").addClass("is-invalid");
-            $('.invalid-feedback').text("Referral name must be at least 3 characters long.").show();
-            return;
-        } else if (!/^(?![-\/])(?!.*[-\/]$)(?!.*[-\/]{2,})[A-Za-z ]+([-\/][A-Za-z ]+)*$/.test(referralName)) {
-            $("#referals").addClass("is-invalid");
-            $('.invalid-feedback').text("Referral name may only contain letters, spaces, hyphens (-), and slashes (/), but cannot start or end with them, nor contain numbers.").show();
-            return;
-        } else {
-            $("#referals").removeClass("is-invalid");
-            $('.invalid-feedback').hide();
+    if (referralName.length < 3) {
+        $("#referals").addClass("is-invalid");
+        $('.invalid-feedback').text("Referral name must be at least 3 characters long.").show();
+        return;
+    } else if (!/^(?![-\/])(?!.*[-\/]$)(?!.*[-\/]{2,})[A-Za-z ]+([-\/][A-Za-z ]+)*$/.test(referralName)) {
+        $("#referals").addClass("is-invalid");
+        $('.invalid-feedback').text("Referral name may only contain letters, spaces, hyphens (-), and slashes (/), but cannot start or end with them, nor contain numbers.").show();
+        return;
+    } else {
+        $("#referals").removeClass("is-invalid");
+        $('.invalid-feedback').hide();
+    }
+
+    let url = $("#referal_id").val()
+        ? "/update_referral/" + $("#referal_id").val()
+        : "/create_referals";
+
+    $("#btnsubmit")
+    .prop("disabled", true)
+    .text("Saving Referral...");
+
+    Swal.fire({
+        title: 'Saving...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
-
-        let url = $("#referal_id").val()
-            ? "/update_referral/" + $("#referal_id").val()
-            : "/create_referals";
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                referals: referralName,
-                is_visible: isVisible
-            },
-            success: function (response) {
-                $('#referralbody').load(location.href + " #referralbody > *");
-
-                let isEdit = $("#referal_id").val() ? true : false;
-
-                Swal.fire({
-                    icon: 'success',
-                    title: isEdit ? 'Referral Updated!' : 'Referral Added!',
-                    text: response.message || 'The referral has been successfully saved.',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-
-                $("#referal_id").val("");
-                $("#referals").val("");
-                $("#is_visible").val("active");
-                $('#referralModal').modal('hide');
-                $('.modal-backdrop').remove();
-            },
-            error: function (xhr) {
-                let errorMessage = "An error occurred. Please try again.";
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.referals) {
-                    errorMessage = xhr.responseJSON.errors.referals[0];
-                }
-                $("#referals").addClass("is-invalid");
-                $('.invalid-feedback').text(errorMessage).show();
-            }
-        });
     });
 
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            referals: referralName,
+            is_visible: isVisible
+        },
+        success: function (response) {
+            $('#referralbody').load(location.href + " #referralbody > *");
+
+            let isEdit = $("#referal_id").val() ? true : false;
+
+            if ($("#referal_id").val()) {
+                let originalName = $("#referals").data("original");
+                let originalVisibility = $("#is_visible").data("original");
+
+                if (referralName === originalName && isVisible === originalVisibility) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Changes',
+                        text: 'No changes were made to the referral.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    $("#btnsubmit").prop("disabled", false).text("Save Referral");
+                    return;
+                }
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: isEdit ? 'Referral Updated!' : 'Referral Added!',
+                text: response.message || 'The referral has been successfully saved.',
+                timer: 1600,
+                showConfirmButton: false
+            });
+
+             $("#btnsubmit")
+            .prop("disabled", false)
+            .text("Save Referral");
+
+            $("#referal_id").val("");
+            $("#referals").val("");
+            $("#is_visible").val("active");
+            $('#referralModal').modal('hide');
+            $('.modal-backdrop').remove();
+        },
+        error: function (xhr) {
+            let errorMessage = "An error occurred. Please try again.";
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.referals) {
+                errorMessage = xhr.responseJSON.errors.referals[0];
+            }
+               $("#btnsubmit")
+            .prop("disabled", false)
+            .text("Save Referral");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage,
+            });
+            $("#referals").addClass("is-invalid");
+            $('.invalid-feedback').text(errorMessage).show();
+        }
+    });
+});
     // Edit Referral
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");
 
-        let referralID = row.children().eq(0).text().trim();   
-        let referralUID = row.children().eq(1).text().trim();  
+        let referralID = row.children().eq(0).text().trim();
         let referralName = row.children().eq(2).text().trim();
-        let visibility = row.children().eq(3).text().trim().toLowerCase(); 
-
-
-        if (visibility === "active" || visibility === "1") {
-            $("#is_visible").val("active");
-        } else {
-            $("#is_visible").val("inactive");
-        }
+        let visibility = row.children().eq(3).text().trim().toLowerCase();
 
         $("#referal_id").val(referralID);
         $("#referals").val(referralName).removeClass("is-invalid");
+        $("#referals").data("original", referralName);
+
+        $("#is_visible").val(visibility === "active" ? "active" : "inactive");
+        $("#is_visible").data("original", visibility);
+
         $('.invalid-feedback').hide();
         $('#referralModal').modal('show');
     });

@@ -81,7 +81,7 @@ $violationdata = violation::get();
                         </div>
 
                         <!-- Save Button -->
-                        <button type="submit" class="btn btn-primary">Save Violation</button>
+                        <button type="submit" class="btn btn-primary" id="btnsubmit">Save Violation</button>
                     </form>
                 </div>
             </div>
@@ -121,78 +121,105 @@ $(document).ready(function () {
 
     // Add/Edit Violation Submit
     $("#violationForm").on("submit", function (e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        let violationName = $("#violations").val().trim();
-        let isVisible = $("#is_visible").val();
+    let violationName = $("#violations").val().trim();
+    let isVisible = $("#is_visible").val();
 
-        if (violationName.length < 5) {
-            $("#violations").addClass("is-invalid");
-            $('.invalid-feedback').text("Violation name must be at least 5 characters long.").show();
-            return;
-        } else if (!/^[A-Za-z ]+$/.test(violationName)) {
-            $("#violations").addClass("is-invalid");
-            $('.invalid-feedback').text("Violation name should only contain alphabetic characters and spaces.").show();
-            return;
-        } else {
-            $("#violations").removeClass("is-invalid");
-            $('.invalid-feedback').hide();
+    if (violationName.length < 5) {
+        $("#violations").addClass("is-invalid");
+        $('.invalid-feedback').text("Violation name must be at least 5 characters long.").show();
+        return;
+    } else if (!/^[A-Za-z ]+$/.test(violationName)) {
+        $("#violations").addClass("is-invalid");
+        $('.invalid-feedback').text("Violation name should only contain alphabetic characters and spaces.").show();
+        return;
+    } else {
+        $("#violations").removeClass("is-invalid");
+        $('.invalid-feedback').hide();
+    }
+
+    let url = $("#violation_id").val()
+        ? "/update_violation/" + $("#violation_id").val()
+        : "/create_violation";
+
+    $("#btnsubmit")
+    .prop("disabled", true)
+    .text("Saving violation...");
+    Swal.fire({
+        title: 'Saving...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
+    });
 
-        let url = $("#violation_id").val()
-            ? "/update_violation/" + $("#violation_id").val()
-            : "/create_violation";
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            violations: violationName,
+            is_visible: isVisible
+        },
+        success: function (response) {
+            $('#violationbody').load(location.href + " #violationbody > *");
 
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                violations: violationName,
-                is_visible: isVisible
-            },
-            success: function (response) {
-                $('#violationbody').load(location.href + " #violationbody > *");
+            let isEdit = $("#violation_id").val() ? true : false;
 
-                let isEdit = $("#violation_id").val() ? true : false;
-
-                if (response.message && response.message.includes("No changes detected")) {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'No Changes',
-                        text: 'No changes were made to the violation.',
-                        timer: 5000,
-                        showConfirmButton: true
-                    });
-                    return;
-                }
-
+            if (response.message && response.message.includes("No changes detected")) {
                 Swal.fire({
-                    icon: 'success',
-                    title: isEdit ? 'Violation Updated!' : 'Violation Added!',
-                    text: response.message || 'The violation has been successfully saved.',
-                    timer: 3000,
+                    icon: 'info',
+                    title: 'No Changes',
+                    text: 'No changes were made to the violation.',
+                    timer: 2000,
                     showConfirmButton: false
                 });
-
-                $("#violation_id").val("");
-                $("#violations").val("");
-                $("#is_visible").val("active");
-                $('#violationModal').modal('hide');
-                $('.modal-backdrop').remove();
-            },
-            error: function (xhr) {
-                let errorMessage = "An error occurred. Please try again.";
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.violations) {
-                    errorMessage = xhr.responseJSON.errors.violations[0];
-                }
-                $("#violations").addClass("is-invalid");
-                $('.invalid-feedback').text(errorMessage).show();
+                      $("#btnsubmit")
+                    .prop("disabled", false)
+                    .text("Save violation");
+                return;
             }
-        });
+
+         
+            Swal.fire({
+                icon: 'success',
+                title: isEdit ? 'Violation Updated!' : 'Violation Added!',
+                text: response.message || 'The violation has been successfully saved.',
+                timer: 1600,
+                showConfirmButton: false
+            });
+                $("#btnsubmit")
+                    .prop("disabled", false)
+                    .text("Save violation");
+
+            $("#violation_id").val("");
+            $("#violations").val("");
+            $("#is_visible").val("active");
+            $('#violationModal').modal('hide');
+            $('.modal-backdrop').remove();
+        },
+        error: function (xhr) {
+            let errorMessage = "An error occurred. Please try again.";
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.violations) {
+                errorMessage = xhr.responseJSON.errors.violations[0];
+            }
+            $("#btnsubmit")
+            .prop("disabled", false)
+            .text("Save violation");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage,
+            });
+            $("#violations").addClass("is-invalid");
+            $('.invalid-feedback').text(errorMessage).show();
+        }
     });
+});
 
     // Edit Violation
     $(document).on("click", ".edit-btn", function () {

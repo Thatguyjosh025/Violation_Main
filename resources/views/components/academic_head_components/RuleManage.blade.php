@@ -102,7 +102,7 @@
                         </select>
                         <div class="invalid-feedback"></div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create Rule</button>
+                    <button type="submit" class="btn btn-primary" id="btnsubmit" >Create Rule</button>
                 </form>
             </div>
         </div>
@@ -147,7 +147,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <button type="submit" class="btn btn-success" id="btnsubmitedit" >Save Changes</button>
                 </form>
             </div>
         </div>
@@ -233,6 +233,20 @@ $(document).ready(function() {
 
             if (!valid) return;
 
+
+            $("#btnsubmit")
+            .prop("disabled", true)
+            .text("Creating Rule...");
+
+            Swal.fire({
+                title: 'Creating...',
+                text: 'Please wait while creating rule.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             $.ajax({
                 url: "/create_rules",
                 type: "POST",
@@ -240,6 +254,10 @@ $(document).ready(function() {
                 success: function () {
                     $('#createRuleModal').modal('hide');
                     $('#rulebody').load(location.href + " #rulebody > *");
+
+                    $("#btnsubmit")
+                    .prop("disabled", false)
+                    .text("Create Rule");
 
                 Swal.fire({
                     icon: 'success',
@@ -250,25 +268,38 @@ $(document).ready(function() {
                 });
                 },
                 error: function (xhr) {
+                    $("#btnsubmit")
+                    .prop("disabled", false)
+                    .text("Create Rule");
+                     Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An unexpected error occurred. Please try again.'
+                        });
                     if (xhr.status === 422) {
                         const errors = xhr.responseJSON.errors;
                         for (const field in errors) {
                             setInvalid($(`[name=${field}]`), errors[field][0]);
                         }
-                    } else {
-                        alert('An unexpected error occurred. Please try again.');
-                    }
+                    } 
                 }
             });
         });
 
         // OPEN EDIT MODAL AND POPULATE DATA
         $(document).on('click', '.edit-btn-rule', function () {
-            $('#edit_rule_id').val($(this).data('id'));
-            $('#edit_rule_name').val($(this).data('name'));
-            $('#edit_description').val($(this).data('description'));
-            $('#edit_violation_id').val($(this).data('violation'));
-            $('#edit_severity_id').val($(this).data('severity'));
+            const id = $(this).data('id');
+            const name = $(this).data('name');
+            const description = $(this).data('description');
+            const violation = $(this).data('violation');
+            const severity = $(this).data('severity');
+
+            $('#edit_rule_id').val(id);
+            $('#edit_rule_name').val(name).data('original', name);
+            $('#edit_description').val(description).data('original', description);
+            $('#edit_violation_id').val(violation).data('original', violation);
+            $('#edit_severity_id').val(severity).data('original', severity);
+
             $('#editRuleModal').modal('show');
         });
 
@@ -303,6 +334,62 @@ $(document).ready(function() {
 
             if (!valid) return;
 
+            // Button loader FIRST
+            $("#btnsubmitedit")
+                .prop("disabled", true)
+                .text("Saving Changes...");
+
+            // FIRST Swal loader
+            Swal.fire({
+                title: 'Saving...',
+                text: 'Please wait while saving your changes.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Detect NO CHANGES WHILE loader is showing
+            let noChanges =
+                ruleName === $('#edit_rule_name').data('original') &&
+                description === $('#edit_description').data('original') &&
+                violation == $('#edit_violation_id').data('original') &&
+                severity == $('#edit_severity_id').data('original');
+
+            if (noChanges) {
+
+                // KEEP loader for a moment before showing "No Changes"
+                setTimeout(() => {
+                    Swal.close();
+
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Changes',
+                        text: 'No changes were made to the rule.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    $("#btnsubmitedit")
+                        .prop("disabled", false)
+                        .text("Save Changes");
+
+                }, 800); // smooth delay for loader visibility
+
+                return;
+            }
+
+            // If there ARE changes, continue AJAX
+            Swal.close();
+            Swal.fire({
+                title: 'Saving...',
+                text: 'Please wait while saving your changes.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             $.ajax({
                 url: `/update_rule/${$('#edit_rule_id').val()}`,
                 type: 'POST',
@@ -314,19 +401,13 @@ $(document).ready(function() {
                     severity_id: severity
                 },
                 success: function (response) {
-                    if (response.status === "no_changes") {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'No Changes',
-                            text: response.message,
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                        return;
-                    }
 
                     $('#editRuleModal').modal('hide');
                     $('#rulebody').load(location.href + " #rulebody > *");
+
+                    $("#btnsubmitedit")
+                        .prop("disabled", false)
+                        .text("Save Changes");
 
                     Swal.fire({
                         icon: 'success',
@@ -336,15 +417,12 @@ $(document).ready(function() {
                         showConfirmButton: false
                     });
                 },
-                error: function (xhr) {
-                    if (xhr.status === 422) {
-                        const errors = xhr.responseJSON.errors;
-                        for (const field in errors) {
-                            setInvalid($(`[name=edit_${field}]`), errors[field][0]);
-                        }
-                    } else {
-                        alert('An unexpected error occurred. Please try again.');
-                    }
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An unexpected error occurred. Please try again.'
+                    });
                 }
             });
         });

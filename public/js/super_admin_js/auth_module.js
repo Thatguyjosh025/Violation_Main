@@ -262,6 +262,9 @@
                 status: $('#edituser #status').val(),
                 _token: $('meta[name="csrf-token"]').attr('content')
             };
+             $(".btn-update")
+                .prop("disabled", true)
+                .text("Updating...");
 
             // 🔹 Show loader before sending request
             Swal.fire({
@@ -285,10 +288,16 @@
                             title: "Update successful!",
                             icon: "success",
                             timer: 3000
+                            
                         });
 
                         $('#edituser').modal('hide');
                         $('#authbody').load(location.href + " #authbody > *");
+
+                        $(".btn-update")
+                        .prop("disabled", false)
+                        .text("Update");
+    
                     } 
                     else if (response.status === 204) {
                         Swal.fire({
@@ -297,6 +306,9 @@
                             icon: "info",
                             timer: 3000
                         });
+                         $(".btn-update")
+                        .prop("disabled", false)
+                        .text("Update");
                     } 
                     else {
                         alert(response.message);
@@ -318,6 +330,9 @@
                         title: "Update Failed",
                         text: "An error occurred while updating. Please check your input or try again later."
                     });
+                     $(".btn-update")
+                        .prop("disabled", false)
+                        .text("Updating...");
                 }
             });
         }
@@ -392,12 +407,18 @@
     var formData = new FormData($('#importBackupForm')[0]);
     formData.append('_token', $('meta[name="csrf-token"]').attr('content')); // CSRF token
 
+
+    
     Swal.fire({
         title: 'Importing Backup CSV...',
         text: 'Please wait while we process your file.',
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
     });
+
+    $("#importBackupBtn")
+    .prop("disabled", true)
+    .text("Uploading...");
 
     $.ajax({
         url: '/import_users_csv', // your import route
@@ -414,6 +435,10 @@
                 showConfirmButton: false
             });
 
+            $("#importBackupBtn")
+            .prop("disabled", false)
+            .text("Upload");
+
             $('#authbody').load(location.href + " #authbody > *"); // reload table
             $('#importBackupModal').modal('hide'); // close modal
         },
@@ -421,8 +446,11 @@
             Swal.close();
             Swal.fire({
                 icon: "error",
-                text: "Failed to import Backup CSV."
+                text: "The csv file field is required."
             });
+            $("#importBackupBtn")
+            .prop("disabled", false)
+            .text("Upload");
         }
     });
 });

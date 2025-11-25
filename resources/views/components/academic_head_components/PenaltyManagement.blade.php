@@ -82,7 +82,7 @@ $penaltydata = penalties::get();
                     </div>
 
                     <!-- Submit -->
-                    <button type="submit" class="btn btn-primary">Save Penalty</button>
+                    <button type="submit" class="btn btn-primary" id="btnsubmit" >Save Penalty</button>
                 </form>
 
             </div>
@@ -157,84 +157,106 @@ $(document).ready(function () {
         });
     }
 
-    $("#penaltyForm").on("submit", function (e) {
-        e.preventDefault();
+$("#penaltyForm").on("submit", function (e) {
+    e.preventDefault();
 
-        // get and normalize
-        let penaltyName = $("#penalties").val().trim();
-        let visibility = $("#is_visible").val();
+    let penaltyName = $("#penalties").val().trim();
+    let visibility = $("#is_visible").val();
 
-        if (penaltyName.length < 5) {
-            $("#penalties").addClass("is-invalid");
-            $('.invalid-feedback').text("Penalty name must be at least 5 characters long.").show();
-            return;
+    if (penaltyName.length < 5) {
+        $("#penalties").addClass("is-invalid");
+        $('.invalid-feedback').text("Penalty name must be at least 5 characters long.").show();
+        return;
+    }
+
+    if (!penaltyRegex.test(penaltyName)) {
+        $("#penalties").addClass("is-invalid");
+        $('.invalid-feedback').text("Penalty name may only contain letters, single spaces, hyphens (-), and slashes (/). It cannot start or end with a special character, and it cannot contain consecutive special characters or double spaces.").show();
+        return;
+    } else {
+        $("#penalties").removeClass("is-invalid");
+        $('.invalid-feedback').hide();
+    }
+
+    let url = $("#penalties_id").val()
+        ? "/update_penalty/" + $("#penalties_id").val()
+        : "/create_penalties";
+
+    $("#btnsubmit")
+    .prop("disabled", true)
+    .text("Saving penalty...");
+
+    Swal.fire({
+        title: 'Saving...',
+        text: 'Please wait while we process your request.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
+    });
 
-        // regex validation
-        if (!penaltyRegex.test(penaltyName)) {
-            $("#penalties").addClass("is-invalid");
-            $('.invalid-feedback').text("Penalty name may only contain letters, single spaces, hyphens (-), and slashes (/). It cannot start or end with a special character, and it cannot contain consecutive special characters or double spaces.").show();
-            return;
-        } else {
-            $("#penalties").removeClass("is-invalid");
-            $('.invalid-feedback').hide();
-        }
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            penalties: penaltyName,
+            is_visible: visibility
+        },
+        success: function (response) {
+            const isEdit = $("#penalties_id").val() !== "";
 
-        // Decide URL (create or update)
-        let url = $("#penalties_id").val()
-            ? "/update_penalty/" + $("#penalties_id").val()
-            : "/create_penalties";
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                penalties: penaltyName,
-                is_visible: visibility
-            },
-            success: function (response) {
-                const isEdit = $("#penalties_id").val() !== "";
-
-                if (response.message && response.message.includes("No changes detected")) {
-                    // show info and keep modal open if you want to edit
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'No Changes',
-                        text: 'No changes were made to the penalty.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    return;
-                }
-
-                // Reload the penalty table fragment and reinitialize DataTable (safe)
-                reloadPenaltyTableFragment();
-
+            if (response.message && response.message.includes("No changes detected")) {
                 Swal.fire({
-                    icon: 'success',
-                    title: isEdit ? 'Penalty Updated!' : 'Penalty Added!',
-                    text: response.message || 'The penalty has been successfully saved.',
-                    timer: 1600,
+                    icon: 'info',
+                    title: 'No Changes',
+                    text: 'No changes were made to the penalty.',
+                    timer: 2000,
                     showConfirmButton: false
                 });
-
-                // Reset modal and hide
-                resetModalForAdd();
-                $('#penaltyModal').modal('hide');
-            },
-            error: function (xhr) {
-                let errorMessage = "An error occurred. Please try again.";
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.penalties) {
-                    errorMessage = xhr.responseJSON.errors.penalties[0];
-                }
-                $("#penalties").addClass("is-invalid");
-                $('.invalid-feedback').text(errorMessage).show();
+                $("#btnsubmit")
+                .prop("disabled", false)
+                .text("Save penalty");
+                return;
             }
-        });
+
+            reloadPenaltyTableFragment();
+
+            Swal.fire({
+                icon: 'success',
+                title: isEdit ? 'Penalty Updated!' : 'Penalty Added!',
+                text: response.message || 'The penalty has been successfully saved.',
+                timer: 1600,
+                showConfirmButton: false
+            });
+
+                $("#btnsubmit")
+                .prop("disabled", false)
+                .text("Save penalty");
+
+            resetModalForAdd();
+            $('#penaltyModal').modal('hide');
+        },
+        error: function (xhr) {
+            let errorMessage = "An error occurred. Please try again.";
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.penalties) {
+                errorMessage = xhr.responseJSON.errors.penalties[0];
+            }
+              $("#btnsubmit")
+                .prop("disabled", false)
+                .text("Save penalty");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage,
+            });
+            $("#penalties").addClass("is-invalid");
+            $('.invalid-feedback').text(errorMessage).show();
+        }
     });
+});
 
     $(document).on("click", ".edit-btn", function () {
         let row = $(this).closest("tr");

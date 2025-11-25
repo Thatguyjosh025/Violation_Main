@@ -406,6 +406,19 @@ $(document).ready(function () {
         formData.append('Remarks', $("#Remarks").val());
         formData.append('appeal', $("#appeal").val());
 
+      
+         $("#approve-btn")
+            .prop("disabled", true)
+            .text("Approving...");
+
+        Swal.fire({
+            title: 'Processing Approval',
+            text: 'The incident report is being approved. Please wait...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
         $.ajax({
             url: "/post_violation",
             type: "POST",
@@ -413,8 +426,12 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function (response) {
+                
                 $('#violationProcess').modal('hide');
-                console.log("Incident recorded successfully!");
+
+                $("#approve-btn")
+                    .prop("disabled", false)
+                    .text("Approve");
 
                 $('#incidentReportForm')[0].reset();
                 $("#active-incidents").load(location.href + " #active-incidents > *");
@@ -428,8 +445,18 @@ $(document).ready(function () {
                 });
             },
             error: function (xhr) {
-                console.log("Error submitting form. Please check the inputs.");
                 console.log(xhr.responseText);
+
+                  $("#approve-btn")
+                    .prop("disabled", false)
+                    .text("Approve");
+                    
+                Swal.fire({
+                    icon: "error",
+                    title: "Submission Failed",
+                    text: "There was a problem recording the incident. Please check your inputs and try again.",
+                    confirmButtonText: "OK"
+                });
             }
         });
     });
