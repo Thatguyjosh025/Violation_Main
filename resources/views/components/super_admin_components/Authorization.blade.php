@@ -275,6 +275,10 @@
             }
         });
 
+        $("#uploadGraduatesBtn")
+        .prop("disabled", true)
+        .text("Uploading...");
+
         $.ajax({
             url: '/deactivate-graduates',
             method: 'POST',
@@ -293,6 +297,10 @@
                     timer: 2000
                 });
 
+            $("#uploadGraduatesBtn")
+            .prop("disabled", false)
+            .text("Upload");
+
                 $('#authbody').load(location.href + " #authbody > *");
                 $('#graduatesFile').val('');
                 $('#graduatesModal').modal('hide');
@@ -305,8 +313,11 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Error uploading CSV.'
+                    text: 'The csv file field is required.'
                 });
+            $("#uploadGraduatesBtn")
+            .prop("disabled", false)
+            .text("Upload");
             }
         });
     });

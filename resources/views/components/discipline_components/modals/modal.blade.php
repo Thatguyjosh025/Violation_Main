@@ -422,7 +422,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="submit" class="btn btn-primary" id="btneditsubmit" >Save changes</button>
         </div>
       </form>
     </div>
@@ -625,7 +625,7 @@ function loadRuleDropdown(url, id, selectedValue = null) {
   //populate selected violation for edit form
   $(document).on("change", "#edit_violation_type", function () {
       let violation_id = $(this).val();
-
+      $("#edit_ruleDropdown").empty().append('<option value="">Select Rule</option>');
       resetEditRuleDisplay();
 
       if (!violation_id) return;
@@ -805,7 +805,7 @@ function loadRuleDropdown(url, id, selectedValue = null) {
     if (status == 8) {
         Swal.fire({
             title: "Are you sure?",
-            text: "This will mark the violation as Resolved.",
+            text: "Marking this violation as RESOLVED will finalize the record and disable editing.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
@@ -824,6 +824,23 @@ function loadRuleDropdown(url, id, selectedValue = null) {
 
     // AJAX function defined inline
     function submitAjax() {
+
+        $("#btneditsubmit")
+        .prop("disabled", true)
+        .text("Saving Changes...");
+
+
+        Swal.fire({
+            title: "Updating...",
+            text: "Please wait while updating the record.",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+
         $.ajax({
             type: "POST",
             url: "/update_student_info/" + id,
@@ -847,6 +864,11 @@ function loadRuleDropdown(url, id, selectedValue = null) {
                 update_notes: $('#edit_notes').val()
             },
             success: function(response) {
+
+                 $("#btneditsubmit")
+                .prop("disabled", false)
+                .text("Save Changes");
+
                 Swal.fire({
                     title: "Updated Successfully!",
                     text: "The information has been saved.",
@@ -861,7 +883,16 @@ function loadRuleDropdown(url, id, selectedValue = null) {
                 $('#violationrecordstable').DataTable().ajax.reload(null, false);
             },
             error: function(xhr) {
-                console.log(xhr.responseText);
+                $("#btneditsubmit")
+                    .prop("disabled", false)
+                    .text("Save Changes");
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Update Failed",
+                    text:  "Error updating the record.",
+                    confirmButtonText: "OK"
+                });
             }
         });
     }

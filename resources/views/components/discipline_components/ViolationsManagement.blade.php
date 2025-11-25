@@ -486,6 +486,20 @@ $(document).ready(function(){
             formData.append('upload_evidence[]', file);
         });
 
+        
+        $("#submit_violation")
+        .prop("disabled", true)
+        .text("Creating Violation...");
+
+        Swal.fire({
+            title: 'Processing Violation Record',
+            text: 'Please wait while saving the violation record.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         $.ajax({
             url: "/post_violation",
             type: "POST",
@@ -497,6 +511,9 @@ $(document).ready(function(){
                 resetViolationForm();
 
                 Swal.fire({ icon: "success", text: "Violation recorded successfully!", timer: 5000 });
+                $("#submit_violation")
+                .prop("disabled", false)
+                .text("Submit Violation");
 
                 ["#ruleName", "#descriptionName", "#severityName"].forEach(sel => $(sel).text("-"));
                 $('#displaystudentno').text("-");
@@ -522,6 +539,9 @@ $(document).ready(function(){
             },
             error: function (xhr) {
                 Swal.fire({ icon: "error", title: "Oops...", text: "Oops! It looks like some required fields are missing or incorrect. Please check your inputs." });
+                    $("#submit_violation")
+                    .prop("disabled", false)
+                    .text("Submit Violation");
                 console.log(xhr.responseText);
             }
         });
