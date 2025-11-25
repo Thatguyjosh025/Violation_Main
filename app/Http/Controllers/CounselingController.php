@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\counseling;
 use Illuminate\Http\Request;
+use App\Models\notifications;
 use App\Models\postviolation;
 use Illuminate\Support\Facades\DB;
 
@@ -32,13 +33,12 @@ class CounselingController extends Controller
     public function storeCounselingSchedule(Request $request)
     {
         $validated = $request->validate([
-            'id' => 'required|integer',
             'student_no'   => 'required|string',
             'student_name' => 'required|string',
             'school_email' => 'required|email',
-            'year_level'  => 'nullable|string',
-            'program'     => 'nullable|string',
-            'violation' => 'nullable|string',
+            'year_level'   => 'nullable|string',
+            'program'      => 'nullable|string',
+            'violation'    => 'nullable|string',
             'severity'     => 'nullable|string',
             'priority_level'=> 'required|integer',
             'guidance_service'=> 'required|integer',
@@ -52,7 +52,11 @@ class CounselingController extends Controller
             return response()->json($validationResult);
         }
 
-        // create a NEW parent UID for storeCounselingSchedule
+        // Determine source of request
+        $isFromReferral = $request->has('id');
+        $postViolationId = $request->id ?? null;
+
+        // Generate parent UID
         $latestUid = Counseling::whereNotNull('parent_uid')
             ->orderBy('id', 'desc')
             ->value('parent_uid');
@@ -65,9 +69,8 @@ class CounselingController extends Controller
         }
 
         $parent_uid = 'SNS-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-        $parent_session_id = null; // 🧩 FIX: Always null for new roots
 
-        // Create record
+        // Create counseling session
         $counseling = Counseling::create([
             'student_no'       => $validated['student_no'],
             'student_name'     => $validated['student_name'],
@@ -80,33 +83,37 @@ class CounselingController extends Controller
             'program'          => $validated['program'],
             'guidance_service' => $validated['guidance_service'],
             'start_date'       => $validated['start_date'],
-            'end_date'         => null,
-            'start_time'       => $validated['start_time'],
             'end_time'         => $validated['end_time'],
-            'session_notes'    => null,
-            'emotional_state'  => null,
-            'plan_goals'       => null,
-            'parent_uid'       => $parent_uid,         
-            'parent_session_id'=> $parent_session_id,  
+            'start_time'       => $validated['start_time'],
+            'parent_uid'       => $parent_uid,
+            'parent_session_id'=> null,
         ]);
 
-        if ($counseling) {
-            postviolation::where('id', $validated['id'])
-            ->update(['is_admitted' => false]);
-
-            return response()->json([
-                'success' => true,
-                'message' => "Counseling session scheduled successfully.",
-                'parent_uid' => $parent_uid,
-                'parent_session_id' => $parent_session_id
-            ]);
+        // UPDATE is_admitted ONLY WHEN COMING FROM REFERRAL
+        if ($isFromReferral) {
+            postviolation::where('id', $postViolationId)
+                ->update(['is_admitted' => false]);
         }
 
+       $notif = notifications::create([
+            'title'        => 'Counseling Session Scheduled',
+            'message'      => 'You have been scheduled for a counseling session.',
+            'role'         => 'student',
+            'student_no'   => $request->student_no,
+            'school_email' => $request->school_email,
+            'type'         => 'posted',
+            'url'          => null,
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+        ]);
+
         return response()->json([
-            'success' => false,
-            'message' => 'Failed to create counseling record.'
-        ], 500);
+            'success' => true,
+            'message' => "Counseling session scheduled successfully.",
+            'parent_uid' => $parent_uid
+        ]);
     }
+
 
 
     public function getSession($id)

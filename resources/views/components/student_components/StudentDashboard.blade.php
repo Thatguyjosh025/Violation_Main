@@ -7,7 +7,7 @@
   $notif = notifications::get();
 
   $studentNotifs = $notif->where('student_no', Auth::user()->student_no)->where('is_read', 0);
-  $studentCounseling = counseling::where('student_no', Auth::user()->student_no)->get();
+  $studentCounseling = counseling::where('student_no', Auth::user()->student_no)->where('status',[2,3])->get();
   function countStudentMajor() {
         return postviolation::where('is_active', 1)
         ->where('severity_Name', 'like', '%Major%')
