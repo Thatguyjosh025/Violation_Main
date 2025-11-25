@@ -56,56 +56,56 @@ return new class extends Migration
                 'role' => env('SUPERADMIN_ROLE'),
                 'status' => env('SUPERADMIN_STATUS')
             ],
-            [
-                'firstname' => 'Jeff',
-                'lastname' => 'Caber',
-                'email' => 'discipline@alabang.sti.edu.ph',
-                'student_no' => 'ALA0157F',
-                // 'course_and_section' => 'Faculty',
-                'password' => bcrypt('123456789'),
-                'role' => 'discipline',
-                'status' => 'active'
-            ],
-            [
-                'firstname' => 'Arvin',
-                'lastname' => 'Marlin',
-                'email' => 'faculty@alabang.sti.edu.ph',
-                'student_no' => 'ALA0153F',
-                // 'course_and_section' => 'Faculty',
-                'password' => bcrypt('123456789'),
-                'role' => 'faculty',
-                'status' => 'active'
-            ],
-            [
-                'firstname' => 'Jc',
-                'lastname' => 'Yangson',
-                'email' => 'counselor@alabang.sti.edu.ph',
-                'student_no' => 'ALA0159F',
-                // 'course_and_section' => 'Faculty',
-                'password' => bcrypt('123456789'),
-                'role' => 'counselor',
-                'status' => 'active'
-            ],
-            [
-                'firstname' => 'Ricson',
-                'lastname' => 'Ricardo',
-                'email' => 'academichead@alabang.sti.edu.ph',
-                'student_no' => 'ALA0151F',
-                // 'course_and_section' => 'Faculty',
-                'password' => bcrypt('123456789'),
-                'role' => 'head',
-                'status' => 'active'
-            ],
-            [
-                'firstname' => 'Vince Ivan',
-                'lastname' => 'Mangampo',
-                'email' => 'mangampo.311699@alabang.sti.edu.ph',
-                'student_no' => '0200311699',
-                // 'course_and_section' => 'Faculty',
-                'password' => bcrypt('123456789'),
-                'role' => 'student',
-                'status' => 'active'
-            ]
+            // [
+            //     'firstname' => 'Jeff',
+            //     'lastname' => 'Caber',
+            //     'email' => 'discipline@alabang.sti.edu.ph',
+            //     'student_no' => 'ALA0157F',
+            //     // 'course_and_section' => 'Faculty',
+            //     'password' => bcrypt('123456789'),
+            //     'role' => 'discipline',
+            //     'status' => 'active'
+            // ],
+            // [
+            //     'firstname' => 'Arvin',
+            //     'lastname' => 'Marlin',
+            //     'email' => 'faculty@alabang.sti.edu.ph',
+            //     'student_no' => 'ALA0153F',
+            //     // 'course_and_section' => 'Faculty',
+            //     'password' => bcrypt('123456789'),
+            //     'role' => 'faculty',
+            //     'status' => 'active'
+            // ],
+            // [
+            //     'firstname' => 'Jc',
+            //     'lastname' => 'Yangson',
+            //     'email' => 'counselor@alabang.sti.edu.ph',
+            //     'student_no' => 'ALA0159F',
+            //     // 'course_and_section' => 'Faculty',
+            //     'password' => bcrypt('123456789'),
+            //     'role' => 'counselor',
+            //     'status' => 'active'
+            // ],
+            // [
+            //     'firstname' => 'Ricson',
+            //     'lastname' => 'Ricardo',
+            //     'email' => 'academichead@alabang.sti.edu.ph',
+            //     'student_no' => 'ALA0151F',
+            //     // 'course_and_section' => 'Faculty',
+            //     'password' => bcrypt('123456789'),
+            //     'role' => 'head',
+            //     'status' => 'active'
+            // ],
+            // [
+            //     'firstname' => 'Vince Ivan',
+            //     'lastname' => 'Mangampo',
+            //     'email' => 'mangampo.311699@alabang.sti.edu.ph',
+            //     'student_no' => '0200311699',
+            //     // 'course_and_section' => 'Faculty',
+            //     'password' => bcrypt('123456789'),
+            //     'role' => 'student',
+            //     'status' => 'active'
+            // ]
         ]);
 
     }
