@@ -30,7 +30,7 @@ class CounselingController extends Controller
         ]);
     }
 
-    public function storeCounselingSchedule(Request $request)
+   public function storeCounselingSchedule(Request $request)
     {
         $validated = $request->validate([
             'student_no'   => 'required|string',
@@ -52,11 +52,12 @@ class CounselingController extends Controller
             return response()->json($validationResult);
         }
 
-        // Determine source of request
-        $isFromReferral = $request->has('id');
+        //     IDENTIFY SOURCES
+        $isFromReferral = $request->has('id');   // Referral intake
+        $isFromAdd = !$request->has('id');       // Add counseling
         $postViolationId = $request->id ?? null;
 
-        // Generate parent UID
+        //  GENERATE PARENT UID
         $latestUid = Counseling::whereNotNull('parent_uid')
             ->orderBy('id', 'desc')
             ->value('parent_uid');
@@ -70,7 +71,6 @@ class CounselingController extends Controller
 
         $parent_uid = 'SNS-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
-        // Create counseling session
         $counseling = Counseling::create([
             'student_no'       => $validated['student_no'],
             'student_name'     => $validated['student_name'],
@@ -89,23 +89,24 @@ class CounselingController extends Controller
             'parent_session_id'=> null,
         ]);
 
-        // UPDATE is_admitted ONLY WHEN COMING FROM REFERRAL
         if ($isFromReferral) {
             postviolation::where('id', $postViolationId)
                 ->update(['is_admitted' => false]);
         }
 
-       $notif = notifications::create([
-            'title'        => 'Counseling Session Scheduled',
-            'message'      => 'You have been scheduled for a counseling session.',
-            'role'         => 'student',
-            'student_no'   => $request->student_no,
-            'school_email' => $request->school_email,
-            'type'         => 'posted',
-            'url'          => null,
-            'date_created' => Carbon::now()->format('Y-m-d'),
-            'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
-        ]);
+        if ($isFromReferral || $isFromAdd) {
+            notifications::create([
+                'title'        => 'Counseling Session Scheduled',
+                'message'      => 'You have been scheduled for a counseling session.',
+                'role'         => 'student',
+                'student_no'   => $request->student_no,
+                'school_email' => $request->school_email,
+                'type'         => 'posted',
+                'url'          => null,
+                'date_created' => Carbon::now()->format('Y-m-d'),
+                'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+            ]);
+        }
 
         return response()->json([
             'success' => true,
@@ -113,6 +114,7 @@ class CounselingController extends Controller
             'parent_uid' => $parent_uid
         ]);
     }
+
 
 
 
@@ -369,7 +371,8 @@ class CounselingController extends Controller
             'end_date',
             'start_time',
             'end_time',
-            'guidance_service'
+            'guidance_service',
+            'status'
         )->get();
 
         // Return the schedules as JSON

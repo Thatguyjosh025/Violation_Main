@@ -80,10 +80,11 @@
     for (let i = 1; i <= daysInMonth; i++) {
         const dayDiv = $("<div>").text(i);
 
-        // Check if this date has schedules
+        // Only mark if schedule exists with status 2 or 3
         const hasSchedule = schedules.some(schedule => {
             const scheduleDate = new Date(schedule.start_date);
             return (
+                (schedule.status === 2 || schedule.status === 3) &&
                 scheduleDate.getDate() === i &&
                 scheduleDate.getMonth() === month &&
                 scheduleDate.getFullYear() === year
@@ -94,6 +95,7 @@
             dayDiv.addClass("has-schedule");
             dayDiv.on("click", () => showSchedulesForDate(i, month, year, schedules));
         }
+
         if (i === date.getDate() && year === date.getFullYear() && month === date.getMonth()) {
             dayDiv.addClass("today");
         }
@@ -114,10 +116,10 @@ function showSchedulesForDate(day, month, year, schedules) {
     const modalList = $("#scheduleList");
     modalList.empty(); // Clear previous content
 
-    const selectedDate = new Date(year, month, day);
     const filteredSchedules = schedules.filter(schedule => {
         const scheduleDate = new Date(schedule.start_date);
         return (
+            (schedule.status === 2 || schedule.status === 3 || schedule.status === 5) &&
             scheduleDate.getDate() === day &&
             scheduleDate.getMonth() === month &&
             scheduleDate.getFullYear() === year

@@ -3,7 +3,7 @@
     use App\Models\notifications;
     use App\Models\counseling;
     $notif = notifications::get();
-    $highPriority = counseling::where('priority_risk', 3)->get();
+    $highPriority = counseling::where('priority_risk', 3)->where('status',[2,3])->get();
 
 
     function countCounseling() {
@@ -120,7 +120,6 @@
                                     </div>
                                 </div>
                              </div>
-
                         </div>
                     </div>
                 
