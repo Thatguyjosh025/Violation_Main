@@ -130,9 +130,12 @@
                                 class="d-block w-100 p-5 border border-dark rounded text-center bg-white" 
                                 style="cursor: pointer; border-style: dashed;">
                             <div class="text-dark fw-medium">Upload Evidence</div>
-                            <small class="text-muted">Click to select files or drag them here</small>
+                            <small class="text-muted">
+                              Click to select files or drag them here<br>
+                              Allowed formats: JPG, JPEG, PNG, PDF, DOCX (max 2MB)
+                            </small>
                           </label>
-                          <input type="file" id="uploadEvidence" name="upload_evidence[]" multiple hidden>
+                          <input type="file" id="uploadEvidence" name="upload_evidence[]"  accept=".jpg,.jpeg,.png,.pdf,.docx" multiple hidden>
                         </div>
 
                         <!-- preview stack -->

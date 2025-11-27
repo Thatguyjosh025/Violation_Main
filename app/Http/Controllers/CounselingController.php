@@ -141,6 +141,7 @@ class CounselingController extends Controller
         $resolvedStatusId = 5;
         $endDate = ($validated['status'] == $resolvedStatusId) ? Carbon::now()->toDateString() : null;
 
+        // Update session data
         $session->update([
             'year_level'        => $validated['year_level'] ?? $session->year_level,
             'program'           => $validated['program'] ?? $session->program,
@@ -152,9 +153,20 @@ class CounselingController extends Controller
             'end_date'          => $endDate,
         ]);
 
-        // If marked as resolved, mark all in the family as resolved
+        // If marked as resolved, mark entire family resolved
         if ($validated['status'] == $resolvedStatusId) {
             $this->markFamilyResolved($session);
+            notifications::create([
+                'title'        => 'Counseling Session Resolved',
+                'message'      => 'Your counseling session has been marked as resolved.',
+                'role'         => 'student',
+                'student_no'   => $session->student_no,
+                'school_email' => $session->school_email,
+                'type'         => 'status_change',
+                'url'          => null,
+                'date_created' => Carbon::now()->format('Y-m-d'),
+                'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
+            ]);
         }
 
         return response()->json([
@@ -185,6 +197,18 @@ class CounselingController extends Controller
             'start_time' => $validated['start_time'],
             'end_time'   => $validated['end_time'],
             // 'status' => 'Rescheduled',
+        ]);
+
+        notifications::create([
+            'title'        => 'Counseling Session Rescheduled',
+            'message'      => 'Your counseling session has been rescheduled. Please check the updated schedule.',
+            'role'         => 'student',
+            'student_no'   => $session->student_no,
+            'school_email' => $session->school_email,
+            'type'         => 'rescheduled',
+            'url'          => null,
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
         ]);
 
         return response()->json([
@@ -232,6 +256,18 @@ class CounselingController extends Controller
             'start_time'        => $validated['start_time'],
             'end_time'          => $validated['end_time'],
             'parent_session_id' => $root->parent_uid, // Always same root UID
+        ]);
+
+        notifications::create([
+            'title'        => 'Follow-up Counseling Session Scheduled',
+            'message'      => 'A follow-up counseling session has been scheduled for you. Please check the details.',
+            'role'         => 'student',
+            'student_no'   => $parent->student_no,
+            'school_email' => $parent->school_email,
+            'type'         => 'follow_up',
+            'url'          => null,
+            'date_created' => Carbon::now()->format('Y-m-d'),
+            'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
         ]);
 
         return response()->json([

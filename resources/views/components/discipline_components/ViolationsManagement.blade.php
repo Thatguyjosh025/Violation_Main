@@ -127,62 +127,81 @@ $(document).ready(function(){
     // File Handling with Duplicate Rules
     // -----------------------------
     function handleFiles(files) {
-        const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    let duplicates = [];
+    let oversized = [];
 
-        if (files.length > 1) {
-            let duplicates = files.filter(file => selectedFiles.find(f => f.name === file.name));
-            if (duplicates.length > 0) {
-                Swal.fire({ icon: "warning", text: `Multiple files have been already selected.` });
-                return;
-            }
-        } else if (files.length === 1) {
-            let file = files[0];
-            let existingIndex = selectedFiles.findIndex(f => f.name === file.name);
-            if (existingIndex !== -1) {
-                // Replace old file
-                selectedFiles[existingIndex] = file;
-                Swal.fire({ icon: "info", text: `${file.name} have already selected.` });
+    files.forEach(file => {
+        // Check for duplicate
+        let existingIndex = selectedFiles.findIndex(f => f.name === file.name);
 
-                // Remove old entry
-                [...fileList.children].forEach(li => {
-                    if (li.firstChild.textContent.includes(file.name)) {
-                        li.remove();
-                    }
-                });
-            }
+        if (existingIndex !== -1) {
+            duplicates.push(file.name); // record duplicate
+            selectedFiles[existingIndex] = file; // replace old file
+            // Remove old displayed entry
+            // [...fileList.children].forEach(li => {
+            //     if (li.firstChild.textContent.includes(file.name)) li.remove();
+            // });
         }
 
-        files.forEach(file => {
-            if (file.size > maxSize) {
-                Swal.fire({ icon: "error", text: `${file.name} exceeds 2MB limit.` });
-                return;
-            }
+        // Check for size
+        if (file.size > maxSize) {
+            oversized.push(file.name);
+            return; // skip adding
+        }
 
-            if (!selectedFiles.find(f => f.name === file.name)) {
-                selectedFiles.push(file);
+        // Add file if not oversized
+        if (!selectedFiles.find(f => f.name === file.name)) {
+            selectedFiles.push(file);
 
-                let li = document.createElement("li");
-                li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
-                li.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+            let li = document.createElement("li");
+            li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+            li.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
 
-                let removeBtn = document.createElement("button");
-                removeBtn.classList.add("btn", "btn-sm", "btn-danger");
-                removeBtn.textContent = "x";
-                removeBtn.onclick = () => {
-                    selectedFiles = selectedFiles.filter(f => f !== file);
-                    li.remove();
-                    syncInput();
-                };
+            let removeBtn = document.createElement("button");
+            removeBtn.classList.add("btn", "btn-sm", "btn-danger");
+            removeBtn.textContent = "x";
+            removeBtn.onclick = () => {
+                selectedFiles = selectedFiles.filter(f => f.name !== file.name);
+                li.remove();
+                syncInput();
+            };
 
-                li.appendChild(removeBtn);
-                fileList.appendChild(li);
-            }
+            li.appendChild(removeBtn);
+            fileList.appendChild(li);
+        }
+    });
+
+    // Fire Swal for duplicates if any
+    if (duplicates.length > 0) {
+        Swal.fire({
+            icon: "info",
+            title: "File already selected",
+            html: `These files were already selected:<br><b>${duplicates.join('<br>')}</b>`
         });
-
-        syncInput();
-        fileInput.value = ""; // allow reselection of same file
     }
 
+      if (duplicates.length == 1) {
+        Swal.fire({
+            icon: "info",
+            title: "File already selected",
+            html: `This file were already selected:<br><b>${duplicates.join('<br>')}</b>`
+        });
+    }
+
+    // Fire Swal for oversized files if any
+    if (oversized.length > 0) {
+        Swal.fire({
+            icon: "error",
+            title: "File Too Large",
+            html: `These files exceed 2MB and were not added:<br><b>${oversized.join('<br>')}</b>`
+        });
+    }
+
+    syncInput();
+    fileInput.value = ""; // allow selecting same file again
+}
+    
     function syncInput() {
         let dataTransfer = new DataTransfer();
         selectedFiles.forEach(f => dataTransfer.items.add(f));
