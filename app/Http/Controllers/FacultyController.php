@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\incident;
-use App\Models\notifications;
 use Illuminate\Http\Request;
+use App\Models\notifications;
+use App\Models\postviolation;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class FacultyController extends Controller
 {
@@ -66,4 +68,43 @@ class FacultyController extends Controller
             'data' => $incident
         ]);
     }
+    public function filterRecords(Request $request)
+{
+    $faculty = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+
+    if ($request->type === 'active') {
+
+        $data = postviolation::with(['violation', 'status'])
+            ->where('faculty_name', $faculty)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'student_no' => $item->student_no,
+                    'student_name' => $item->student_name,
+                    'school_email' => $item->school_email,
+                    'violation' => $item->violation->violations ?? 'N/A',
+                    'status' => $item->status->status ?? 'N/A',
+                    'date' => \Carbon\Carbon::parse($item->Date_Created)->format('Y-m-d'),
+                ];
+            });
+
+    } else if ($request->type === 'rejected') {
+
+        $data = incident::where('faculty_name', $faculty)
+            ->where('is_visible','reject')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'student_no' => $item->student_no,
+                    'student_name' => $item->student_name,
+                    'school_email' => $item->school_email,
+                    'violation' => $item->violation->violations ?? 'N/A',
+                    'status' => 'Rejected',
+                    'date' => \Carbon\Carbon::parse($item->created_at)->format('Y-m-d'),
+                ];
+            });
+    }
+
+    return response()->json($data);
+}
 }
