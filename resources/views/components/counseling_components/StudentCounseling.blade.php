@@ -30,7 +30,7 @@
                          <tr>
                             <td data-label="Student No.">{{ $session ->student_no }}</td>
                             <td data-label="Name">{{ $session -> student_name }}</td>
-                            <td data-label="Violation">{{ $session -> violation }}</td>
+                            <td data-label="Violation">{{ $session -> violation ?? '-'}}</td>
                             <td data-label="Status">
                                 <span class="badge text-light" style="background-color: green;">{{ $session -> statusRelation -> session_status }}</span>
                             </td>
@@ -67,7 +67,6 @@
             <div class="section-title">General Info</div>
             <div class="kv-row"><div class="kv-label">Name</div><div class="kv-value" id="view_name">Mark Jecil Bausa</div></div>
             <div class="kv-row"><div class="kv-label">Violation</div><div class="kv-value" id="view_violation">Misbehaviour</div></div>
-            <div class="kv-row"><div class="kv-label">Severity</div><div class="kv-value"><span class="badge-severity" id="view_status">Major A</span></div></div>
 
             <hr class="my-3">
 
@@ -125,7 +124,7 @@ $(document).ready(function () {
 
                 $('#view_name').text(response.student_name || 'N/A');
                 $('#view_violation').text(response.violation || 'N/A');
-                $('#view_status').text(response.severity || 'N/A');
+                $('#view_status').text(response.priorityRiskRelation?.priority_risk || 'N/A');
                 $('#view_session_notes').text(response.session_notes || 'No session notes provided.');
                 $('#view_emotional').text(response.emotional_state || 'N/A');
                 $('#view_behavior').text(response.behavior_observe || 'N/A');

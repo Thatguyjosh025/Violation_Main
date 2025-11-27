@@ -20,6 +20,24 @@
         ->where('student_no','like',Auth::user()->student_no)
         ->count();
   }
+
+function recentMinorViolation() {
+    return postviolation::where('student_no', Auth::user()->student_no)
+        ->whereHas('violation', function ($q) {
+            $q->where('severity_Name', 'Minor');
+        })
+        ->latest('Date_Created')
+        ->first();
+}
+
+function recentMajorViolation() {
+    return postviolation::where('student_no', Auth::user()->student_no)
+        ->whereHas('violation', function ($q) {
+            $q->where('severity_Name', 'like', 'Major%'); // catches ALL Major types
+        })
+        ->latest('Date_Created')
+        ->first();
+}
  @endphp
       <div class="d-flex align-items-center">
         <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -58,7 +76,7 @@
                   <h1 class="fw-bold">{{ countStudentMinor() }}</h1>
                   <p class="mb-1">Recent Violation</p>
                   <div class="bg-white p-2 rounded shadow-sm">
-                    <p class="mb-0">Improper Uniform</p>
+                    <p class="mb-0">   {{ recentMinorViolation() ? recentMinorViolation()->violation->violations : 'No Minor Violations' }}</p>
                   </div>
                 </div>
               </div>
@@ -69,7 +87,7 @@
                   <h1 class="fw-bold">{{ countStudentMajor() }}</h1>
                   <p class="mb-1">Recent Violation</p>
                   <div class="bg-white p-2 rounded shadow-sm text-dark">
-                    <p class="mb-0">Gambling</p>
+                    <p class="mb-0">{{ recentMajorViolation() ? recentMajorViolation()->violation->violations : 'No Major Violations' }}</p>
                   </div>
                 </div>
               </div>

@@ -22,6 +22,9 @@
                     <button class="btn btn-sm btn-secondary" id="validateName">Name Validator</button>
                 </div>
                 <div class="d-flex align-items-center">
+                    <input type="month" id="startMonth" class="form-control ms-2" style="width: 140px;" placeholder="Start Month">
+                    <input type="month" id="endMonth" class="form-control ms-2" style="width: 140px;" placeholder="End Month">
+                    <button class="btn btn-sm btn-primary ms-2" id="applyDateFilter" style="margin-right: 7px;" >Apply</button>
                     <select id="statusFilter" class="sort-dropdown form-select" style="width: auto; min-width: 150px;">
                         <option value="">Show All Active</option>
                         <option value="Pending">Pending</option>
@@ -82,11 +85,15 @@
         serverSide: true,
         ajax: {
             url: "{{ route('violation_records.data') }}",
-            data: function (d) {
+           data: function (d) {
                 const status = $('#statusFilter').val();
                 if (status) {
                     d.status = status;
                 }
+                const start = $('#startMonth').val();
+                const end = $('#endMonth').val();
+                if (start) d.start_month = start;
+                if (end) d.end_month = end;
             }
         },
         columns: [
@@ -111,6 +118,9 @@
         }
     });
 
+    $('#applyDateFilter').on('click', function() {
+        table.ajax.reload();
+    });
     // Filter table when dropdown changes
     $('#statusFilter').on('change', function () {
         table.ajax.reload();

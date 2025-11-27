@@ -323,6 +323,16 @@ Route::get('/violation_records/data', function (Request $request) {
         $query->where('is_active', true);
     }
 
+    if ($request->has('start_month') && $request->start_month) {
+        $startDate = Carbon::parse($request->start_month . '-01')->startOfMonth();
+        $query->where('Date_Created', '>=', $startDate);
+    }
+
+    if ($request->has('end_month') && $request->end_month) {
+        $endDate = Carbon::parse($request->end_month . '-01')->endOfMonth();
+        $query->where('Date_Created', '<=', $endDate);
+    }
+
     return DataTables::of($query)
         ->addColumn('violation', fn($data) => $data->violation->violations ?? 'N/A')
         ->addColumn('status', fn($data) => $data->status->status ?? 'N/A')

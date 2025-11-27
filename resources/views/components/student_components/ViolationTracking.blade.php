@@ -121,7 +121,7 @@ $(document).ready(function () {
 
         if (violations.length === 0) {
               $('#activeViolationCards').append(`
-                <div id="no-violations-msg" class="d-flex justify-content-center align-items-center" 
+                <div id="no-violations-msg" class="d-flex justify-content-center align-items-center mt-4" 
                      style="width: 100%;">
                     <p class="text-center mb-0">No active violations found.</p>
                 </div>

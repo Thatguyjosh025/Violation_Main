@@ -2,16 +2,31 @@
 @php
     use App\Models\notifications;
     use App\Models\postviolation;
+    use Carbon\Carbon;
+
 
     $notif = notifications::get();
     $dataviolators = postviolation::get();
 
     function countMinor() {
-    return postviolation::where('is_active', 1)->where('severity_Name', 'like', '%Minor%') ->count();
-    }
+        // Get the start and end of the current month
+        $startOfMonth = Carbon::now('Asia/Manila')->startOfMonth();
+        $endOfMonth = Carbon::now('Asia/Manila')->endOfMonth();
 
+        return postviolation::where('is_active', 1)
+            ->where('severity_Name', 'like', '%Minor%')
+            ->whereBetween('Date_Created', [$startOfMonth, $endOfMonth])
+            ->count();
+    }
     function countMajor() {
-        return postviolation::where('is_active', 1)->where('severity_Name', 'like', '%Major%')->count();
+        // Get the start and end of the current month in Manila time
+        $startOfMonth = Carbon::now('Asia/Manila')->startOfMonth();
+        $endOfMonth = Carbon::now('Asia/Manila')->endOfMonth();
+
+        return postviolation::where('is_active', 1)
+            ->where('severity_Name', 'like', '%Major%')
+            ->whereBetween('Date_Created', [$startOfMonth, $endOfMonth])
+            ->count();
     }
 @endphp
 <div class="d-flex align-items-center">
@@ -65,7 +80,7 @@
                              <!-- Minor Card -->
                             <div class="custom-card flex-fill">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <div class="card-title">Minor</div>
+                                    <div class="card-title">Total Minor Violators</div>
                                     <i class="bi bi-exclamation-circle-fill text-warning fs-3"></i>
                                 </div>
                                 <div class="card-number">{{ countMinor() }}</div>
@@ -78,7 +93,7 @@
                             <!-- Major Card -->
                             <div class="custom-card flex-fill">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <div class="card-title">Major</div>
+                                    <div class="card-title">Total Major Violators</div>
                                     <i class="bi bi-exclamation-circle-fill text-danger fs-3"></i>
                                 </div>
                                 <div class="card-number">{{ countMajor() }}</div>
@@ -92,32 +107,32 @@
 
                     <!-- Notification Card -->
                     <div class="col-lg-5">
-                    <div class="card shadow-sm notif" id="notif-container">
-                        <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
-                        <div class="notif-scrollable">
-                            <!-- notif cards -->
-                            @if ($notif->where('role', 'admin')->where('is_read', 0)->isEmpty())
-                                <div class="text-center py-4 text-muted">
-                                    You have no notifications.
-                                </div>
-                            @else
-                                @foreach ($notif->where('role', 'admin')->where('is_read', 0) as $notifdata)
-                                    <a href="{{ $notifdata->url }}" class="text-decoration-none text-dark">
-                                        <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1">{{ $notifdata->title }}</h6>
-                                                <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
-                                                <small class="text-muted">{{ $notifdata->created_time }}</small>
-                                                <small class="text-muted">{{ $notifdata->date_created }}</small>
+                        <div class="card shadow-sm notif" id="notif-container">
+                            <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
+                            <div class="notif-scrollable">
+                                <!-- notif cards -->
+                                @if ($notif->where('role', 'admin')->where('is_read', 0)->isEmpty())
+                                    <div class="text-center py-4 text-muted">
+                                        You have no notifications.
+                                    </div>
+                                @else
+                                    @foreach ($notif->where('role', 'admin')->where('is_read', 0) as $notifdata)
+                                        <a href="{{ $notifdata->url }}" class="text-decoration-none text-dark">
+                                            <div class="notification-card d-flex align-items-start mb-3 p-3 rounded shadow-sm bg-light position-relative" data-notif-id="{{ $notifdata->id }}">
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">{{ $notifdata->title }}</h6>
+                                                    <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
+                                                    <small class="text-muted">{{ $notifdata->created_time }}</small>
+                                                    <small class="text-muted">{{ $notifdata->date_created }}</small>
+                                                </div>
+                                                <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
                                             </div>
-                                            <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
-                                        </div>
-                                    </a>
-                                @endforeach
-                            @endif
+                                        </a>
+                                    @endforeach
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
         </div>
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>

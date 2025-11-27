@@ -78,7 +78,7 @@
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const currentUrl = window.location.href;
+    const currentPath = window.location.pathname; // Ignore query string
     const navLinks = document.querySelectorAll('.nav-link');
     let matched = false;
 
@@ -88,7 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
             link.classList.add('active');
         });
 
-        if (link.href === currentUrl) {
+        const linkPath = new URL(link.href).pathname; // Ignore query string in links
+        if (linkPath === currentPath) {
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
             matched = true;
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!matched) {
         navLinks.forEach(l => l.classList.remove('active'));
-        const fallback = document.querySelector(".nav-link[href='{{ url('discipline_dashboard') }}']");        
+        const fallback = document.querySelector(".nav-link[href='{{ url('discipline_dashboard') }}']");
         if (fallback) fallback.classList.add('active');
     }
 });

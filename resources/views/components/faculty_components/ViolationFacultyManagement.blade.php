@@ -86,9 +86,12 @@ $accounts = users::get();
                                class="d-block w-100 p-5 border border-dark rounded text-center bg-white drop-area"
                                style="cursor: pointer; border-style: dashed;">
                             <div class="text-dark fw-medium">Upload Evidence</div>
-                            <small class="text-muted">Click to select files or drag them here</small>
+                              <small class="text-muted">
+                              Click to select files or drag them here<br>
+                              Allowed formats: JPG, JPEG, PNG, PDF, DOCX (max 2MB)
+                            </small>
                         </label>
-                        <input type="file" id="uploadEvidence" name="upload_evidence[]" multiple hidden>
+                        <input type="file" id="uploadEvidence" name="upload_evidence[]" multiple hidden accept=".jpg,.jpeg,.png,.pdf,.docx">
                         <ul id="fileList" class="list-group mt-2" style="max-height: 150px; overflow-y: auto;"></ul>
                     </div>
 
@@ -214,6 +217,8 @@ $(document).ready(function () {
     }
 
     function handleFiles(files) {
+        let duplicateFiles = []; // track duplicates
+
         for (const file of files) {
             if (!selectedFiles.find(f => f.name === file.name)) {
                 selectedFiles.push(file);
@@ -230,8 +235,20 @@ $(document).ready(function () {
                 };
                 li.appendChild(removeBtn);
                 fileList.appendChild(li);
+            } else {    
+                duplicateFiles.push(file.name); // add duplicates
             }
         }
+
+        if (duplicateFiles.length > 0) {
+            Swal.fire({
+                icon: "info",
+                text: duplicateFiles.length === 1
+                    ? `${duplicateFiles[0]} is already selected.`
+                    : `These files were already selected: ${duplicateFiles.join(", ")}`
+            });
+        }
+
         syncInput();
     }
 
