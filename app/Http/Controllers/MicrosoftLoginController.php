@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\users;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
@@ -44,11 +45,9 @@ class MicrosoftLoginController extends Controller
 {
     $state = $request->get('state');
     $code  = $request->get('code');
-
     if (!$state || !$code || $state !== Session::get('oauth_state')) {
         abort(403, 'Access Denied: Invalid state');
     }
-
     Session::forget('oauth_state');
 
     // Exchange code for access token
@@ -66,8 +65,6 @@ class MicrosoftLoginController extends Controller
     }
 
     $accessToken = $tokenResponse['access_token'];
-
-    // Fetch user info from Microsoft Graph
     $userResponse = Http::withToken($accessToken)->get('https://graph.microsoft.com/v1.0/me');
 
     if (!$userResponse->ok()) {
@@ -75,32 +72,26 @@ class MicrosoftLoginController extends Controller
     }
 
     $userData = $userResponse->json();
-
-    // Domain restriction
     $allowedDomain = 'alabang.sti.edu.ph';
+
     if (!str_ends_with($userData['userPrincipalName'], "@$allowedDomain")) {
         return redirect('/403');
     }
 
-    // Determine role and status
     $role = null;
     $status = 'active';
 
     if (isset($userData['displayName'])) {
         if (str_contains($userData['displayName'], '(Student)')) {
             $role = 'student';
-            // $status = 'inactive';
         } elseif (str_contains($userData['displayName'], '(Faculty)')) {
             $role = 'faculty';
-            $status = 'active';
         }
     }
 
-    // Extract student ID
     preg_match('/\.(\d+)@/', $userData['mail'], $matches);
     $student_id = isset($matches[1]) ? '02000' . $matches[1] : null;
 
-    // Check if user exists
     $user = Users::where('email', $userData['mail'])->first();
 
     if (!$user) {
@@ -115,24 +106,34 @@ class MicrosoftLoginController extends Controller
         ]);
     }
 
-    // Block login if inactivesdsdsdsd
     if ($user->status === 'inactive') {
         return response()->view('errors.Inactive', [], 403);
     }
 
-    // Log in the user
+    // --- Logout other sessions for this user ---
+    $sessionId = session()->getId();
+    $sessions = DB::table('sessions')
+        ->where('user_id', $user->id)
+        ->where('id', '!=', $sessionId)
+        ->pluck('id');
+
+    foreach ($sessions as $s) {
+        Session::getHandler()->destroy($s);
+    }
+    // --- End logout logic ---
+
     Auth::login($user);
 
-    // Redirect based on role
     return match ($user->role) {
         'discipline' => redirect()->route('discipline_dashboard'),
-        // 'super'      => redirect()->route('super_dashboard') ingore this line since the credentials will be embeded in the ENV,
         'student'    => redirect()->route('student_dashboard'),
         'faculty'    => redirect()->route('faculty_dashboard'),
         'counselor'  => redirect()->route('counseling_dashboard'),
-        'head'  => redirect()->route('academic-head_dashboard'),
+        'head'       => redirect()->route('academic-head_dashboard'),
         default      => redirect()->route('home'),
     };
 }
+
+
 
 }

@@ -5,9 +5,9 @@
   use App\Models\penalties;
 
   $accounts = users::get();
-  $violate = violation::get();
-  $ref = referals::get();
-  $pen = penalties::get();
+  $violate = violation::where('is_visible', 'active')->get();  
+  $ref = referals::where('is_visible', 'active')->get();  
+  $pen = penalties::where('is_visible', 'active')->get();  
   $facultyUsers = users::where('role', 'faculty')->get();
 @endphp
 <!-- Violation Process Form Modal -->
