@@ -24,7 +24,7 @@ class DataController extends Controller
 
     public function getViolations(Request $request)
     {
-        return response()->json(['violation_data' => violation::all()]);
+        return response()->json(['violation_data' => violation::where('is_visible', 'active')->get()]);
     }
 
     public function getPenalties(Request $request)
