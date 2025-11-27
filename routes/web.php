@@ -144,6 +144,9 @@ Route::middleware(['permission:faculty', RedirectIfNotAuthenticated::class])->gr
 
     // Create
     Route::post('/submit_incident_report', [FacultyController::class, 'submitIncidentReport']);
+
+    Route::get('/incident-records/filter', [FacultyController::class, 'filterRecords']);
+
 });
 
 // ==========================
