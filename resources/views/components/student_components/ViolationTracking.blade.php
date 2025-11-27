@@ -65,10 +65,13 @@ $ruleinfos = rules::get();
                                     class="d-block w-100 p-5 border border-dark rounded text-center bg-white"
                                     style="cursor: pointer; border-style: dashed;">
                                     <div class="text-dark fw-medium">Upload Appeal Evidence</div>
-                                    <small class="text-muted">Click to select files or drag them here</small>
+                                     <small class="text-muted">
+                                    Click to select files or drag them here<br>
+                                    Allowed formats: JPG, JPEG, PNG, PDF, DOCX (max 2MB)
+                                    </small>
                                 </label>
 
-                                <input type="file" id="uploadAppealEvidence" name="upload_appeal_evidence[]" multiple style="display:none;">
+                                <input type="file" id="uploadAppealEvidence" name="upload_appeal_evidence[]" multiple style="display:none;" accept=".jpg,.jpeg,.png,.pdf,.docx">
 
                                 <div style="max-height: 150px; overflow-y: auto;">
                                     <ul id="fileList" class="list-group mt-2"></ul>
