@@ -29,12 +29,12 @@ class DataController extends Controller
 
     public function getPenalties(Request $request)
     {
-        return response()->json(['penalties_data' => penalties::all()]);
+        return response()->json(['penalties_data' => penalties::where('is_visible', 'active')->get()]);
     }
 
     public function getReferals(Request $request)
     {
-        return response()->json(['referals_data' => referals::all()]);
+        return response()->json(['referals_data' => referals::where('is_visible', 'active')->get()]);
     }
 
     public function getStatus(Request $request)

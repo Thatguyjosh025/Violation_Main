@@ -71,7 +71,6 @@ foreach ($statusLabels as $statusId => $statusName) {
 <div class="d-flex align-items-center mb-3">
     <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
     <h3 class="mb-0">Reports and Analytics</h3>
-    <input type="text" class="form-control ms-auto w-25 w-md-50 w-sm-75" id="searchInput" placeholder="Search">
 </div>
 
 <div class="container mt-4 w-100">
