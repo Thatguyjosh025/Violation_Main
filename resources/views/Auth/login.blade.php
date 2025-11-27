@@ -107,6 +107,10 @@ $(document).ready(function () {
             }
             return false;
         }
+         $("#loginButton")
+        .prop("disabled", true)
+        .text("Logging in...");
+
 
         // AJAX request to login
         $.ajax({
@@ -121,6 +125,11 @@ $(document).ready(function () {
                 // Clear previous errors again
                 $('#login_email').removeClass('is-invalid').next('.invalid-feedback').remove();
                 $('#login_password').removeClass('is-invalid').next('.invalid-feedback').remove();
+
+                $("#loginButton")
+                .prop("disabled", false)
+                .text("Login");
+
 
                 if (response.success) {
                     // Redirect based on role
@@ -140,6 +149,9 @@ $(document).ready(function () {
                 } else {
                     // If the response has validation errors
                     if (response.errors) {
+                        $("#loginButton")
+                        .prop("disabled", false)
+                        .text("Login");
                         if (response.errors.email) {
                             $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">' + response.errors.email + '</div>');
                         }
@@ -147,6 +159,9 @@ $(document).ready(function () {
                             $('#login_password').addClass('is-invalid').after('<div class="invalid-feedback">' + response.errors.password + '</div>');
                         }
                     } else {
+                        $("#loginButton")
+                        .prop("disabled", false)
+                        .text("Login");
                         // General invalid credentials error
                         $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
                         $('#login_password').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
@@ -154,6 +169,9 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
+                $("#loginButton")
+                .prop("disabled", false)
+                .text("Login");
                 // Handle server error
                 $('#login_email').removeClass('is-invalid').next('.invalid-feedback').remove();
                 $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
