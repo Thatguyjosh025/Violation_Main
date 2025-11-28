@@ -22,7 +22,9 @@ class StudentController extends Controller
     
          $violations = PostViolation::with(['violation', 'penalty', 'referal', 'status'])
         ->where('student_no', $student_number)
-        ->where('status_name', '!=', 8) // exclude resolved status
+        ->whereHas('status', function ($q) {
+            $q->whereNotIn('status_name', [6, 7, 8]);
+        })
         ->paginate(9);
 
         // 5 mins violation demo expiration check

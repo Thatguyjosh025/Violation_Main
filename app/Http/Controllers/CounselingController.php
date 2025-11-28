@@ -120,7 +120,7 @@ class CounselingController extends Controller
 
             $textValue = null;
             if ($field === 'guidance_service') {
-                $model = \App\Models\guidanceService::find($value);
+                $model = \App\Models\guidanceservice::find($value);
                 $textValue = $model ? $model->guidance_service : null;
             }
             if ($field === 'priority_risk') {
