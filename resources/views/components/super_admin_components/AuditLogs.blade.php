@@ -41,8 +41,8 @@ $auditdata = audits::get();
                                     <td data-label="change_by">{{ $data->user->firstname . ' ' . $data->user->lastname }}</td>
                                     <td data-label="event_type">{{ $data->event_type }}</td>
                                     <td data-label="field_name">{{ $data->field_name }}</td>
-                                    <td data-label="old_value">{{ $data->old_value }}</td>
-                                    <td data-label="new_value">{{ $data->new_value }}</td>
+                                    <td data-label="old_value">{{ $data->old_value_text ?? $data->old_value }}</td>
+                                    <td data-label="new_value">{{ $data->new_value_text ?? $data->new_value }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

@@ -6,12 +6,14 @@ use Log;
 use Carbon\Carbon;
 use App\Models\rules;
 use App\Models\users;
+use App\Models\audits;
 use App\Models\incident;
 use App\Models\statuses;
 use App\Models\violation;
 use Illuminate\Http\Request;
 use App\Models\notifications;
 use App\Models\postviolation;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
@@ -131,6 +133,51 @@ class AdminController extends Controller
                 'is_admitted' => ($request->counseling_required === 'Yes') ? true : false,
             ]);
 
+            //  AUDIT (REQUEST FIELDS ONLY)
+            // ==============================
+            $userId = Auth::user()->id;
+
+            foreach ($request->all() as $field => $value) {
+
+                if (in_array($field, ['_token', '_method', 'upload_evidence','course','incident_id'])) {
+                    continue;
+                }
+
+                if (is_array($value)) {
+                    $value = json_encode($value);
+                }
+
+                // Detect which model to use
+                $textValue = null;
+
+                if ($field === 'violation_type') {
+                    $model = \App\Models\violation::find($value);
+                    $textValue = $model ? $model->violations : null;
+                }
+
+                if ($field === 'penalty_type') {
+                    $model = \App\Models\penalties::find($value);
+                    $textValue = $model ? $model->penalties : null;
+                }
+
+                if ($field === 'referal_type') {
+                    $model = \App\Models\referals::find($value);
+                    $textValue = $model ? $model->referals : null;
+                }
+
+                audits::create([
+                    'changed_at'     => now()->format('Y-m-d H:i'),
+                    'changed_by'     => $userId,
+                    'event_type'     => 'Create',
+                    'field_name'     => $field,
+                    'old_value'      => null,
+                    'old_value_text' => null,
+                    'new_value'      => $value,      // store ID for relationships
+                    'new_value_text' => $textValue,  // store readable text
+                ]);
+            }
+            // ==============================
+
             // Delete incident and notify faculty
             if ($incident) {
                 $facultyId = $incident->faculty_id;
@@ -176,6 +223,51 @@ class AdminController extends Controller
                 'is_admitted' => ($request->counseling_required === 'Yes') ? true : false,
             ]);
         }
+
+        // AUDIT (REQUEST FIELDS ONLY)
+        // ==============================
+        $userId = Auth::user()->id;
+
+            foreach ($request->all() as $field => $value) {
+
+                if (in_array($field, ['_token', '_method', 'upload_evidence','course'])) {
+                    continue;
+                }
+
+                if (is_array($value)) {
+                    $value = json_encode($value);
+                }
+
+                // Detect which model to use
+                $textValue = null;
+
+                if ($field === 'violation_type') {
+                    $model = \App\Models\violation::find($value);
+                    $textValue = $model ? $model->violations : null;
+                }
+
+                if ($field === 'penalty_type') {
+                    $model = \App\Models\penalties::find($value);
+                    $textValue = $model ? $model->penalties : null;
+                }
+
+                if ($field === 'referal_type') {
+                    $model = \App\Models\referals::find($value);
+                    $textValue = $model ? $model->referals : null;
+                }
+
+                audits::create([
+                    'changed_at'     => now()->format('Y-m-d H:i'),
+                    'changed_by'     => $userId,
+                    'event_type'     => 'Create',
+                    'field_name'     => $field,
+                    'old_value'      => null,
+                    'old_value_text' => null,
+                    'new_value'      => $value,      // store ID for relationships
+                    'new_value_text' => $textValue,  // store readable text
+                ]);
+            }
+        // ==============================
 
         $notif = notifications::create([
             'title' => 'New Active Violation',
@@ -256,6 +348,25 @@ class AdminController extends Controller
             return response()->json(['status' => 500, 'message' => 'Student not found']);
         }
 
+        //old values
+        $oldValues = [
+            'student_no' => $student->student_no,
+            'student_name' => $student->student_name,
+            'school_email' => $student->school_email,
+            'violation_type' => $student->violation->violations,
+            'penalty_type' => $student->penalty->penalties,
+            'severity_Name' => $student->severity_Name,
+            'status_name' => $student->status->status,
+            'rule_Name' => $student->rule_Name,
+            'description_Name' => $student->description_Name,
+            'faculty_involvement' => $student->faculty_involvement,
+            'faculty_name' => $student->faculty_name,
+            'counseling_required' => $student->counseling_required,
+            'referal_type' => $student->referal->referals,
+            'Remarks' => $student->Remarks,
+            'Notes' => $student->Notes,
+        ];
+
         $oldStatus = $student->status ? $student->status->status_text : null;
 
         $student->update([
@@ -278,6 +389,77 @@ class AdminController extends Controller
             'Update_at' => Carbon::now('Asia/Manila')
         ]);
 
+        // ==============================
+        // AUDIT LOGGING
+        $userId = Auth::user()->id;
+        $fieldMappings = [
+            'update_student_no' => 'student_no',
+            'update_name' => 'student_name',
+            'update_school_email' => 'school_email',
+            'update_violation_type' => 'violation_type',
+            'update_penalty_type' => 'penalty_type',
+            'update_severity' => 'severity_Name',
+            'update_status' => 'status_name',
+            'update_rule_name' => 'rule_Name',
+            'update_description' => 'description_Name',
+            'update_faculty_involvement' => 'faculty_involvement',
+            'update_faculty_name' => 'faculty_name',
+            'update_counseling_required' => 'counseling_required',
+            'update_referral_type' => 'referal_type',
+            'update_remarks' => 'Remarks',
+            'update_notes' => 'Notes',
+        ];
+
+    foreach ($request->all() as $field => $value) {
+        if (in_array($field, ['_token', '_method', 'upload_evidence','update_student_no','update_name','update_school_email','update_notes'])) {
+            continue;
+        }
+
+        $modelField = $fieldMappings[$field] ?? null;
+        if (!$modelField) {
+            continue;
+        }
+
+        $oldValue = $oldValues[$modelField] ?? null;
+        $oldValueText = null;
+
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+
+        // Detect which model to use for readable text
+        $textValue = null;
+        if ($field === 'update_violation_type') {
+            $model = \App\Models\violation::find($value);
+            $textValue = $model ? $model->violations : null;
+        }
+        if ($field === 'update_penalty_type') {
+            $model = \App\Models\penalties::find($value);
+            $textValue = $model ? $model->penalties : null;
+        }
+        if ($field === 'update_referral_type') {
+            $model = \App\Models\referals::find($value);
+            $textValue = $model ? $model->referals : null;
+        }
+        if ($field === 'update_status') {
+            $status = statuses::find($value);
+            $textValue = $status ? $status->status : null;
+        }
+
+        audits::create([
+            'changed_at'     => now()->format('Y-m-d H:i'),
+            'changed_by'     => $userId,
+            'event_type'     => 'Update',
+            'field_name'     => $field,
+            'old_value'      => $oldValue,
+            'old_value_text' => $oldValueText, // You can map this if needed
+            'new_value'      => $value,
+            'new_value_text' => $textValue,
+        ]);
+    }
+
+        // ==============================
+
         $newStatusText = statuses::find($request->update_status)->status ?? 'Unknown';
 
         if ($newStatusText === 'Resolved') {
@@ -288,7 +470,7 @@ class AdminController extends Controller
         if ($oldStatus != $newStatusText) {
             $url = ($newStatusText === 'Resolved') ? '/violation_history' : '/violation_tracking';
 
-            $notif = notifications::create([
+            notifications::create([
                 'title' => 'Violation Status Update',
                 'message' => 'Your violation has been escalated to ' . $newStatusText,
                 'role' => 'student',

@@ -42,97 +42,97 @@ class MicrosoftLoginController extends Controller
     }
 
     public function handleProviderCallback(Request $request)
-{
-    $state = $request->get('state');
-    $code  = $request->get('code');
-    if (!$state || !$code || $state !== Session::get('oauth_state')) {
-        abort(403, 'Access Denied: Invalid state');
-    }
-    Session::forget('oauth_state');
-
-    // Exchange code for access token
-    $tokenResponse = Http::asForm()->post("https://login.microsoftonline.com/{$this->tenantId}/oauth2/v2.0/token", [
-        'client_id'     => $this->clientId,
-        'client_secret' => $this->clientSecret,
-        'code'          => $code,
-        'redirect_uri'  => $this->redirectUri,
-        'grant_type'    => 'authorization_code',
-        'scope'         => $this->scopes,
-    ]);
-
-    if (!$tokenResponse->ok() || !isset($tokenResponse['access_token'])) {
-        abort(500, 'Failed to retrieve access token');
-    }
-
-    $accessToken = $tokenResponse['access_token'];
-    $userResponse = Http::withToken($accessToken)->get('https://graph.microsoft.com/v1.0/me');
-
-    if (!$userResponse->ok()) {
-        abort(500, 'Failed to retrieve user info');
-    }
-
-    $userData = $userResponse->json();
-    $allowedDomain = 'alabang.sti.edu.ph';
-
-    if (!str_ends_with($userData['userPrincipalName'], "@$allowedDomain")) {
-        return redirect('/403');
-    }
-
-    $role = null;
-    $status = 'active';
-
-    if (isset($userData['displayName'])) {
-        if (str_contains($userData['displayName'], '(Student)')) {
-            $role = 'student';
-        } elseif (str_contains($userData['displayName'], '(Faculty)')) {
-            $role = 'faculty';
+    {
+        $state = $request->get('state');
+        $code  = $request->get('code');
+        if (!$state || !$code || $state !== Session::get('oauth_state')) {
+            abort(403, 'Access Denied: Invalid state');
         }
-    }
+        Session::forget('oauth_state');
 
-    preg_match('/\.(\d+)@/', $userData['mail'], $matches);
-    $student_id = isset($matches[1]) ? '02000' . $matches[1] : null;
-
-    $user = Users::where('email', $userData['mail'])->first();
-
-    if (!$user) {
-        $user = Users::create([
-            'firstname'   => $userData['givenName'],
-            'lastname'    => $userData['surname'],
-            'email'       => $userData['mail'],
-            'password'    => null,
-            'role'        => $role,
-            'student_no'  => $student_id,
-            'status'      => $status,
+        // Exchange code for access token
+        $tokenResponse = Http::asForm()->post("https://login.microsoftonline.com/{$this->tenantId}/oauth2/v2.0/token", [
+            'client_id'     => $this->clientId,
+            'client_secret' => $this->clientSecret,
+            'code'          => $code,
+            'redirect_uri'  => $this->redirectUri,
+            'grant_type'    => 'authorization_code',
+            'scope'         => $this->scopes,
         ]);
+
+        if (!$tokenResponse->ok() || !isset($tokenResponse['access_token'])) {
+            abort(500, 'Failed to retrieve access token');
+        }
+
+        $accessToken = $tokenResponse['access_token'];
+        $userResponse = Http::withToken($accessToken)->get('https://graph.microsoft.com/v1.0/me');
+
+        if (!$userResponse->ok()) {
+            abort(500, 'Failed to retrieve user info');
+        }
+
+        $userData = $userResponse->json();
+        $allowedDomain = 'alabang.sti.edu.ph';
+
+        if (!str_ends_with($userData['userPrincipalName'], "@$allowedDomain")) {
+            return redirect('/403');
+        }
+
+        $role = null;
+        $status = 'active';
+
+        if (isset($userData['displayName'])) {
+            if (str_contains($userData['displayName'], '(Student)')) {
+                $role = 'student';
+            } elseif (str_contains($userData['displayName'], '(Faculty)')) {
+                $role = 'faculty';
+            }
+        }
+
+        preg_match('/\.(\d+)@/', $userData['mail'], $matches);
+        $student_id = isset($matches[1]) ? '02000' . $matches[1] : null;
+
+        $user = Users::where('email', $userData['mail'])->first();
+
+        if (!$user) {
+            $user = Users::create([
+                'firstname'   => $userData['givenName'],
+                'lastname'    => $userData['surname'],
+                'email'       => $userData['mail'],
+                'password'    => null,
+                'role'        => $role,
+                'student_no'  => $student_id,
+                'status'      => $status,
+            ]);
+        }
+
+        if ($user->status === 'inactive') {
+            return response()->view('errors.Inactive', [], 403);
+        }
+
+        // --- Logout other sessions for this user ---
+        $sessionId = session()->getId();
+        $sessions = DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->where('id', '!=', $sessionId)
+            ->pluck('id');
+
+        foreach ($sessions as $s) {
+            Session::getHandler()->destroy($s);
+        }
+        // --- End logout logic ---
+
+        Auth::login($user);
+
+        return match ($user->role) {
+            'discipline' => redirect()->route('discipline_dashboard'),
+            'student'    => redirect()->route('student_dashboard'),
+            'faculty'    => redirect()->route('faculty_dashboard'),
+            'counselor'  => redirect()->route('counseling_dashboard'),
+            'head'       => redirect()->route('academic-head_dashboard'),
+            default      => redirect()->route('home'),
+        };
     }
-
-    if ($user->status === 'inactive') {
-        return response()->view('errors.Inactive', [], 403);
-    }
-
-    // --- Logout other sessions for this user ---
-    $sessionId = session()->getId();
-    $sessions = DB::table('sessions')
-        ->where('user_id', $user->id)
-        ->where('id', '!=', $sessionId)
-        ->pluck('id');
-
-    foreach ($sessions as $s) {
-        Session::getHandler()->destroy($s);
-    }
-    // --- End logout logic ---
-
-    Auth::login($user);
-
-    return match ($user->role) {
-        'discipline' => redirect()->route('discipline_dashboard'),
-        'student'    => redirect()->route('student_dashboard'),
-        'faculty'    => redirect()->route('faculty_dashboard'),
-        'counselor'  => redirect()->route('counseling_dashboard'),
-        'head'       => redirect()->route('academic-head_dashboard'),
-        default      => redirect()->route('home'),
-    };
-}
 
 
 

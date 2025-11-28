@@ -70,6 +70,8 @@ return new class extends Migration
             $table->string('field_name');
             $table->text('old_value')->nullable();
             $table->text('new_value')->nullable();
+            $table->text('old_value_text')->nullable();
+            $table->text('new_value_text')->nullable();
         });
 
         Schema::create('tb_sections', function (Blueprint $table) {

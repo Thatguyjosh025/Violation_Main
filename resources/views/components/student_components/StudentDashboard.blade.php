@@ -63,7 +63,7 @@ function recentMajorViolation() {
                 <div class="flex-grow-1">
                   <span class="badge badge-custom">Student</span>
                   <h4 class="mt-2 mb-1">{{ Auth::user()-> firstname }} {{ Auth::user()-> lastname}} {{ Auth::user()-> middlename }}</h4>
-                  <p class="mb-1">Student ID: {{ Auth::user()-> student_no }}</p>
+                  <p class="mb-1">{{ Auth::user()-> email }}</p>
                 </div>
               </div>
             </div>

@@ -80,6 +80,7 @@
                         <div class="kv-row"><div class="kv-label">Student No.</div><div class="kv-value"></div></div>
                         <div class="kv-row"><div class="kv-label">Email</div><div class="kv-value"><span class="badge-severity"></span></div></div>
                         <div class="kv-row"><div class="kv-label">Priority Level</div><div class="kv-value"></div></div>
+                        <div class="kv-row"><div class="kv-label">Guidance Service</div><div class="kv-value"></div></div>
                         <hr class="my-3">
                         <div class="section-title">Time and Date</div>
                         <div class="kv-row"><div class="kv-label">Start Time: </div><div class="kv-value"></div></div>
@@ -436,10 +437,11 @@ $(document).ready(function () {
                 $('#editModal .kv-value').eq(1).text(data.student_no);
                 $('#editModal .kv-value').eq(2).html(`<span>${data.school_email || 'N/A'}</span>`);
                 $('#editModal .kv-value').eq(3).html(`<span>${data.priority_risk_relation?.priority_risk || 'N/A'}</span>`);
-                $('#editModal .kv-value').eq(4).text(data.start_time || 'N/A');
-                $('#editModal .kv-value').eq(5).text(data.end_time || 'N/A');
-                $('#editModal .kv-value').eq(6).text(data.start_date || 'N/A');
-                $('#editModal .kv-value').eq(7).text(data.end_date || 'N/A');
+                $('#editModal .kv-value').eq(4).html(`<span>${data.guidance_service_relation?.guidance_service || 'N/A'}</span>`);
+                $('#editModal .kv-value').eq(5).text(data.start_time || 'N/A');
+                $('#editModal .kv-value').eq(6).text(data.end_time || 'N/A');
+                $('#editModal .kv-value').eq(7).text(data.start_date || 'N/A');
+                $('#editModal .kv-value').eq(8).text(data.end_date || 'N/A');
 
                 $('#year_level_input_select').val(data.year_level || '');
                 $('#program_input').val(data.program || '');
