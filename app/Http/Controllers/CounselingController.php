@@ -145,6 +145,18 @@ class CounselingController extends Controller
         if ($isFromReferral) {
             postviolation::where('id', $postViolationId)
                 ->update(['is_admitted' => false]);
+
+            notifications::create([
+                'title'        => 'Referred Student Scheduled for Counseling',
+                'message'      => "The student you referred has been scheduled for a counseling session.",
+                'role'         => 'admin', // ensures only the officer receives this
+                'student_no'   => null, // student being referred
+                'school_email' => $request->school_email, // student's email (optional)
+                'type'         => 'posted',
+                'url'          => null,
+                'date_created' => Carbon::now()->format('Y-m-d'),
+                'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+            ]);
         }
 
         if ($isFromReferral || $isFromAdd) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\audits;
 use App\Models\incident;
 use Illuminate\Http\Request;
 use App\Models\notifications;
@@ -51,6 +52,52 @@ class FacultyController extends Controller
             'Date_Created' => Carbon::now('Asia/Manila'),
         ]);
 
+         // AUDIT LOGGING
+    $userId = Auth::user()->id;
+    $fieldsToAudit = [
+        'student_name' => $request->student_name,
+        'student_no' => $request->student_no,
+        'school_email' => $request->school_email,
+        'faculty_name' => $request->faculty_name,
+        'faculty_id' => $request->faculty_id,
+        'violation_type' => $request->violation_type,
+        'rule_name' => $request->rule_name,
+        'description' => $request->description,
+        'severity' => $request->severity,
+        'remarks' => $request->remarks,
+        'status' => 'Pending',
+        'upload_evidence' => !empty($evidencePaths) ? json_encode($evidencePaths) : null,
+        'is_visible' => 'show',
+    ];
+
+    // List of fields to ignore in audit logging
+    $ignoredFields = ['_token', '_method', 'upload_evidence.*'];
+
+    foreach ($fieldsToAudit as $field => $value) {
+        // Skip ignored fields
+        if (in_array($field, $ignoredFields)) {
+            continue;
+        }
+
+        $textValue = null;
+        // Map violation_type to readable text if needed
+        if ($field === 'violation_type') {
+            $model = \App\Models\violation::find($value);
+            $textValue = $model ? $model->violations : null;
+        }
+
+        audits::create([
+            'changed_at'     => now()->format('Y-m-d H:i'),
+            'changed_by'     => $userId,
+            'event_type'     => 'Create',
+            'field_name'     => $field,
+            'old_value'      => null, // No old value for create
+            'old_value_text' => null,
+            'new_value'      => $value,
+            'new_value_text' => $textValue,
+        ]);
+    }
+
         notifications::create([
             'title' => 'Incident Report',
             'message' => 'A new incident report has been submitted.',
@@ -68,6 +115,7 @@ class FacultyController extends Controller
             'data' => $incident
         ]);
     }
+
     public function filterRecords(Request $request)
 {
     $faculty = Auth::user()->firstname . ' ' . Auth::user()->lastname;
@@ -91,7 +139,7 @@ class FacultyController extends Controller
     } else if ($request->type === 'rejected') {
 
         $data = incident::where('faculty_name', $faculty)
-            ->where('is_visible','reject')
+            // ->where('is_visible','reject')
             ->get()
             ->map(function ($item) {
                 return [
@@ -99,7 +147,7 @@ class FacultyController extends Controller
                     'student_name' => $item->student_name,
                     'school_email' => $item->school_email,
                     'violation' => $item->violation->violations ?? 'N/A',
-                    'status' => 'Rejected',
+                    'status' => $item->status,
                     'date' => \Carbon\Carbon::parse($item->created_at)->format('Y-m-d'),
                 ];
             });

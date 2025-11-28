@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\users;
+use App\Models\audits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -194,6 +195,12 @@ class AuthController extends Controller
             'status' => 'required|string|max:255',
         ]);
 
+        // Store old values for role and status
+        $oldValues = [
+            'role' => $user->role,
+            'status' => $user->status,
+        ];
+
         // Check if there are changes
         $changes = false;
         foreach ($validatedData as $key => $value) {
@@ -211,6 +218,29 @@ class AuthController extends Controller
         }
 
         $user->update($validatedData);
+
+        // Audit logging for role and status
+        $userId = Auth::user()->id;
+        $fieldsToAudit = [
+            'role' => $validatedData['role'],
+            'status' => $validatedData['status'],
+        ];
+
+        foreach ($fieldsToAudit as $field => $newValue) {
+            $oldValue = $oldValues[$field] ?? null;
+
+            audits::create([
+                'changed_at' => now()->format('Y-m-d H:i'),
+                'changed_by' => $userId,
+                'event_type' => 'Update',
+                'field_name' => $field,
+                'old_value' => $oldValue,
+                'old_value_text' => $oldValue, // For string fields, the text is the same as the value
+                'new_value' => $newValue,
+                'new_value_text' => $newValue, // For string fields, the text is the same as the value
+            ]);
+        }
+
 
         return response()->json([
             'status' => 200,

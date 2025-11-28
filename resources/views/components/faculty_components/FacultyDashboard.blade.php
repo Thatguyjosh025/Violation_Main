@@ -193,5 +193,27 @@ $(document).ready(function() {
             }
         });
     });
+
+    (function() {
+        const processedViolationCount = {{ countIncident() }};
+        const $counter = $('#processedViolationCounter');
+        $({ countNum: 0 }).animate(
+            { countNum: processedViolationCount },
+            {
+                duration: 1000,
+                easing: 'swing',
+                step: function() {
+                    $counter.text(Math.floor(this.countNum));
+                },
+                complete: function() {
+                    $counter.text(this.countNum);
+                }
+            }
+        );
+        const progressPercent = Math.min(processedViolationCount, 100);
+        $('.progress-bar.bg-info')
+            .css('width', progressPercent + '%')
+            .attr('aria-valuenow', progressPercent);
+    })();
 });
 </script>
