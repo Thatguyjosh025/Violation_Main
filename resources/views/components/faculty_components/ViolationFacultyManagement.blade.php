@@ -4,7 +4,7 @@ use App\Models\users;
 use App\Models\violation;
 use App\Models\referals;
 use App\Models\penalties;
-$violate = violation::get();
+$violate = violation::where('is_visible', 'active')->get();
 $accounts = users::get();
 @endphp
 

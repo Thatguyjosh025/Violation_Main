@@ -100,7 +100,7 @@ return new class extends Migration
             //     'firstname' => 'Vince Ivan',
             //     'lastname' => 'Mangampo',
             //     'email' => 'mangampo.311699@alabang.sti.edu.ph',
-            //     'student_no' => '0200311699',
+            //     'student_no' => '02000311699',
             //     // 'course_and_section' => 'Faculty',
             //     'password' => bcrypt('123456789'),
             //     'role' => 'student',

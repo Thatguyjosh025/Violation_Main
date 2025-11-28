@@ -119,6 +119,8 @@ $(document).ready(function () {
         }
     });
 
+    const violationRegex = /^(?![-\/\s])(?!.*[-\/\s]$)(?!.*[-\/]{2,})(?!.*\s{2,})[A-Za-z]+(?:[ \/-][A-Za-z]+)*$/;
+
     // Add/Edit Violation Submit
     $("#violationForm").on("submit", function (e) {
     e.preventDefault();
@@ -130,9 +132,9 @@ $(document).ready(function () {
         $("#violations").addClass("is-invalid");
         $('.invalid-feedback').text("Violation name must be at least 5 characters long.").show();
         return;
-    } else if (!/^[A-Za-z ]+$/.test(violationName)) {
+    } else if (!violationRegex.test(violationName)) {
         $("#violations").addClass("is-invalid");
-        $('.invalid-feedback').text("Violation name should only contain alphabetic characters and spaces.").show();
+        $('.invalid-feedback').text("Violation name may only contain letters, single spaces, hyphens (-), and slashes (/). It cannot start or end with a special character, and it cannot contain consecutive special characters or double spaces.").show();
         return;
     } else {
         $("#violations").removeClass("is-invalid");
