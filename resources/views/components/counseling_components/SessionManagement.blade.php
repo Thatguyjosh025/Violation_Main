@@ -104,7 +104,18 @@
                         </div>
                         <div class="mb-3">
                             <div class="section-title">Program</div>
-                            <input class="form-control" id="program_input" placeholder="Bachelor of Science in Information Technology">
+                            <!-- <input class="form-control" id="program_input" placeholder="Bachelor of Science in Information Technology"> -->
+                            <select name="" id="program_input" class="form-select">
+                                <option value="">Select Year/Grade Level</option>
+                                <option value="BS Information Technology">BS Information Technology</option>
+                                <option value="BS Computer Science">BS Computer Science</option>
+                                <option value="BS Business Administration">BS Business Administration</option>
+                                <option value="BS Toursim Managemen">BS Toursim Management</option>
+                                <option value="BS Hospitality Management">BS Hospitality Management</option>
+                                <option value="HUMSS">HUMSS</option>
+                                <option value="ITMAWD">ITMAWD</option>
+                                <option value="ABM">ABM</option>
+                            </select>
                             <div class="error-msg text-danger small mt-1" id="error_program"></div>
                         </div>
                         <div class="mb-3">
@@ -254,7 +265,18 @@
                     </div>
                     <div class="mb-2">
                         <label class="form-label fw-bold">Program</label>
-                        <input type="text" id="add_program" class="form-control" placeholder="Bachelor of Science in Information Technology">
+                        <!-- <input type="text" id="add_program" class="form-control" placeholder="Bachelor of Science in Information Technology"> -->
+                          <select name="" id="add_program" class="form-select">
+                            <option value="">Select Year/Grade Level</option>
+                            <option value="BS Information Technology">BS Information Technology</option>
+                            <option value="BS Computer Science">BS Computer Science</option>
+                            <option value="BS Business Administration">BS Business Administration</option>
+                            <option value="BS Toursim Managemen">BS Toursim Management</option>
+                            <option value="BS Hospitality Management">BS Hospitality Management</option>
+                            <option value="HUMSS">HUMSS</option>
+                            <option value="ITMAWD">ITMAWD</option>
+                            <option value="ABM">ABM</option>
+                        </select>
                         <div class="error-msg text-danger small mt-1" id="add_error_program"></div>
                     </div>
                     <hr>

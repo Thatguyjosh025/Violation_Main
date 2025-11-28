@@ -197,14 +197,15 @@
                         $('#edituser #status').val(response.data.status);
 
 
+                        var roleDropdownDiv = $('#edituser #roledropdown');
                         var roleDropdown = $('#edituser #edit-role');
 
                         if (response.data.role === 'student') {
-                            // Hide the entire role dropdown for student users
-                            roleDropdown.closest('.mb-3').hide();
+                            // Hide the entire role dropdown div for student users
+                            roleDropdownDiv.hide();
                         } else {
-                            // Show dropdown (in case it was previously hidden)
-                            roleDropdown.closest('.mb-3').show();
+                            // Show the dropdown div (in case it was previously hidden)
+                            roleDropdownDiv.show();
 
                             // Remove 'student' option for all non-student roles
                             roleDropdown.find('option[value="student"]').remove();

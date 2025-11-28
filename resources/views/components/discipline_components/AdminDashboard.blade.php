@@ -28,6 +28,13 @@
             ->whereBetween('Date_Created', [$startOfMonth, $endOfMonth])
             ->count();
     }
+
+    $minorCount = countMinor();
+    $majorCount = countMajor();
+
+    // Cap at 100%
+    $minorPercent = $minorCount > 100 ? 100 : $minorCount;
+    $majorPercent = $majorCount > 100 ? 100 : $majorCount
 @endphp
 <div class="d-flex align-items-center">
                 <button class="toggle-btn" id="toggleSidebar"><i class="bi bi-list"></i></button>
@@ -85,7 +92,7 @@
                                 </div>
                                 <div class="card-number">{{ countMinor() }}</div>
                                 <div class="progress">
-                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 60%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div id="minorProgressBar" class="progress-bar bg-warning" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
                             
@@ -98,7 +105,7 @@
                                 </div>
                                 <div class="card-number">{{ countMajor() }}</div>
                                 <div class="progress">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%;" aria-valuenow="29" aria-valuemin="0" aria-valuemax="100"></div>
+                                     <div id="majorProgressBar" class="progress-bar bg-danger" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
                             
@@ -180,4 +187,19 @@ $(document).ready(function() {
         });
     });
 });
+
+const minorPercent = {{ $minorPercent }};
+const majorPercent = {{ $majorPercent }};
+
+// Select the progress bar elements
+const minorProgressBar = document.getElementById('minorProgressBar');
+const majorProgressBar = document.getElementById('majorProgressBar');
+
+// Update the Minor progress bar
+minorProgressBar.style.width = minorPercent + '%';
+minorProgressBar.setAttribute('aria-valuenow', minorPercent);
+
+// Update the Major progress bar
+majorProgressBar.style.width = majorPercent + '%';
+majorProgressBar.setAttribute('aria-valuenow', majorPercent);
 </script>

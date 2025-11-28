@@ -568,71 +568,70 @@ class SuperController extends Controller
         while (($row = fgetcsv($handle)) !== false) {
             $data = array_combine($header, $row);
 
-            // Insert only if email does not exist
-            users::firstOrCreate(
+            // Update or create the user based on email
+            users::updateOrCreate(
                 ['email' => $data['Email']], // Unique identifier
                 [
                     'firstname'   => $data['First Name'],
                     'lastname'    => $data['Last Name'],
                     'student_no'  => $data['Student No'],
                     'role'        => $data['Role'],
-                    'status'      => $data['Status'],
-                    'password'    => $data['Password'], 
+                    'status'      => $data['Status'], // This will override the status
+                    'password'    => $data['Password'],
                 ]
             );
         }
 
         fclose($handle);
-
         return response()->json(['status' => 200, 'message' => 'CSV imported successfully']);
     }
 
-public function deactivateGraduates(Request $request)
-{
-    $request->validate([
-        'file' => 'required|file|mimes:csv,txt'
-    ]);
+    public function deactivateGraduates(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt'
+        ]);
 
-    $file = $request->file('file');
-    $handle = fopen($file, 'r');
-    $deactivated = 0;
+        $file = $request->file('file');
+        $handle = fopen($file, 'r');
+        $deactivated = 0;
 
-    while (($row = fgetcsv($handle)) !== false) {
-        $fullName = trim($row[0] ?? '');
-        $email = trim($row[1] ?? '');
+        while (($row = fgetcsv($handle)) !== false) {
+            $fullName = trim($row[0] ?? '');
+            $email = trim($row[1] ?? '');
 
-        // SPLIT NAME WITH ORIGINAL CASE
-        $parts = preg_split('/\s+/', $fullName);
-        if (count($parts) >= 3) {
-            $firstname = $parts[0] . ' ' . $parts[1];
-            $lastname = implode(' ', array_slice($parts, 2));
-        } else {
-            $firstname = $parts[0] ?? '';
-            $lastname  = $parts[1] ?? '';
+            // SPLIT NAME WITH ORIGINAL CASE
+            $parts = preg_split('/\s+/', $fullName);
+            if (count($parts) >= 3) {
+                $firstname = $parts[0] . ' ' . $parts[1];
+                $lastname = implode(' ', array_slice($parts, 2));
+            } else {
+                $firstname = $parts[0] ?? '';
+                $lastname  = $parts[1] ?? '';
+            }
+
+            // Build the query dynamically
+            $query = users::query()
+                ->whereRaw('LOWER(firstname) = LOWER(?)', [$firstname])
+                ->whereRaw('LOWER(lastname) = LOWER(?)', [$lastname]);
+
+            // Only add email condition if email is provided
+            if (!empty($email)) {
+                $query->whereRaw('LOWER(email) = LOWER(?)', [$email]);
+            }
+
+            $user = $query->first();
+
+            if ($user) {
+                $user->update(['status' => 'inactive']);
+                $deactivated++;
+            }
         }
 
-        // Build the query dynamically
-        $query = users::query()
-            ->whereRaw('LOWER(firstname) = LOWER(?)', [$firstname])
-            ->whereRaw('LOWER(lastname) = LOWER(?)', [$lastname]);
-
-        // Only add email condition if email is provided
-        if (!empty($email)) {
-            $query->whereRaw('LOWER(email) = LOWER(?)', [$email]);
-        }
-
-        $user = $query->first();
-
-        if ($user) {
-            $user->update(['status' => 'inactive']);
-            $deactivated++;
-        }
+        fclose($handle);
+        return response()->json([
+            'message' => "Successfully deactivated {$deactivated} accounts."
+        ]);
     }
-
-    fclose($handle);
-    return response()->json([
-        'message' => "Successfully deactivated {$deactivated} accounts."
-    ]);
-}
         
 }

@@ -157,7 +157,7 @@
                             <input type="text" class="form-control" id="student_no" name="student_no" min="8" maxlength="8" required>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3" id="roledropdown">
                             <label for="role" class="form-label">Role</label>
                             <select class="form-select" name="edit-role" id="edit-role">
                                 <option value="" hidden>Select role</option>

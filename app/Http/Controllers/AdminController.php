@@ -133,6 +133,21 @@ class AdminController extends Controller
                 'is_admitted' => ($request->counseling_required === 'Yes') ? true : false,
             ]);
 
+            // Send counseling notification if required
+            if ($request->counseling_required === 'Yes') {
+                notifications::create([
+                    'title' => 'New Referral Intake Assigned',
+                    'message' => "A student has been referred to you for counseling. Please review and schedule the intake session.",
+                    'role' => 'counselor',
+                    'student_no' => $request->student_no,
+                    'school_email' => $request->school_email,
+                    'type' => 'referral',
+                    'url' => null,
+                    'date_created' => Carbon::now()->format('Y-m-d'),
+                    'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+                ]);
+            }
+
             //  AUDIT (REQUEST FIELDS ONLY)
             // ==============================
             $userId = Auth::user()->id;
@@ -222,6 +237,19 @@ class AdminController extends Controller
                 'is_active' => true,
                 'is_admitted' => ($request->counseling_required === 'Yes') ? true : false,
             ]);
+                if ($request->counseling_required === 'Yes') {
+                    notifications::create([
+                        'title' => 'New Referral Intake Assigned',
+                        'message' => "A student has been referred to you for counseling. Please review and schedule the intake session.",
+                        'role' => 'counselor',
+                        'student_no' => $request->student_no,
+                        'school_email' => $request->school_email,
+                        'type' => 'referral',
+                        'url' => null,
+                        'date_created' => Carbon::now()->format('Y-m-d'),
+                        'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+                    ]);
+            }    
         }
 
         // AUDIT (REQUEST FIELDS ONLY)
@@ -280,6 +308,20 @@ class AdminController extends Controller
             'date_created' => Carbon::now()->format('Y-m-d'),
             'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
         ]);
+
+        if ($request->counseling_required === 'Yes') {
+            notifications::create([
+                'title'        => 'New Referral Intake Assigned',
+                'message'      => "A student has been referred to you for counseling. Please review and schedule the intake session.",
+                'role'         => 'guidance_counselor',
+                'student_no'   => $request->student_no,
+                'school_email' => $request->school_email,
+                'type'         => 'referral',
+                'url'          => null,
+                'date_created' => Carbon::now()->format('Y-m-d'),
+                'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+            ]);
+        }
 
         $create->load('referal', 'violation', 'penalty', 'status');
 
@@ -563,6 +605,7 @@ class AdminController extends Controller
     {
         $incident = incident::findOrFail($request->id);
         $incident->is_visible = 'reject'; 
+        $incident->status = 'Rejected'; 
         $incident->save();
 
         $facultyId = $incident->faculty_id;

@@ -7,7 +7,7 @@
 
 
     function countCounseling() {
-        return Counseling::whereIn('status', [2, 3, 4])->count();
+        return Counseling::whereIn('status', [2, 3])->count();
     }
 
 @endphp
@@ -61,7 +61,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Today's Appointments</h5>
+                                    <h5 class="modal-title">Appointments</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -125,7 +125,7 @@
                 
                     <!-- NOTIF -->
                     <div class="col-lg-5 mb-3">
-                        <div class="card shadow-sm notif">
+                        <div class="card shadow-sm notif" id="notif-container">
                             <h6 class="mb-3 sticky-top bg-white" style="z-index: 1;">Notifications</h6>
                             <div class="notif-scrollable">
                                 @if ($notif->where('role', 'counselor')->where('is_read', 0)->isEmpty())
@@ -140,7 +140,7 @@
                                                     <h6 class="mb-1">{{ $notifdata->title }}</h6>
                                                     <p class="mb-1 text-muted small">{{ $notifdata->message }}</p>
                                                     <small class="text-muted">{{ $notifdata->created_time }}</small>
-                                                    <small class="text-muted">{{ $notifdata->date_created }}</small>
+                                                    <small class="text- muted">{{ $notifdata->date_created }}</small>
                                                 </div>
                                                 <button class="btn-close ms-2 mt-1" aria-label="Close"></button>
                                             </div>
@@ -153,3 +153,61 @@
 
                 </div>
             </div>
+<script src="{{ asset('./vendor/jquery.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    // Notification close handler
+    $('#notif-container').on('click', '.btn-close', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var $card = $(this).closest('.notification-card');
+        var notifId = $card.data('notif-id');
+        $.ajax({
+            url: '/update_notification_status',
+            type: 'POST',
+            data: {
+                notification_id: notifId,
+                _token: '{{ csrf_token() }}',
+            },
+            success: function(response) {
+                if (response.success) {
+                    $card.fadeOut(300, function() {
+                        $(this).remove();
+                        if ($('#notif-container .notification-card').length === 0) {
+                            $('#notif-container .notif-scrollable').html(`
+                                <div class="text-center py-4 text-muted">
+                                    You have no notifications.
+                                </div>
+                            `);
+                        }
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Error updating notification status:', error);
+            }
+        });
+    });
+
+    // Counter and progress bar animation
+    const ongoingSessionCount = {{ countCounseling() }};
+    const $counter = $('#ongoingSessionCounter');
+    $({ countNum: 0 }).animate(
+        { countNum: ongoingSessionCount },
+        {
+            duration: 1000,
+            easing: 'swing',
+            step: function() {
+                $counter.text(Math.floor(this.countNum));
+            },
+            complete: function() {
+                $counter.text(this.countNum);
+            }
+        }
+    );
+    const progressPercent = Math.min(ongoingSessionCount, 100);
+    $('.progress-bar.bg-info')
+        .css('width', progressPercent + '%')
+        .attr('aria-valuenow', progressPercent);
+});
+</script>

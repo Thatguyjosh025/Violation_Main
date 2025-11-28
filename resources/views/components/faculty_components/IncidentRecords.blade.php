@@ -28,7 +28,7 @@
                     <div class="ms-auto d-flex gap-2">
                         <select id="recordFilter" class="form-select form-select-sm w-auto">
                             <option value="active">Active Records</option>
-                            <option value="rejected">Rejected Records</option>
+                            <option value="rejected">Incident Records</option>
                         </select>
                     </div>
                 </div>

@@ -119,7 +119,7 @@ function showSchedulesForDate(day, month, year, schedules) {
     const filteredSchedules = schedules.filter(schedule => {
         const scheduleDate = new Date(schedule.start_date);
         return (
-            (schedule.status === 2 || schedule.status === 3 || schedule.status === 5) &&
+            (schedule.status === 2 || schedule.status === 3) &&
             scheduleDate.getDate() === day &&
             scheduleDate.getMonth() === month &&
             scheduleDate.getFullYear() === year

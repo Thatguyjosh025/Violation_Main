@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use DateTime;
 use Carbon\Carbon;
 use App\Models\users;
+use App\Models\audits;
 use Illuminate\Http\Request;
 use App\Models\notifications;
 use App\Models\postviolation;
@@ -31,6 +32,12 @@ class StudentController extends Controller
         // put a fucking validation here to ignore all the data with RESOLVE status because it process everything it sees fucking annoying
         foreach ($violations->items() as $violation) {
             
+            if ($violation->status_name == 6) {
+                continue;
+            }
+            if ($violation->status_name == 7) {
+                continue;
+            }
             if ($violation->status_name == 8) {
                 continue;
             }
@@ -57,7 +64,7 @@ class StudentController extends Controller
                     'created_time' => Carbon::now('Asia/Manila')->format('h:i A'),
                 ]);
             }
-        }
+        }   
 
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -165,6 +172,11 @@ class StudentController extends Controller
         return response()->json(['success' => false, 'message' => 'Violation not found']);
     }
 
+    // Store old values before update
+    $oldValues = [
+        'appeal' => $violation->appeal,
+    ];
+
     $uploadedFiles = [];
     if ($request->hasFile('upload_appeal_evidence')) {
         foreach ($request->file('upload_appeal_evidence') as $file) {
@@ -184,6 +196,30 @@ class StudentController extends Controller
             'status_name' => 5,
             'appeal_evidence' => !empty($uploadedFiles) ? json_encode($uploadedFiles) : null,
         ]);
+
+         // Audit logging
+        $userId = Auth::user()->id;
+        $fieldsToAudit = [
+            'appeal' => $appealReason,
+        ];
+
+        foreach ($fieldsToAudit as $field => $newValue) {
+            $oldValue = $oldValues[$field] ?? null;
+            $textValue = null;
+
+
+            audits::create([
+                'changed_at' => now()->format('Y-m-d H:i'),
+                'changed_by' => $userId,
+                'event_type' => 'Update',
+                'field_name' => $field,
+                'old_value' => $oldValue,
+                'old_value_text' => $oldValue, // For string fields, the text is the same as the value
+                'new_value' => $newValue,
+                'new_value_text' => $textValue ?? $newValue, // Use mapped text or the new value itself
+            ]);
+        }
+
 
         notifications::create([
             'title' => 'Student Appeal Submitted',

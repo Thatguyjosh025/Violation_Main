@@ -98,9 +98,9 @@ foreach ($statusLabels as $statusId => $statusName) {
                 <div class="bi bi-exclamation-diamond-fill" style="color: #fd8c00;"></div>
             </div>
             <div class="severity-value">{{ $counts['Major A'] }}</div>
-            <div class="progress">
+            <!-- <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: 30%; background-color: #fd8c00;"></div>
-            </div>
+            </div> -->
             <span class="background-letter" style="color: #fd8b0010;">A</span>
         </div>
 
@@ -111,9 +111,9 @@ foreach ($statusLabels as $statusId => $statusName) {
                 <div class="bi bi-exclamation-diamond-fill" style="color: #dc0000;"></div>
             </div>
             <div class="severity-value">{{ $counts['Major B'] }}</div>
-            <div class="progress">
+            <!-- <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: 30%; background-color: #dc0000;"></div>
-            </div>
+            </div> -->
             <span class="background-letter" style="color: #dc000010;">B</span>
         </div>
 
@@ -124,9 +124,9 @@ foreach ($statusLabels as $statusId => $statusName) {
                 <div class="bi bi-exclamation-diamond-fill" style="color: #780000;"></div>
             </div>
             <div class="severity-value">{{ $counts['Major C'] }}</div>
-            <div class="progress">
+            <!-- <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: 30%; background-color: #780000;"></div>
-            </div>
+            </div> -->
             <span class="background-letter" style="color: #78000010;">C</span>
         </div>
 
@@ -137,9 +137,9 @@ foreach ($statusLabels as $statusId => $statusName) {
                 <div class="bi bi-exclamation-diamond-fill" style="color: #780000;"></div>
             </div>
             <div class="severity-value">{{ $counts['Major D'] }}</div>
-            <div class="progress">
+            <!-- <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: 30%; background-color: #780000;"></div>
-            </div>
+            </div> -->
             <span class="background-letter" style="color: #78000010;">D</span>
         </div>
     </div>
@@ -153,9 +153,9 @@ foreach ($statusLabels as $statusId => $statusName) {
                     <div class="bi bi-exclamation-diamond-fill" style="color: #FDC500;"></div>
                 </div>
                 <div class="severity-value">{{ $counts['Minor'] }}</div>
-                <div class="progress">
+                <!-- <div class="progress">
                     <div class="progress-bar" role="progressbar" style="width: 30%; background-color: #FDC500;"></div>
-                </div>
+                </div> -->
                 <span class="background-letter" style="color: #FDC50010;">M</span>
             </div>
         </div>
@@ -185,7 +185,7 @@ foreach ($statusLabels as $statusId => $statusName) {
                                 <td><strong>{{ $row['status'] }}</strong></td>
                                 @foreach ($severities as $severity)
                                     <td>{{ $row[$severity] }}</td>
-                                @endforeach
+                                @endforeach 
                             </tr>
                         @endforeach
                     </tbody>
@@ -226,6 +226,7 @@ foreach ($statusLabels as $statusId => $statusName) {
         printWindow.print();
         printWindow.document.close();
     }
+    
 
     // Reload page on year filter change
     $('#reportYear').on('change', function() {
