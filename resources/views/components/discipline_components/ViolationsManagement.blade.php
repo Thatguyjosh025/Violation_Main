@@ -45,7 +45,7 @@
                                 </div>
                             </div>
                             <div class="createviolation mt-1">
-                                <button class="btn create-violation-btn" id="createViolationbtn">+ Create Violation</button>
+                                <button class="btn create-violation-btn" id="createViolationbtn" disabled>+ Create Violation</button>
                             </div>
                         </div>
                         
@@ -252,6 +252,9 @@ $(document).ready(function(){
     // -----------------------------
     $(document).on("click", ".view-btn", function (e) {
         e.preventDefault();
+
+        $("#createViolationbtn")
+        .prop("disabled", false)
 
         var studentId = $(this).data("id");
         var studentName = $(this).data("name");
@@ -526,6 +529,10 @@ $(document).ready(function(){
             contentType: false,
             processData: false,
             success: function () {
+
+                $("#createViolationbtn")
+                .prop("disabled", true)
+
                 $('#violationModal').modal('hide');
                 resetViolationForm();
 

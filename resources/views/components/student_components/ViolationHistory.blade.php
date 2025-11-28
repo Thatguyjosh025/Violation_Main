@@ -3,10 +3,10 @@
     use App\Models\postviolation;
     // APPLY PAGINATION (3 per page)
     $violationhistory = postviolation::where('student_no', Auth::user()->student_no)
-        ->whereHas('status', function($q){
-            $q->where('status', 'Resolved');
-        })
-        ->paginate(4);
+    ->whereHas('status', function($q){
+        $q->whereIn('status', ['Resolved', 'Appeal Denied','Appeal Approved']);
+    })
+    ->paginate(4);
 @endphp
 
 <div class="d-flex align-items-center mb-4">

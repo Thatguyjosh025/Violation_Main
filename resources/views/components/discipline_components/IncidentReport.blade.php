@@ -215,6 +215,10 @@ $(document).ready(function(){
         $(this).removeClass("is-invalid");
         $(this).next(".invalid-feedback").remove();
     });
+
+    $('#rejected-tab').on('shown.bs.tab', function () {
+        $("#rejected").load(location.href + " #rejected > *");
+    });
     
    
 

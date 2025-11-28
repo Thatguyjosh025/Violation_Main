@@ -489,6 +489,14 @@ class AdminController extends Controller
             $student->is_active = false;
             $student->save();
         }
+        if ($newStatusText === 'Appeal Approved') {
+            $student->is_active = false;
+            $student->save();
+        }
+        if ($newStatusText === 'Appeal Denied') {
+            $student->is_active = false;
+            $student->save();
+        }
 
         if ($oldStatus != $newStatusText) {
             $url = ($newStatusText === 'Resolved') ? '/violation_history' : '/violation_tracking';
