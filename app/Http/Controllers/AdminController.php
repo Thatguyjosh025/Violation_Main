@@ -245,7 +245,7 @@ class AdminController extends Controller
                         'student_no' => $request->student_no,
                         'school_email' => $request->school_email,
                         'type' => 'referral',
-                        'url' => null,
+                        'url' => '/referral_intake',
                         'date_created' => Carbon::now()->format('Y-m-d'),
                         'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
                     ]);
@@ -317,7 +317,7 @@ class AdminController extends Controller
                 'student_no'   => $request->student_no,
                 'school_email' => $request->school_email,
                 'type'         => 'referral',
-                'url'          => null,
+                'url'          => '/referral_intake',
                 'date_created' => Carbon::now()->format('Y-m-d'),
                 'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
             ]);
@@ -456,6 +456,23 @@ class AdminController extends Controller
             'Notes' => $request->update_notes,
             'Update_at' => Carbon::now('Asia/Manila')
         ]);
+
+        if ($request->update_counseling_required === 'Yes') {
+            $student->is_admitted = true;
+            $student->save();
+
+            notifications::create([
+                'title'        => 'New Referral Intake Assigned',
+                'message'      => "A student has been referred to you for counseling. Please review and schedule the intake session.",
+                'role'         => 'counselor',
+                'student_no'   => $request->update_student_no,
+                'school_email' => $request->update_school_email,
+                'type'         => 'referral',
+                'url'          => '/referral_intake',
+                'date_created' => Carbon::now()->format('Y-m-d'),
+                'created_time' => Carbon::now('Asia/Manila')->format('h:i A')
+            ]);
+        }
 
         // ==============================
         // AUDIT LOGGING

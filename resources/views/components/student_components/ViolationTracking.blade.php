@@ -305,6 +305,7 @@ $(document).ready(function () {
             contentType: false,
             success: function (response) {
                 if (response.success) {
+                    loadViolations();
                     $('#appealform').trigger('reset');
                     $('#appealSection').hide();
                     $('#appealModal').modal('hide');
