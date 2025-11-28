@@ -546,6 +546,15 @@ $(document).ready(function () {
             method: 'POST',
             data: payload,
             success: function (response) {
+                if (response.status === 204) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Changes Detected',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
                 if (response.success) {
                     $("#btnupdate")
                     .prop("disabled", false)

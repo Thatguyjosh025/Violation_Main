@@ -350,22 +350,48 @@ class AdminController extends Controller
 
         //old values
         $oldValues = [
-            'student_no' => $student->student_no,
-            'student_name' => $student->student_name,
-            'school_email' => $student->school_email,
-            'violation_type' => $student->violation->violations,
-            'penalty_type' => $student->penalty->penalties,
-            'severity_Name' => $student->severity_Name,
-            'status_name' => $student->status->status,
-            'rule_Name' => $student->rule_Name,
-            'description_Name' => $student->description_Name,
-            'faculty_involvement' => $student->faculty_involvement,
-            'faculty_name' => $student->faculty_name,
-            'counseling_required' => $student->counseling_required,
-            'referal_type' => $student->referal->referals,
-            'Remarks' => $student->Remarks,
-            'Notes' => $student->Notes,
+            'violation_type' => $student->violation_type,
+        'penalty_type' => $student->penalty_type,
+        'severity_Name' => $student->severity_Name,
+        'status_name' => $student->status_name,
+        'rule_Name' => $student->rule_Name,
+        'description_Name' => $student->description_Name,
+        'faculty_involvement' => $student->faculty_involvement,
+        'faculty_name' => $student->faculty_name,
+        'counseling_required' => $student->counseling_required,
+        'referal_type' => $student->referal_type,
+        'Remarks' => $student->Remarks,
+        'Notes' => $student->Notes,
         ];
+        // New values
+    $newValues = [
+        'violation_type' => $request->update_violation_type,
+        'penalty_type' => $request->update_penalty_type,
+        'severity_Name' => $request->update_severity,
+        'status_name' => $request->update_status,
+        'rule_Name' => $request->update_rule_name,
+        'description_Name' => $request->update_description,
+        'faculty_involvement' => $request->update_faculty_involvement,
+        'faculty_name' => $request->update_faculty_name,
+        'counseling_required' => $request->update_counseling_required,
+        'referal_type' => $request->update_referral_type,
+        'Remarks' => $request->update_remarks,
+        'Notes' => $request->update_notes,
+    ];
+
+    // Compare old and new values
+    $hasChanges = false;
+    foreach ($oldValues as $key => $oldValue) {
+        if ($oldValue != $newValues[$key]) {
+            $hasChanges = true;
+            break;
+        }
+    }
+
+    if (!$hasChanges) {
+        return response()->json(['status' => 204, 'message' => 'No changes detected.']);
+    }
+        
 
         $oldStatus = $student->status ? $student->status->status_text : null;
 
@@ -393,21 +419,18 @@ class AdminController extends Controller
         // AUDIT LOGGING
         $userId = Auth::user()->id;
         $fieldMappings = [
-            'update_student_no' => 'student_no',
-            'update_name' => 'student_name',
-            'update_school_email' => 'school_email',
-            'update_violation_type' => 'violation_type',
-            'update_penalty_type' => 'penalty_type',
-            'update_severity' => 'severity_Name',
-            'update_status' => 'status_name',
-            'update_rule_name' => 'rule_Name',
-            'update_description' => 'description_Name',
-            'update_faculty_involvement' => 'faculty_involvement',
-            'update_faculty_name' => 'faculty_name',
-            'update_counseling_required' => 'counseling_required',
-            'update_referral_type' => 'referal_type',
-            'update_remarks' => 'Remarks',
-            'update_notes' => 'Notes',
+           'update_violation_type' => 'violation_type',
+        'update_penalty_type' => 'penalty_type',
+        'update_severity' => 'severity_Name',
+        'update_status' => 'status_name',
+        'update_rule_name' => 'rule_Name',
+        'update_description' => 'description_Name',
+        'update_faculty_involvement' => 'faculty_involvement',
+        'update_faculty_name' => 'faculty_name',
+        'update_counseling_required' => 'counseling_required',
+        'update_referral_type' => 'referal_type',
+        'update_remarks' => 'Remarks',
+        'update_notes' => 'Notes',
         ];
 
     foreach ($request->all() as $field => $value) {
