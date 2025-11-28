@@ -366,6 +366,8 @@ class CounselingController extends Controller
             'student_no'        => $parent->student_no,
             'student_name'      => $parent->student_name,
             'school_email'      => $parent->school_email,
+            'year_level'        => $parent->year_level,
+            'program'           => $parent->program,
             'violation'         => $parent->violation,
             'severity'          => $parent->severity,
             'priority_risk'     => $parent->priority_risk,

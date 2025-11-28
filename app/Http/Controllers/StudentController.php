@@ -46,7 +46,7 @@ class StudentController extends Controller
             $now = Carbon::now('Asia/Manila');
             $minutesSinceCreated = $createdDate->diffInMinutes($now);
 
-            if ($minutesSinceCreated > 1 && $violation->appeal === 'N/A') {
+            if ($minutesSinceCreated > 2 && $violation->appeal === 'N/A') {
                 $violation->appeal = 'No Objection';
                 $violation->status_name = 3;
                 $violation->is_active = true;
@@ -128,6 +128,14 @@ class StudentController extends Controller
             else{
                 $sectionId = 'frontpage';
             }
+
+            $created = Carbon::parse($violation->Date_Created, 'Asia/Manila');
+            $deadline = $created->copy()->addMinutes(3); // 1-minute demo window
+            $remaining = $deadline->diffInSeconds(now('Asia/Manila'), false);
+
+            if ($remaining < 0) {
+                $remaining = 0;
+            }
             
             return [
                 'id' => $violation->id,
@@ -144,6 +152,9 @@ class StudentController extends Controller
                 'Remarks' => $violation->Remarks,
                 'upload_evidence' => $violation->upload_evidence,
                 'appeal' => $violation->appeal,
+
+                'remaining_seconds' => $remaining
+
             ];
         });
     
