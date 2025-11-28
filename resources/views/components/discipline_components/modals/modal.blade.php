@@ -656,6 +656,7 @@ function loadRuleDropdown(url, id, selectedValue = null) {
       $("#edit_severity_Name").val("");
   }
 
+  
   //Preview edit
   $(document).on('click', '.btn-edit-post', function(){
     var id = $(this).val();
@@ -851,7 +852,7 @@ function loadRuleDropdown(url, id, selectedValue = null) {
                 _token: $('input[name="_token"]').val(),
                 update_student_no: $('#edit_student_no').val(),
                 update_name: $('#edit_student_name').val(),
-                update_course: $('#edit_course').val(),
+                // update_course: $('#edit_course').val(),
                 update_school_email: $('#edit_school_email').val(),
                 update_violation_type: $('#edit_violation_type').val(),
                 update_rule_name: $('#edit_rule_Name').val(),
@@ -871,6 +872,16 @@ function loadRuleDropdown(url, id, selectedValue = null) {
                  $("#btneditsubmit")
                 .prop("disabled", false)
                 .text("Save Changes");
+
+                if (response.status === 204) {
+                    Swal.fire({
+                        icon: "info",
+                        title: "No Changes Detected",
+                        text: response.message,
+                        confirmButtonText: "OK"
+                    });
+                    return;
+                }
 
                 Swal.fire({
                     title: "Updated Successfully!",

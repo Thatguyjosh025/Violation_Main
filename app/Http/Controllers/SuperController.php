@@ -28,8 +28,7 @@ class SuperController extends Controller
                 'required',
                 'string',
                 'max:255',
-                'unique:tb_violation,violations',
-                'regex:/^[a-zA-Z ]+$/'
+                'unique:tb_violation,violations'
             ],
         ]);
 
@@ -324,7 +323,6 @@ class SuperController extends Controller
                 'required',
                 'string',
                 'max:255',
-                'regex:/^[a-zA-Z ]+$/',
                 Rule::unique('tb_violation', 'violations')->ignore($id, 'violation_id')
             ],
             'is_visible' => 'required|in:active,inactive',

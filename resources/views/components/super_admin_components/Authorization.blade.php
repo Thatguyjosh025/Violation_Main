@@ -37,7 +37,6 @@
                         <th data-label="firstname" scope="col">First Name</th>
                         <th scope="col">Last Name</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Student No.</th>
                         <th scope="col">Role</th>
                         <th scope="col">Status</th>
                         <th scope="col">Actions</th>
@@ -50,7 +49,6 @@
                             <td data-label="First Name">{{ $data->firstname }}</td>
                             <td data-label="Last Name">{{ $data->lastname }}</td>
                             <td data-label="Email">{{ $data->email }}</td>
-                            <td data-label="Student No.">{{ $data->student_no }}</td>
                             <td data-label="Role">{{ $data->role }}</td>
                             <td data-label="Status">{{ $data->status }}</td>
                             <td data-label="Actions">

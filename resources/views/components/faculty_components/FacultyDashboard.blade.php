@@ -51,7 +51,7 @@ function countIncident() {
                     <div class="flex-grow-1">
                         <span class="badge badge-custom">Faculty</span>
                         <h4 class="mt-2 mb-1">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h4>
-                        <p class="mb-1">ID: {{ Auth::user()->student_no }}</p>
+                        <p class="mb-1">{{ Auth::user()->email }}</p>
                     </div>
                 </div>
             </div>

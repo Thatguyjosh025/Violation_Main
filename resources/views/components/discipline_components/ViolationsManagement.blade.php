@@ -615,7 +615,7 @@ $(document).ready(function(){
                                             data-student_no="${data.student_no}"
                                             data-first="${data.firstname}"
                                             data-last="${data.lastname}"
-                                            data-course="${data.course_and_section}">
+                                           ">
                                             View
                                         </button>
                                     </div>`;

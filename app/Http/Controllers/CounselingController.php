@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\audits;
 use App\Models\counseling;
 use Illuminate\Http\Request;
 use App\Models\notifications;
 use App\Models\postviolation;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CounselingController extends Controller
 {
@@ -30,7 +32,7 @@ class CounselingController extends Controller
         ]);
     }
 
-   public function storeCounselingSchedule(Request $request)
+    public function storeCounselingSchedule(Request $request)
     {
         $validated = $request->validate([
             'student_no'   => 'required|string',
@@ -89,6 +91,57 @@ class CounselingController extends Controller
             'parent_session_id'=> null,
         ]);
 
+        // AUDIT LOGGING
+        $userId = Auth::user()->id;
+        $fieldsToAudit = [
+            'student_no' => $validated['student_no'],
+            'student_name' => $validated['student_name'],
+            'school_email' => $validated['school_email'],
+            'violation' => $validated['violation'],
+            'severity' => $validated['severity'],
+            'priority_risk' => $validated['priority_level'],
+            'year_level' => $validated['year_level'],
+            'program' => $validated['program'],
+            'guidance_service' => $validated['guidance_service'],
+            'start_date' => $validated['start_date'],
+            'end_time' => $validated['end_time'],
+            'start_time' => $validated['start_time'],
+            'parent_uid' => $parent_uid,
+        ];
+
+        // List of fields to ignore in audit logging
+        $ignoredFields = ['_token', '_method', 'upload_evidence', 'course'];
+
+        foreach ($fieldsToAudit as $field => $value) {
+            // Skip ignored fields
+            if (in_array($field, $ignoredFields)) {
+                continue;
+            }
+
+            $textValue = null;
+            if ($field === 'guidance_service') {
+                $model = \App\Models\guidanceService::find($value);
+                $textValue = $model ? $model->guidance_service : null;
+            }
+            if ($field === 'priority_risk') {
+                $model = \App\Models\priorityrisk::find($value);
+                $textValue = $model ? $model->priority_risk : null;
+            }
+            // Add more mappings for other fields if needed
+
+            audits::create([
+                'changed_at'     => now()->format('Y-m-d H:i'),
+                'changed_by'     => $userId,
+                'event_type'     => 'Create',
+                'field_name'     => $field,
+                'old_value'      => null, // No old value for create
+                'old_value_text' => null,
+                'new_value'      => $value,
+                'new_value_text' => $textValue,
+            ]);
+        }
+
+
         if ($isFromReferral) {
             postviolation::where('id', $postViolationId)
                 ->update(['is_admitted' => false]);
@@ -117,16 +170,27 @@ class CounselingController extends Controller
 
 
 
-
     public function getSession($id)
     {
-        $session = Counseling::with('priorityRiskRelation')->findOrFail($id);
+        $session = Counseling::with('priorityRiskRelation','guidanceServiceRelation')->findOrFail($id);
         return response()->json($session);
     }
 
     public function updateSession(Request $request, $id)
     {
-        $session = Counseling::findOrFail($id);
+        $session = Counseling::with('statusRelation')->findOrFail($id);
+
+        // Store old values before update
+        $oldValues = [
+            'year_level'       => $session->year_level,
+            'program'          => $session->program,
+            'session_notes'    => $session->session_notes,
+            'emotional_state'  => $session->emotional_state,
+            'behavior_observe' => $session->behavior_observe,
+            'plan_goals'       => $session->plan_goals,
+            'status'           => $session->statusRelation->session_status,
+            'end_date'         => $session->end_date,
+        ];
 
         $validated = $request->validate([
             'year_level'        => 'nullable|string',
@@ -152,6 +216,49 @@ class CounselingController extends Controller
             'status'            => $validated['status'],
             'end_date'          => $endDate,
         ]);
+
+        // AUDIT LOGGING
+        $userId = Auth::user()->id;
+        $fieldsToAudit = [
+            'year_level'       => $validated['year_level'] ?? $session->year_level,
+            'program'          => $validated['program'] ?? $session->program,
+            'session_notes'    => $validated['session_notes'] ?? $session->session_notes,
+            'emotional_state'  => $validated['emotional_state'] ?? $session->emotional_state,
+            'behavior_observe' => $validated['behavior_observe'] ?? $session->behavior_observe,
+            'plan_goals'       => $validated['plan_goals'] ?? $session->plan_goals,
+            'status'           => $validated['status'],
+            'end_date'         => $endDate,
+        ];
+
+        // List of fields to ignore in audit logging
+        $ignoredFields = ['_token', '_method', 'upload_evidence', 'course', 'incident_id','behavior_observe'];
+
+        foreach ($fieldsToAudit as $field => $newValue) {
+            // Skip ignored fields
+            if (in_array($field, $ignoredFields)) {
+                continue;
+            }
+
+            $oldValue = $oldValues[$field] ?? null;
+            $textValue = null;
+
+            //Map status ID to readable text if needed
+            if ($field === 'status') {
+                $statusModel = \App\Models\sessionstatus::find($newValue);
+                $textValue = $statusModel ? $statusModel->session_status : null;
+            }
+
+            audits::create([
+                'changed_at'     => now()->format('Y-m-d H:i'),
+                'changed_by'     => $userId,
+                'event_type'     => 'Update',
+                'field_name'     => $field,
+                'old_value'      => $oldValue,
+                'old_value_text' => null, // You can map old value text if needed
+                'new_value'      => $newValue,
+                'new_value_text' => $textValue,
+            ]);
+        }
 
         // If marked as resolved, mark entire family resolved
         if ($validated['status'] == $resolvedStatusId) {

@@ -22,10 +22,16 @@
                     <button class="btn btn-sm btn-secondary" id="validateName">Name Validator</button>
                 </div>
                 <div class="d-flex align-items-center">
-                    <input type="month" id="startMonth" class="form-control ms-2" style="width: 140px;" placeholder="Start Month">
-                    <input type="month" id="endMonth" class="form-control ms-2" style="width: 140px;" placeholder="End Month">
-                    <button class="btn btn-sm btn-primary ms-2" id="applyDateFilter" style="margin-right: 7px;" >Apply</button>
-                    <select id="statusFilter" class="sort-dropdown form-select" style="width: auto; min-width: 150px;">
+                    <div class="d-flex flex-column me-2">
+                        <label for="startMonth" class="form-label mb-0">From</label>
+                        <input type="month" id="startMonth" class="form-control" style="width: 150px;">
+                    </div>
+                    <div class="d-flex flex-column me-2">
+                        <label for="endMonth" class="form-label mb-0">To</label>
+                        <input type="month" id="endMonth" class="form-control" style="width: 150px;">
+                    </div>
+                    <button class="btn btn-sm btn-primary ms-2 mt-3" id="applyDateFilter" style="margin-right: 7px;" >Apply</button>
+                    <select id="statusFilter" class="sort-dropdown form-select mt-3" style="width: auto; min-width: 150px;">
                         <option value="">Show All Active</option>
                         <option value="Pending">Pending</option>
                         <option value="Under Review">Under Review</option>
@@ -62,7 +68,7 @@
             <div class="modal fade" id="validatorModal" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content p-3">
-                        <h5>Upload CSV or XML</h5>
+                        <h5>Upload CSV file</h5>
                         <input type="file" id="validatorFile" class="form-control mt-2" accept=".csv">
                         <button class="btn btn-primary mt-3" id="runValidator">Run Validator</button>
                     </div>
@@ -137,24 +143,52 @@ $(document).ready(function () {
         }
 
         $('#exportCSV').click(function () {
-            let csv = [];
-            let table = cloneTableWithoutActions();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to export all violation records to CSV.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, export it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Clone table without Actions column
+                    function cloneTableWithoutActions() {
+                        let cloned = $('#violationrecordstable').clone();
+                        cloned.find('tr').each(function () {
+                            $(this).find('th:last-child, td:last-child').remove(); // remove last column
+                        });
+                        return cloned;
+                    }
 
-            table.find('tr').each(function () {
-                let row = [];
-                $(this).find('th, td').each(function () {
-                    let text = $(this).text().replace(/"/g, '""');
-                    row.push('"' + text + '"');
-                });
-                csv.push(row.join(','));
+                    let csv = [];
+                    let table = cloneTableWithoutActions();
+
+                    table.find('tr').each(function () {
+                        let row = [];
+                        $(this).find('th, td').each(function () {
+                            let text = $(this).text().replace(/"/g, '""');
+                            row.push('"' + text + '"');
+                        });
+                        csv.push(row.join(','));
+                    });
+
+                    let csvString = csv.join('\n');
+                    let blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+                    let link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'violation_records.csv';
+                    link.click();
+
+                    Swal.fire(
+                        'Exported!',
+                        'Violation records have been exported.',
+                        'success'
+                    );
+                }
             });
-
-            let csvString = csv.join('\n');
-            let blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-            let link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'violation_records.csv';
-            link.click();
         });
 
 
