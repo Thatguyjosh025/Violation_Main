@@ -132,6 +132,10 @@ $(document).ready(function () {
 
 
                 if (response.success) {
+
+                $('#login_email').val('');
+                $('#login_password').val('');
+
                     // Redirect based on role
                     if (response.role == 'discipline') {
                         window.location.href = "{{ url('discipline_dashboard') }}";
@@ -152,6 +156,10 @@ $(document).ready(function () {
                         $("#loginButton")
                         .prop("disabled", false)
                         .text("Login");
+
+                        $('#login_email').val('');
+                        $('#login_password').val('');
+
                         if (response.errors.email) {
                             $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">' + response.errors.email + '</div>');
                         }
@@ -172,6 +180,10 @@ $(document).ready(function () {
                 $("#loginButton")
                 .prop("disabled", false)
                 .text("Login");
+
+                $('#login_email').val('');
+                $('#login_password').val('');
+                
                 // Handle server error
                 $('#login_email').removeClass('is-invalid').next('.invalid-feedback').remove();
                 $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
