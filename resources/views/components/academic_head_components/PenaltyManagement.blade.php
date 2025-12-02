@@ -64,7 +64,7 @@ $penaltydata = penalties::get();
 
                     <!-- Penalty Name -->
                     <div class="mb-3">
-                        <label for="penalties" class="form-label">Penalty:</label>
+                        <label for="penalties" class="form-label required">Penalty:</label>
                         <!-- use minlength instead of min for text -->
                         <input type="text" name="penalties" id="penalties" class="form-control" minlength="5" required>
                         <div class="invalid-feedback">

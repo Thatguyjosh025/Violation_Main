@@ -80,31 +80,31 @@
                 <h4>Schedule a Counseling Session</h4>
                 <div class="field">
                     <input type="hidden" id="hidden_postviolation_id">
-                    <label>Start Date</label>
+                    <label class="required">Start Date</label>
                     <input type="date" id="start_date" class="form-control rounded-pill px-3 py-2">
                     <div class="error-msg text-danger small mt-1" id="error_start_date"></div>
                 </div>
                 <div class="field">
-                    <label>Start Time</label>
+                    <label class="required">Start Time</label>
                         <input type="time" id="start_time" class="form-control rounded-pill px-3 py-2"
                          min="08:00" max="16:00">
                     <div class="error-msg text-danger small mt-1" id="error_start_time"></div>
                 </div>
                 <div class="field">
-                    <label>End Time</label>
+                    <label class="required">End Time</label>
                         <input type="time" id="end_time" class="form-control rounded-pill px-3 py-2"
                         min="08:00" max="16:00">
                     <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
                 </div>
                 <div class="field">
-                    <label>Priority Level</label>
+                    <label class="required">Priority Level</label>
                     <select name="" id="priority_level_input" class="form-select">
                         <!-- Load hereeee -->
                     </select>
                     <div class="error-msg text-danger small mt-1" id="error_priority_level"></div>
                 </div>
                 <div class="field">
-                    <label>Guidance Service</label>
+                    <label class="required">Guidance Service</label>
                     <select name="" id="guidance_service_input" class="form-select">
                         <!-- Load hereeee -->
                     </select>

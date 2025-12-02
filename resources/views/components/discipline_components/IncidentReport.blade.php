@@ -150,7 +150,7 @@ $rejectedReports = incident::where('is_visible', 'reject')->paginate(9, ['*'], '
                            
                             <div id="incident-dropdowns">
                                 <!-- Referral Dropdown Section -->
-                                <label class="fw-bold mb-1">Action Taken Prior to Referral</label>
+                                <label class="fw-bold mb-1 required">Action Taken Prior to Referral</label>
                                 <select class="form-select" id="referal_type" name="referal_type">
                                     <option value="">Select referal...</option>
                                     @foreach ($ref as $refdata )
@@ -160,7 +160,7 @@ $rejectedReports = incident::where('is_visible', 'reject')->paginate(9, ['*'], '
                                 <!-- End of Dropdown Section -->
 
                                  <!-- Penalty Dropdown Section -->
-                                <label class="fw-bold mt-2">Penalty</label>
+                                <label class="fw-bold mt-2 required">Penalty</label>
                                 <select class="form-select" id="penalty_type" name="penalty_type">
                                     <option value="" hidden>Select Penaltyy</option>
                                     @foreach ($pen as $pendata )
@@ -185,7 +185,7 @@ $rejectedReports = incident::where('is_visible', 'reject')->paginate(9, ['*'], '
                             
                             <!-- Remarks -->
                             <div id="remarks-incident">
-                                <label class="fw-bold">Remarks:</label>
+                                <label class="fw-bold required">Remarks:</label>
                                 <textarea class="form-control" id="Remarks" name="Remarks" style="height: 100px; resize: none;"></textarea>
                             </div>
                 

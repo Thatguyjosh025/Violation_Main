@@ -369,4 +369,68 @@ button.btn.btn-primary {
     color: white;
     width: 100%;
 }
+button.btnSignIn-Admin {
+    margin-top: 10px;
+    padding: 7px 16px;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    background-color: #212529;
+    color: #F2F2F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; 
+}
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    margin: 10px 0 5px;
+}
+
+.divider span {
+    padding: 0 10px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #d1d1d1;
+}
+.central-container{
+    width: 50%;
+    height: 50%;
+}
+.central-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btnBack {
+    margin-top: 10px;
+    padding: 7px 16px;
+    width: 100%;
+    border: none;
+    border-radius: 40px;
+    font-weight: 500;
+    background-color: var(--second-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* gap: 10px; */
+}
+
+.btnBack:hover {
+    opacity: .8;
+    transform: translateY(-2px);
+    transition: 0.2s;
+}
+
 

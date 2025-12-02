@@ -65,7 +65,7 @@ $referalsdata = referals::get();
 
                     <!-- Referral Name -->
                     <div class="mb-3">
-                        <label for="referals" class="form-label">Referral Name:</label>
+                        <label for="referals" class="form-label required">Referral Name:</label>
                         <input type="text" name="referals" id="referals" class="form-control" required>
                         <div class="invalid-feedback">
                             Referral name must be valid.

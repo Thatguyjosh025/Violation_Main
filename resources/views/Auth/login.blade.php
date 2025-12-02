@@ -1,58 +1,71 @@
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <button type="button" class="btn-close align-self-end" data-bs-dismiss="modal" aria-label="Close"></button>
-                <h2 class="text-center mb-3">Login</h2>
-                <p class="text-center text-muted" style="font-size: 15px;">Please fill in this form to sign in</p>
-
-                <form id="loginForm" method="POST" action="{{ url('login') }}">
-                    @csrf
-
-                    <div class="mb-3">
-                        <label for="login_email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="login_email" name="email" placeholder="Enter your email">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="login_password" class="form-label">Password</label>
-                        <div class="input-group" style="position: relative;">
-                            <input type="password" class="form-control" id="login_password" name="password" placeholder="Enter your password" style="border-radius: 6px;">
-                            <span id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; display: none;">
-                                <i class="fas fa-eye"></i>
-                            </span>
+ <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close align-self-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h2 class="central-title mb-3">
+                        <div class="central-container">
+                            <img src="/Photos/central.png" alt="">
                         </div>
-                    </div>
-
-                    <!-- <div class="d-flex justify-content-between align-items-center mb-3">
-                        <a href="#" class="text-decoration-none" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#">Forgot Password?</a>
-                    </div> -->
-
-                    <button type="button" id="loginButton" class="btn btn-primary w-100">Login</button>
-
-                    <!-- SEPERATOR -->
-                    <div class="my-2 d-flex align-items-center">
-                        <hr class="flex-grow-1">
-                        <span class="px-2 text-muted">or</span>
-                        <hr class="flex-grow-1">
-                    </div>
-
-                    <div class="mb-4 text-center">
-                        <a href="{{ route('microsoft.auth') }}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center" style="gap: 8px;">
-                            <i class="fab fa-microsoft"></i>
-                            <span>Login with Microsoft</span>
-                        </a>
-                    </div>
-                </form>
-
-                <!-- <p class="text-center mt-3">
-                    Don't have an Account?
-                    <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Sign Up here</a>
-                </p> -->
+                    </h2>
+                    <form>
+                        <div class="button-container">
+                            <div class="mb-1 text-center">
+                                <a href="{{ route('microsoft.auth') }}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center" style="gap: 8px;">
+                                    <i class="fab fa-microsoft"></i>
+                                    <span>Login with Microsoft</span>
+                                </a>
+                            </div>
+                            <div class="divider">
+                                <span>or</span>
+                            </div>
+                            <button type="button" class="btnSignIn-Admin" data-bs-toggle="modal" data-bs-target="#AdminModal">
+                                <i class="bi bi-shield-lock"></i>Login as Admin
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!--Admin Login Modal-->
+  <div class="modal fade" id="AdminModal" tabindex="-1" aria-labelledby="AdminModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close align-self-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h2 class="central-title mb-3">
+                        <div class="central-container">
+                            <img src="/Photos/central.png" alt="">
+                        </div>
+                    </h2>
+                    <form id="loginForm" method="POST" action="{{ url('login') }}">
+                        @csrf
+
+                        <div class="mb-3">
+                            <label for="login_email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="login_email" name="email" placeholder="Enter your email">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="login_password" class="form-label">Password</label>
+                            <div class="input-group" style="position: relative;">
+                                <input type="password" class="form-control" id="login_password" name="password" placeholder="Enter your password" style="border-radius: 6px;">
+                                <span id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; display: none;">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <button type="button" id="loginButton" class="btn btn-primary w-100">Login</button>
+                        <button type="button" class="btnBack" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

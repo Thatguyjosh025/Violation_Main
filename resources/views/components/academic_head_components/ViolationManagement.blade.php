@@ -64,7 +64,7 @@ $violationdata = violation::get();
 
                         <!-- Violation Name -->
                         <div class="mb-3">
-                            <label for="violations" class="form-label">Violation:</label>
+                            <label for="violations" class="form-label required">Violation:</label>
                             <input type="text" name="violations" id="violations" class="form-control" required>
                             <div class="invalid-feedback">
                                 Violation name should only contain alphabetic characters and spaces.

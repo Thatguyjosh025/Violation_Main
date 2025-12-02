@@ -43,7 +43,7 @@ $accounts = users::get();
 
                     <!-- Violation Dropdown Section -->
                     <div class="mb-3">
-                        <label class="form-label">Reason/s for Referral</label>
+                        <label class="form-label required">Reason/s for Referral</label>
                         <div class="dropdown" id="dropdown1">
                             <select class="form-select" name="violation_type" id="incident_report_violationType">
                                 <option value="">Select Violation</option>
@@ -54,7 +54,7 @@ $accounts = users::get();
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="fw mt-2">Rule Name:</label>
+                        <label class="fw mt-2 required">Rule Name:</label>
                         <select id="incident_report_ruleDropdown" class="form-select" >
                             <option value="">Select Rule</option>
                         </select>
@@ -76,7 +76,7 @@ $accounts = users::get();
                     </div>
 
                     <div class="form-group mt-3">
-                        <label for="floatingTextarea">Details</label>
+                        <label for="floatingTextarea" class="required">Details</label>
                         <textarea class="form-control" id="incident_report_remarks" name="remarks" style="height: 100px; resize: none; font-size: 14px;" maxlength="500" required></textarea>
                     </div>
 
