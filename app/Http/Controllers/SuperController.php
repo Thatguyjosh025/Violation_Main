@@ -521,7 +521,7 @@ class SuperController extends Controller
     public function exportUsersCSV()
     {
         $fileName = 'backup_user_records.csv';
-        $users = Users::all(['firstname', 'lastname','email', 'password', 'role', 'student_no','status']); 
+        $users = Users::all(['firstname', 'lastname','email','username', 'password', 'role', 'student_no','status']); 
 
         $headers = [
             "Content-type"        => "text/csv; charset=UTF-8",
@@ -531,7 +531,7 @@ class SuperController extends Controller
             "Expires"             => "0"
         ];
 
-        $columns = ['First Name', 'Last Name','Email', 'Password', 'Role', 'Student No', 'Status'];
+        $columns = ['First Name', 'Last Name','Email','Username', 'Password', 'Role', 'Student No', 'Status'];
 
         $callback = function() use($users, $columns) {
             $file = fopen('php://output', 'w');
@@ -542,6 +542,7 @@ class SuperController extends Controller
                     $user->firstname,
                     $user->lastname,
                     $user->email,
+                    $user->username,
                     $user->password, // this is danger but okay
                     $user->role,
                     $user->student_no,
@@ -560,28 +561,25 @@ class SuperController extends Controller
         $request->validate([
             'csv_file' => 'required|file|mimes:csv,txt'
         ]);
-
         $file = $request->file('csv_file');
         $handle = fopen($file->getRealPath(), 'r');
         $header = fgetcsv($handle);
-
         while (($row = fgetcsv($handle)) !== false) {
             $data = array_combine($header, $row);
-
             // Update or create the user based on email
-            users::updateOrCreate(
-                ['email' => $data['Email']], // Unique identifier
+            Users::updateOrCreate(
+                ['email' => $data['Email']],
                 [
                     'firstname'   => $data['First Name'],
                     'lastname'    => $data['Last Name'],
+                    'username'    => $data['Username'], 
                     'student_no'  => $data['Student No'],
                     'role'        => $data['Role'],
-                    'status'      => $data['Status'], // This will override the status
+                    'status'      => $data['Status'],
                     'password'    => $data['Password'],
                 ]
             );
         }
-
         fclose($handle);
         return response()->json(['status' => 200, 'message' => 'CSV imported successfully']);
     }
