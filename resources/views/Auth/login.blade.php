@@ -30,7 +30,7 @@
     </div>
 
     <!--Admin Login Modal-->
-  <div class="modal fade" id="AdminModal" tabindex="-1" aria-labelledby="AdminModalLabel" aria-hidden="true">
+    <div class="modal fade" id="AdminModal" tabindex="-1" aria-labelledby="AdminModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
@@ -40,12 +40,13 @@
                             <img src="/Photos/central.png" alt="">
                         </div>
                     </h2>
+
                     <form id="loginForm" method="POST" action="{{ url('login') }}">
                         @csrf
 
                         <div class="mb-3">
-                            <label for="login_email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="login_email" name="email" placeholder="Enter your email">
+                            <label for="login_username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="login_username" name="username" placeholder="Enter your username">
                         </div>
 
                         <div class="mb-3">
@@ -57,10 +58,11 @@
                                 </span>
                             </div>
                         </div>
+
                         <button type="button" id="loginButton" class="btn btn-primary w-100">Login</button>
                         <button type="button" class="btnBack" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                <i class="bi bi-arrow-left"></i> Back
-                            </button>
+                            <i class="bi bi-arrow-left"></i> Back
+                        </button>
                     </form>
                 </div>
             </div>
@@ -70,159 +72,122 @@
 <script src="{{ asset('./vendor/jquery.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
- $(document).ready(function() {
-        // Initially, the eye icon should be hidden
-        $('#togglePassword').hide();
-
-        // Show the eye icon when typing starts
-        $('#login_password').on('input', function() {
-            if ($(this).val().length > 0) {
-                $('#togglePassword').show();
-            } else {
-                $('#togglePassword').hide();
-            }
-        });
-
-        // Toggle the password visibility when clicking on the eye icon
-        $('#togglePassword').on('click', function() {
-            var passwordField = $('#login_password');
-            var icon = $(this).find('i');
-
-            // Toggle between 'password' and 'text' input types
-            if (passwordField.attr('type') === 'password') {
-                passwordField.attr('type', 'text');
-                icon.removeClass('fa-eye').addClass('fa-eye-slash');
-            } else {
-                passwordField.attr('type', 'password');
-                icon.removeClass('fa-eye-slash').addClass('fa-eye');
-            }
-        });
-    });
-   
 $(document).ready(function () {
+
+    // ---- Password Toggle ----
+    $('#togglePassword').hide();
+
+    $('#login_password').on('input', function() {
+        $(this).val().length > 0 ? $('#togglePassword').show() : $('#togglePassword').hide();
+    });
+
+    $('#togglePassword').on('click', function() {
+        var passwordField = $('#login_password');
+        var icon = $(this).find('i');
+
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            passwordField.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
+    // ---- Login Function ----
     function login() {
         event.preventDefault();
 
-        // Clear previous errors
-        $('#login_email').removeClass('is-invalid').next('.invalid-feedback').remove();
-        $('#login_password').removeClass('is-invalid').next('.invalid-feedback').remove();
+        // Clear errors first
+        $('#login_username, #login_password').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
 
-        var email = $('#login_email').val();
+        var username = $('#login_username').val();
         var password = $('#login_password').val();
         var _token = $('input[name="_token"]').val();
 
-        if (email == '' || password == '') {
-            if (email == '') {
-                $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">Email is required.</div>');
+        // Required validation
+        if (username === '' || password === '') {
+            if (username === '') {
+                $('#login_username').addClass('is-invalid').after('<div class="invalid-feedback">Username is required.</div>');
             }
-            if (password == '') {
+            if (password === '') {
                 $('#login_password').addClass('is-invalid').after('<div class="invalid-feedback">Password is required.</div>');
             }
-            return false;
+            return;
         }
-         $("#loginButton")
-        .prop("disabled", true)
-        .text("Logging in...");
 
+        $("#loginButton").prop("disabled", true).text("Logging in...");
 
-        // AJAX request to login
         $.ajax({
             url: "{{ url('login') }}",
             type: 'POST',
             data: {
-                email: email,
+                username: username,
                 password: password,
                 _token: _token
             },
             success: function (response) {
-                // Clear previous errors again
-                $('#login_email').removeClass('is-invalid').next('.invalid-feedback').remove();
-                $('#login_password').removeClass('is-invalid').next('.invalid-feedback').remove();
 
-                $("#loginButton")
-                .prop("disabled", false)
-                .text("Login");
-
+                $("#loginButton").prop("disabled", false).text("Login");
 
                 if (response.success) {
 
-                $('#login_email').val('');
-                $('#login_password').val('');
+                    // Clear fields
+                    $('#login_username').val('');
+                    $('#login_password').val('');
 
-                    // Redirect based on role
-                    if (response.role == 'discipline') {
-                        window.location.href = "{{ url('discipline_dashboard') }}";
-                    } else if (response.role == 'super') {
-                        window.location.href = "{{ url('super_dashboard') }}";
-                    } else if (response.role == 'student') {
-                        window.location.href = "{{ url('student_dashboard') }}";
-                    } else if (response.role == 'faculty') {
-                        window.location.href = "{{ url('faculty_dashboard') }}";
-                    } else if (response.role == 'counselor') {
-                        window.location.href = "{{ url('counseling_dashboard') }}";
-                    } else if (response.role == 'head') {
-                        window.location.href = "{{ url('academic_head_dashboard') }}";
+                    // Redirect by role
+                    switch (response.role) {
+                        case 'discipline': window.location.href = "{{ url('discipline_dashboard') }}"; break;
+                        case 'super': window.location.href = "{{ url('super_dashboard') }}"; break;
+                        case 'student': window.location.href = "{{ url('student_dashboard') }}"; break;
+                        case 'faculty': window.location.href = "{{ url('faculty_dashboard') }}"; break;
+                        case 'counselor': window.location.href = "{{ url('counseling_dashboard') }}"; break;
+                        case 'head': window.location.href = "{{ url('academic_head_dashboard') }}"; break;
                     }
-                } else {
-                    // If the response has validation errors
-                    if (response.errors) {
-                        $("#loginButton")
-                        .prop("disabled", false)
-                        .text("Login");
 
-                        $('#login_email').val('');
+                } else {
+                    // Validation errors
+                    if (response.errors) {
+
                         $('#login_password').val('');
 
-                        if (response.errors.email) {
-                            $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">' + response.errors.email + '</div>');
+                        if (response.errors.username) {
+                            $('#login_username').addClass('is-invalid').after('<div class="invalid-feedback">' + response.errors.username + '</div>');
                         }
                         if (response.errors.password) {
                             $('#login_password').addClass('is-invalid').after('<div class="invalid-feedback">' + response.errors.password + '</div>');
                         }
+
                     } else {
-                        $("#loginButton")
-                        .prop("disabled", false)
-                        .text("Login");
-                        // General invalid credentials error
-                        $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
+                        // General error
+                        $('#login_username').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
                         $('#login_password').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
                     }
                 }
             },
-            error: function (xhr) {
-                $("#loginButton")
-                .prop("disabled", false)
-                .text("Login");
+            error: function () {
 
-                $('#login_email').val('');
-                $('#login_password').val('');
-                
-                // Handle server error
-                $('#login_email').removeClass('is-invalid').next('.invalid-feedback').remove();
-                $('#login_email').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
-                $('#login_password').removeClass('is-invalid').next('.invalid-feedback').remove();
-                $('#login_password').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
+                $("#loginButton").prop("disabled", false).text("Login");
+
+                $('#login_username').val('').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
+                $('#login_password').val('').addClass('is-invalid').after('<div class="invalid-feedback">Invalid credentials.</div>');
             }
         });
     }
 
-// Trigger login function on button click
+    // Button click login
     $('#loginButton').click(function (e) {
         login();
     });
 
-    // Trigger login on pressing the Enter key
+    // Enter key login
     $(document).keypress(function (e) {
-        if (e.which == 13) { 
+        if (e.which == 13) {
             login();
         }
     });
 
-    // Reset the form when the modal is closed
-    $('#loginModal').on('hidden.bs.modal', function () {
-        $(this).find('form')[0].reset();  // Reset form fields
-        $('#login_email').removeClass('is-invalid').next('.invalid-feedback').remove(); // Remove error classes and messages
-        $('#login_password').removeClass('is-invalid').next('.invalid-feedback').remove();
-    });
 });
 </script>

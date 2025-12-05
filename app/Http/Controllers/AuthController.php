@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\users;
 use App\Models\audits;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,87 +13,103 @@ use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
+
     public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-        $email = $request->email;
-        $cacheKey = 'login_attempts_' . $email;
-        $lockoutKey = 'login_lockout_' . $email;
+{
+    $credentials = $request->only('username', 'password');
+    $request->validate([
+        'username' => 'required',
+        'password' => 'required',
+    ]);
 
-        // Check if the user is currently locked out
-        if (Cache::has($lockoutKey)) {
-            $secondsLeft = Cache::get($lockoutKey) - time();
+    $email = $request->email;
+    $cacheKey = 'login_attempts_' . $email;
+    $lockoutKey = 'login_lockout_' . $email;
+
+    // Use Asia/Manila timezone
+    $now = Carbon::now('Asia/Manila');
+
+    // Check if the user is currently locked out
+    if (Cache::has($lockoutKey)) {
+        $lockoutTimestamp = Cache::get($lockoutKey); // store as timestamp
+        $secondsLeft = $lockoutTimestamp - $now->timestamp;
+
+        if ($secondsLeft > 0) {
             return response()->json([
                 'success' => false,
                 'errors' => [
-                    'email' => "Too many login attempts. Please try again in " . ceil($secondsLeft / 60) . " minute(s)."
+                    'username' => "Too many login attempts. Please try again in " . ceil($secondsLeft / 60) . " minute(s)."
                 ]
             ]);
-        }
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            // Reset login attempts and lockout on successful login
-            Cache::forget($cacheKey);
+        } else {
             Cache::forget($lockoutKey);
-
-            if ($user->status == 'inactive') {
-                Auth::logout();
-                return response()->json([
-                    'success' => false,
-                    'errors' => [
-                        'email' => 'Your account is inactive. Please contact support.',
-                    ]
-                ]);
-            }
-
-            // --- Logout other sessions for this user ---
-            $sessionId = session()->getId();
-            $sessions = DB::table('sessions')
-                ->where('user_id', $user->id)
-                ->where('id', '!=', $sessionId)
-                ->pluck('id');
-
-            foreach ($sessions as $s) {
-                Session::getHandler()->destroy($s);
-            }
-            // --- End logout logic ---
-
-            return response()->json([
-                'success' => true,
-                'role' => $user->role,
-            ]);
         }
+    }
 
-        // Handle failed login attempt
-        $attempts = Cache::get($cacheKey, 0) + 1;
-        Cache::put($cacheKey, $attempts, now()->addMinutes(10));
+    // Attempt login
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
 
-        if ($attempts >= 10) {
-            $lockoutMultiplier = floor($attempts / 10);
-            $lockoutTime = 5 * 60 * $lockoutMultiplier;
-            Cache::put($lockoutKey, time() + $lockoutTime, $lockoutTime);
+        // Reset login attempts and lockout on successful login
+        Cache::forget($cacheKey);
+        Cache::forget($lockoutKey);
+
+        if ($user->status == 'inactive') {
+            Auth::logout();
             return response()->json([
                 'success' => false,
                 'errors' => [
-                    'email' => "Too many login attempts. Please try again in " . ceil($lockoutTime / 60) . " minute(s)."
+                    'username' => 'Your account is inactive. Please contact support.',
                 ]
             ]);
         }
+
+        // Logout other sessions for this user
+        $sessionId = session()->getId();
+        $sessions = DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->where('id', '!=', $sessionId)
+            ->pluck('id');
+
+        foreach ($sessions as $s) {
+            Session::getHandler()->destroy($s);
+        }
+
+        return response()->json([
+            'success' => true,
+            'role' => $user->role,
+        ]);
+    }
+
+    // Handle failed login attempt
+    $attempts = Cache::get($cacheKey, 0) + 1;
+    Cache::put($cacheKey, $attempts, 10); // 10 minutes expiry
+
+    // Lockout logic
+    if ($attempts >= 10) {
+        $lockoutMultiplier = floor($attempts / 10);
+        $lockoutTime = 5 * 60 * $lockoutMultiplier; // in seconds
+
+        // Store lockout as timestamp
+        $lockoutTimestamp = $now->copy()->addSeconds($lockoutTime)->timestamp;
+        Cache::put($lockoutKey, $lockoutTimestamp, $lockoutTime);
 
         return response()->json([
             'success' => false,
             'errors' => [
-                'email' => 'The provided credentials do not match our records.',
-                'password' => 'The provided credentials do not match our records.'
+                'username' => "Too many login attempts. Please try again in " . ceil($lockoutTime / 60) . " minute(s)."
             ]
         ]);
     }
+
+    return response()->json([
+        'success' => false,
+        'errors' => [
+            'username' => 'The provided credentials do not match our records.',
+            'password' => 'The provided credentials do not match our records.'
+        ]
+    ]);
+}
 
     public function addUser(Request $request) {
         $request->validate([

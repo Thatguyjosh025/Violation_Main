@@ -99,6 +99,7 @@ class MicrosoftLoginController extends Controller
                 'firstname'   => $userData['givenName'],
                 'lastname'    => $userData['surname'],
                 'email'       => $userData['mail'],
+                'username'    => null,
                 'password'    => null,
                 'role'        => $role,
                 'student_no'  => $student_id,
