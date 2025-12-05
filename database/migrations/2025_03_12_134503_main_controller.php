@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('firstname');
             $table->string('lastname');
             $table->string('email')->unique();
+            $table->string('username')->nullable();
             $table->string(column: 'student_no')->unique()->nullable();
             // $table->string('course_and_section')->nullable();
             $table->string('password')->nullable();
@@ -50,62 +51,79 @@ return new class extends Migration
                 'firstname' => env('SUPERADMIN_FIRSTNAME'),
                 'lastname' => env('SUPERADMIN_LASTNAME'),
                 'email' => env('SUPERADMIN_EMAIL'),
+                'username' => env('SUPERADMIN_USERNAME'),
                 'student_no' => env('SUPERADMIN_STUDENT_NO'),
                 // 'course_and_section' => 'Faculty',
                 'password' => bcrypt(env('SUPERADMIN_PASSWORD')),
                 'role' => env('SUPERADMIN_ROLE'),
                 'status' => env('SUPERADMIN_STATUS')
             ],
-            // [
-            //     'firstname' => 'Jeff',
-            //     'lastname' => 'Caber',
-            //     'email' => 'discipline@alabang.sti.edu.ph',
-            //     'student_no' => 'ALA0157F',
-            //     // 'course_and_section' => 'Faculty',
-            //     'password' => bcrypt('123456789'),
-            //     'role' => 'discipline',
-            //     'status' => 'active'
-            // ],
-            // [
-            //     'firstname' => 'Arvin',
-            //     'lastname' => 'Marlin',
-            //     'email' => 'faculty@alabang.sti.edu.ph',
-            //     'student_no' => 'ALA0153F',
-            //     // 'course_and_section' => 'Faculty',
-            //     'password' => bcrypt('123456789'),
-            //     'role' => 'faculty',
-            //     'status' => 'active'
-            // ],
-            // [
-            //     'firstname' => 'Jc',
-            //     'lastname' => 'Yangson',
-            //     'email' => 'counselor@alabang.sti.edu.ph',
-            //     'student_no' => 'ALA0159F',
-            //     // 'course_and_section' => 'Faculty',
-            //     'password' => bcrypt('123456789'),
-            //     'role' => 'counselor',
-            //     'status' => 'active'
-            // ],
-            // [
-            //     'firstname' => 'Ricson',
-            //     'lastname' => 'Ricardo',
-            //     'email' => 'academichead@alabang.sti.edu.ph',
-            //     'student_no' => 'ALA0151F',
-            //     // 'course_and_section' => 'Faculty',
-            //     'password' => bcrypt('123456789'),
-            //     'role' => 'head',
-            //     'status' => 'active'
-            // ],
-            // [
-            //     'firstname' => 'Vince Ivan',
-            //     'lastname' => 'Mangampo',
-            //     'email' => 'mangampo.311699@alabang.sti.edu.ph',
-            //     'student_no' => '02000311699',
-            //     // 'course_and_section' => 'Faculty',
-            //     'password' => bcrypt('123456789'),
-            //     'role' => 'student',
-            //     'status' => 'active'
-            // ]
+            [
+                'firstname' => 'Jeff',
+                'lastname' => 'Caber',
+                'email' => 'discipline@alabang.sti.edu.ph',
+                'username' => 'disciplineuser',
+                'student_no' => 'ALA0157F',
+                // 'course_and_section' => 'Faculty',
+                'password' => bcrypt('123456789'),
+                'role' => 'discipline',
+                'status' => 'active'
+            ],
+            [
+                'firstname' => 'Arvin',
+                'lastname' => 'Marlin',
+                'email' => 'faculty@alabang.sti.edu.ph',
+                'username' => 'facultyuser',
+                'student_no' => 'ALA0153F',
+                // 'course_and_section' => 'Faculty',
+                'password' => bcrypt('123456789'),
+                'role' => 'faculty',
+                'status' => 'active'
+            ],
+            [
+                'firstname' => 'Jc',
+                'lastname' => 'Yangson',
+                'email' => 'counselor@alabang.sti.edu.ph',
+                'username' => 'counseloruser',
+                'student_no' => 'ALA0159F',
+                // 'course_and_section' => 'Faculty',
+                'password' => bcrypt('123456789'),
+                'role' => 'counselor',
+                'status' => 'active'
+            ],
+            [
+                'firstname' => 'Ricson',
+                'lastname' => 'Ricardo',
+                'email' => 'academichead@alabang.sti.edu.ph',
+                'username' => 'academicheaduser',
+                'student_no' => 'ALA0151F',
+                // 'course_and_section' => 'Faculty',
+                'password' => bcrypt('123456789'),
+                'role' => 'head',
+                'status' => 'active'
+            ],
+            [
+                'firstname' => 'Vince Ivan',
+                'lastname' => 'Mangampo',
+                'email' => 'mangampo.311699@alabang.sti.edu.ph',
+                'username' => 'studentuser',
+                'student_no' => '02000311699',
+                // 'course_and_section' => 'Faculty',
+                'password' => bcrypt('123456789'),
+                'role' => 'student',
+                'status' => 'active'
+            ],
+            [
+                'firstname' => 'Mica Ella',
+                'lastname' => 'Loresca',
+                'email' => 'loresca.295774@alabang.sti.edu.ph',
+                'username' => 'secondstudentuser',
+                'student_no' => '02000295774',
+                // 'course_and_section' => 'Faculty',
+                'password' => bcrypt('123456789'),
+                'role' => 'student',
+                'status' => 'active'
+            ]
         ]);
 
     }

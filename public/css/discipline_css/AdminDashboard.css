@@ -428,3 +428,8 @@ img {
 .card h6 {
     font-size: 1rem;
 }
+.required::after {
+  content: " *";
+  color: #dc3545; /* Bootstrap's red */
+  font-weight: bold;
+}

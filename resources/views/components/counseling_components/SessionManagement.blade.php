@@ -89,7 +89,7 @@
                         <div class="kv-row"><div class="kv-label">End Date: </div><div class="kv-value"></div></div>
                         <hr class="my-3">
                         <div class="mb-3">
-                            <div class="section-title">Year level / Grade</div>
+                            <div class="section-title required">Year level / Grade</div>
                             <!-- <input class="form-control" id="year_level_input" placeholder="First Year or Grade - 11"> -->
                              <select name="" id="year_level_input_select" class="form-select">
                                 <option value="" hidden>Select Year/Grade Level</option>
@@ -103,7 +103,7 @@
                             <div class="error-msg text-danger small mt-1" id="error_year_level"></div>
                         </div>
                         <div class="mb-3">
-                            <div class="section-title">Program</div>
+                            <div class="section-title required">Program</div>
                             <!-- <input class="form-control" id="program_input" placeholder="Bachelor of Science in Information Technology"> -->
                             <select name="" id="program_input" class="form-select">
                                 <option value="">Select Year/Grade Level</option>
@@ -154,17 +154,17 @@
             <form id="reschedForm">
                 @csrf
                 <div class="mb-3">
-                    <label class="form-label">New Start Date</label>
+                    <label class="form-label required">New Start Date</label>
                     <input type="date" id="resched_date" class="form-control">
                     <div class="new-error-msg text-danger small mt-1" id="error_new_start_date"></div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">New Start Time</label>
+                    <label class="form-label required">New Start Time</label>
                     <input type="time" id="resched_start_time" class="form-control">
                     <div class="new-error-msg text-danger small mt-1" id="error_new_start_time"></div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">New End Time</label>
+                    <label class="form-label required">New End Time</label>
                     <input type="time" id="resched_end_time" class="form-control">
                     <div class="new-error-msg text-danger small mt-1" id="error_new_end_time"></div>
                 </div>
@@ -182,17 +182,17 @@
             <form id="followForm">
                 @csrf
                 <div class="mb-3">
-                    <label class="form-label">Follow-up Date</label>
+                    <label class="form-label required">Follow-up Date</label>
                     <input type="date" id="follow_date" class="form-control" >
                     <div class="follow-error-msg text-danger small mt-1" id="error_follow_start_date"></div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Start Time</label>
+                    <label class="form-label required">Start Time</label>
                     <input type="time" id="follow_start_time" class="form-control">
                     <div class="follow-error-msg text-danger small mt-1" id="error_follow_start_time"></div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">End Time</label>
+                    <label class="form-label required">End Time</label>
                     <input type="time" id="follow_end_time" class="form-control">
                     <div class="follow-error-msg text-danger small mt-1" id="error_follow_end_time"></div>
                 </div>
@@ -250,7 +250,7 @@
                     </div>
                     <hr>
                     <div class="mb-2">
-                        <label class="form-label fw-bold">Year level / Grade</label>
+                        <label class="form-label fw-bold required">Year level / Grade</label>
                         <!-- <input type="text" id="add_year_level" class="form-control" placeholder="First Year or Grade - 11"> -->
                         <select name="" id="add_year_level_select" class="form-select">
                             <option value="">Select Year/Grade Level</option>
@@ -264,7 +264,7 @@
                         <div class="error-msg text-danger small mt-1" id="add_error_year_level"></div>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label fw-bold">Program</label>
+                        <label class="form-label fw-bold required">Program</label>
                         <!-- <input type="text" id="add_program" class="form-control" placeholder="Bachelor of Science in Information Technology"> -->
                           <select name="" id="add_program" class="form-select">
                             <option value="">Select Year/Grade Level</option>
@@ -282,30 +282,30 @@
                     <hr>
                     <div class="section-title">Time and Date</div>
                     <div class="mb-2">
-                        <label>Start Date</label>
+                        <label class="required">Start Date</label>
                         <input type="date" id="add_start_date" class="form-control rounded-pill px-3 py-2">
                         <div class="error-msg text-danger small mt-1" id="error_start_date"></div>
                     </div>
                     <div class="mb-2">
-                        <label>Start Time</label>
+                        <label class="required">Start Time</label>
                         <input type="time" id="add_start_time" class="form-control rounded-pill px-3 py-2">
                         <div class="error-msg text-danger small mt-1" id="error_start_time"></div>
                     </div>
                     <div class="mb-2">
-                        <label>End Time</label>
+                        <label class="required">End Time</label>
                         <input type="time" id="add_end_time" class="form-control rounded-pill px-3 py-2">
                         <div class="error-msg text-danger small mt-1" id="error_end_time"></div>
                     </div>
                     <hr>
                     <div class="mb-2">
-                        <label class="fw-bold">Priority Level</label>
+                        <label class="fw-bold required">Priority Level</label>
                         <select name="" id="add_priority_level_input" class="form-select">
                             <!-- Load hereeee -->
                         </select>
                         <div class="error-msg text-danger small mt-1" id="error_priority_level"></div>
                     </div>
                     <div class="mb-2">
-                        <label class="fw-bold">Guidance Service</label>
+                        <label class="fw-bold required">Guidance Service</label>
                         <select name="" id="add_guidance_service_input" class="form-select">
                             <!-- Load hereeee -->
                         </select>

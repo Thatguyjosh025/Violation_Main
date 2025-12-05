@@ -462,3 +462,8 @@ textarea {
 .container.mt-4 {
     max-width: 1750px;
 }
+.required::after {
+  content: " *";
+  color: #dc3545; /* Bootstrap's red */
+  font-weight: bold;
+}

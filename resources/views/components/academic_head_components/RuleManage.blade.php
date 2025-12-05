@@ -73,17 +73,17 @@
                 <form id="ruleForm" novalidate>
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label">Rule:</label>
+                        <label class="form-label required">Rule:</label>
                         <input type="text" name="rule_name" id="rule_name" class="form-control" required>
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Description:</label>
+                        <label class="form-label required">Description:</label>
                         <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Violation:</label>
+                        <label class="form-label required">Violation:</label>
                         <select name="violation_id" id="violation_id" class="form-select">
                             <option value="">Select Violation</option>
                             @foreach ($violationinfo as $violation)
@@ -93,7 +93,7 @@
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Severity:</label>
+                        <label class="form-label required">Severity:</label>
                         <select name="severity_id" id="severity_id" class="form-select">
                             <option value="">Select Severity</option>
                             @foreach ($severityinfo as $severity)

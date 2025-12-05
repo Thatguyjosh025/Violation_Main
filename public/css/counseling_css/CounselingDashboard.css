@@ -596,3 +596,8 @@ img {
     div#scheduleList {
         max-height: 40rem;
     }
+    .required::after {
+    content: " *";
+    color: #dc3545; /* Bootstrap's red */
+    font-weight: bold;
+    }

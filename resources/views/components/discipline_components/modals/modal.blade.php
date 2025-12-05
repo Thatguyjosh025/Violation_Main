@@ -26,7 +26,7 @@
                     <input type="hidden" class="form-control mb-2" id="modal_student_course" name="course" readonly required>
                     <input type="hidden" class="form-control mb-2" id="modal_student_email" name="school_email" readonly required>
 
-                    <label class="fw-bold mb-1 text text-dark">Reason/s for Referral</label>
+                    <label class="fw-bold mb-1 text text-dark required">Reason/s for Referral</label>
                     <!-- Violation Dropdown Section -->
                     <div class="dropdown" id="dropdown1">
                         <select name="violation_type" id="violation_type" class="form-select">
@@ -39,7 +39,7 @@
                     <!-- End of Dropdown Section -->
 
                     <!-- RuleName, Description, Severity auto populate -->
-                    <label class="fw-bold mt-2 text text-dark">Rule Name:</label>
+                    <label class="fw-bold mt-2 text text-dark required">Rule Name:</label>
                     <select id="ruleDropdown" class="form-select">
                         <option value="" hidden>Select Rule</option>
                     </select>
@@ -59,7 +59,7 @@
 
                     
                     <!-- Referral Dropdown Section -->
-                    <label class="fw-bold mb-1 text text-dark">Action Taken Prior to Referral</label>
+                    <label class="fw-bold mb-1 text text-dark required">Action Taken Prior to Referral</label>
                     <select class="form-select" id="referal_type" name="referal_type">
                         <option value="" hidden>Select Referals</option>
                        @foreach ( $ref as $referaldata )
@@ -69,7 +69,7 @@
                     <!-- End of Dropdown Section -->
 
                     <!-- Penalty Dropdown Section -->
-                    <label class="fw-bold mt-2 text text-dark">Penalty</label>
+                    <label class="fw-bold mt-2 text text-dark required">Penalty</label>
                     <select class="form-select" id="penalty_type" name="penalty_type">
                         <option value="" hidden>Select Penalty</option>
                        @foreach ( $pen as $pendata )
@@ -117,7 +117,7 @@
     
                         <!-- Remarks-->
                         <div class="form-group mt-3">
-                            <label for="floatingTextarea" class="text text-dark">Remarks</label>
+                            <label for="floatingTextarea" class="text text-dark required">Remarks</label>
                             <textarea class="form-control" id="remarks" style="height: 100px; resize: none;" maxlength="200"></textarea>
                         </div>
                     
@@ -739,20 +739,20 @@ function loadRuleDropdown(url, id, selectedValue = null) {
 
           if ($('#edit_faculty_yes').is(':checked')) {
               $('#edit_faculty_Name').show().val(response.data.faculty_name);
-              $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');        
+              $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark required');        
             }
           else {
               $('#edit_faculty_Name').hide().val('N/A');
-              $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark');        
+              $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark required');        
             }
 
           $('input[name="edit_faculty_involvement"]').change(function () {
               if ($('#edit_faculty_yes').is(':checked')) {
                   $('#edit_faculty_Name').show().val(''); 
-                  $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark');            
+                  $("#editfacultyLabel").show().text('Enter Faculty Name:').addClass('text-dark required');            
                 } else {
                   $('#edit_faculty_Name').hide().val('N/A');
-                  $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark');            
+                  $("#editfacultyLabel").hide().text('Enter Faculty Name:').addClass('text-dark required');            
                 }
           });
 
