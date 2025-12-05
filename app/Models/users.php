@@ -11,6 +11,6 @@ class users extends Authenticatable
 
     protected $table = 'tb_users';
     protected $primaryKey = 'id';
-    protected $fillable = ['firstname', 'lastname', 'email', 'password','role','student_no','course_and_section','status'];
+    protected $fillable = ['firstname', 'lastname', 'email','username','password','role','student_no','course_and_section','status'];
     public $timestamps = false;
 }
